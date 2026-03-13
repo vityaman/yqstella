@@ -26,12 +26,11 @@ jobs:
       - name: Cache Stack Dependencies
         uses: actions/cache@v4
         with:
-          path:
-            - ~/.stack
-            - .stack-work
+          path: |
+            ~/.stack
+            .stack-work
           key: ${{ runner.os }}-stack-${{ hashFiles('stack.yaml', 'package.yaml', 'yqstella.cabal') }}
-          restore-keys:
-            - ${{ runner.os }}-stack-
+          restore-keys: ${{ runner.os }}-stack-
 
       - name: Build Dependencies
         run: stack build --only-dependencies --test --no-run-tests
