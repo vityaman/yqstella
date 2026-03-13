@@ -1,8 +1,15 @@
 module Lib
-    ( someFunc
-    ) where
+  ( someFunc,
+  )
+where
 
-import Syntax.ParStella ( pProgram, myLexer )
+import Syntax.AbsStella ()
+import Syntax.ParStella (myLexer, pProgram)
 
 someFunc :: IO ()
-someFunc = putStrLn "someFunc"
+someFunc = do
+  input <- getContents
+  let tokens = myLexer input
+  let tree = pProgram tokens
+  let output = either id show tree
+  putStrLn output
