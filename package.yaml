@@ -1,0 +1,53 @@
+name:                yqstella
+version:             0.1.0.0
+github:              "vityaman/yqstella"
+license:             BSD-3-Clause
+author:              "Victor Smirnov"
+maintainer:          "vityaman.dev@yandex.com"
+copyright:           "Copyright (c) 2025 Victor Smirnov"
+
+extra-source-files:
+- README.md
+
+synopsis:            Yandex Query Stella
+
+description:         Please see the README on GitHub at <https://github.com/vityaman/yqstella#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -Wincomplete-record-updates
+- -Wincomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wpartial-fields
+- -Wredundant-constraints
+
+library:
+  source-dirs: src
+
+executables:
+  yqstella:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - yqstella
+
+tests:
+  yqstella-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - yqstella
