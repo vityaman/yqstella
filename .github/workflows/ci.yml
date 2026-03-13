@@ -29,14 +29,29 @@ jobs:
           path: |
             ~/.stack
             .stack-work
-          key: ${{ runner.os }}-stack-${{ hashFiles('stack.yaml', 'package.yaml', 'yqstella.cabal') }}
+          key: ${{ runner.os }}-stack-${{ hashFiles('stack.yaml', 'package.yaml') }}
           restore-keys: ${{ runner.os }}-stack-
 
+      - name: Install HPack
+        run: stack install hpack
+
+      - name: Generate Cabal File
+        run: hpack
+
+      - name: Install BNFC
+        run: |
+          stack install BNFC
+          stack install alex
+          stack install happy
+
+      - name: Generate Syntax Modules
+        run: ./syntax/codegen.bash
+
       - name: Build Dependencies
-        run: stack build --only-dependencies --test --no-run-tests
+        run: stack build --only-dependencies
 
       - name: Build Project
-        run: stack build --test --no-run-tests
+        run: stack build
 
       - name: Test
         run: stack test
