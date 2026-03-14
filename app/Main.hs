@@ -1,6 +1,11 @@
 module Main (main) where
 
+import qualified CLI
+
 import Lib
 
 main :: IO ()
-main = someFunc
+main = do
+  args <- CLI.parseArgs
+  print args
+  return ()
