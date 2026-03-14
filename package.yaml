@@ -43,6 +43,7 @@ executables:
     dependencies:
     - yqstella
     - optparse-applicative
+    - filepath
 
 tests:
   yqstella-test:

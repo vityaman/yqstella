@@ -19,13 +19,15 @@ import Options.Applicative
     (<**>),
   )
 
+import System.FilePath (FilePath)
+
 data Args = Args
-  { inputPath :: String,
-    diagnosticsPath :: String,
-    tokensPath :: String,
-    parseTreePath :: String,
-    typeAnnotationPath :: String,
-    outputPath :: String
+  { inputPath :: FilePath,
+    diagnosticsPath :: FilePath,
+    tokensPath :: FilePath,
+    parseTreePath :: FilePath,
+    typeAnnotationPath :: FilePath,
+    outputPath :: FilePath
   } deriving (Show)
 
 parseArgs :: IO Args
