@@ -26,8 +26,6 @@ import Options.Applicative
     (<**>),
   )
 
-import System.FilePath (FilePath)
-
 data Args = Args
   { inputPath :: FilePath,
     diagnosticsPath :: FilePath,
