@@ -1,7 +1,14 @@
 {-# LANGUAGE ApplicativeDo #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module CLI (Args, parseArgs) where
+module CLI
+  ( Args (Args),
+    inputPath,
+    diagnosticsPath,
+    tokensPath,
+    parseArgs,
+  )
+where
 
 import Options.Applicative
   ( Parser,
@@ -19,8 +26,6 @@ import Options.Applicative
     (<**>),
   )
 
-import System.FilePath (FilePath)
-
 data Args = Args
   { inputPath :: FilePath,
     diagnosticsPath :: FilePath,
@@ -28,7 +33,8 @@ data Args = Args
     parseTreePath :: FilePath,
     typeAnnotationPath :: FilePath,
     outputPath :: FilePath
-  } deriving (Show)
+  }
+  deriving (Show)
 
 parseArgs :: IO Args
 parseArgs =
