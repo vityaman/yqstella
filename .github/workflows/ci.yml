@@ -55,3 +55,11 @@ jobs:
 
       - name: Test
         run: stack test
+
+      - name: Install Ormolu
+        run: stack install ormolu
+
+      - name: Check Haskell Formatting
+        run: |
+          SRCS=$(find . -path './src/*.hs' -not -path './src/Syntax/*')
+          ormolu --mode check $SRCS
