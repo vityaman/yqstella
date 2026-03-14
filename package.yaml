@@ -31,6 +31,8 @@ library:
   source-dirs: src
   dependencies:
   - array
+  - transformers
+  - mtl
 
 executables:
   yqstella:
@@ -44,6 +46,8 @@ executables:
     - yqstella
     - optparse-applicative
     - filepath
+    - transformers
+    - mtl
 
 tests:
   yqstella-test:
