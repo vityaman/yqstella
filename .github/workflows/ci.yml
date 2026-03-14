@@ -69,3 +69,23 @@ jobs:
 
       - name: Check Haskell Style
         run: hlint .
+
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get install -y shellcheck
+
+      - name: Check Shell Style
+        run: |
+          find . -name "*.bash" -type f | while read f; do
+            shellcheck "$f" || exit 1
+          done
+
+      - name: Install MarkdownLint
+        run: |
+          npm install -g markdownlint-cli
+
+      - name: Check Markdown Style
+        run: |
+          find . -name "*.md" -type f | while read f; do
+            markdownlint "$f" || exit 1
+          done
