@@ -63,3 +63,9 @@ jobs:
         run: |
           SRCS=$(find . -path './src/*.hs' -not -path './src/Syntax/*')
           ormolu --mode check $SRCS
+
+      - name: Install HLint
+        run: stack install hlint
+
+      - name: Check Haskell Style
+        run: hlint .
