@@ -1,0 +1,77 @@
+--- /tmp/Syntax/PrintStella.hs
++++ ../src/Syntax/PrintStella.hs
+@@ -29,6 +29,14 @@
+ doc :: ShowS -> Doc
+ doc = (:)
+ 
++-- Indentation (spaces) for given indentation level.
++indent :: Int -> ShowS
++indent i = replicateS (2*i) (showChar ' ')
++
++-- Make sure we are on a fresh line.
++onNewLine :: Int -> Bool -> ShowS
++onNewLine i p = (if p then id else showChar '\n') . indent i
++
+ render :: Doc -> String
+ render d = rend 0 False (map ($ "") $ d []) ""
+   where
+@@ -40,9 +48,11 @@
+   rend i p = \case
+       "["      :ts -> char '[' . rend i False ts
+       "("      :ts -> char '(' . rend i False ts
+-      "{"      :ts -> onNewLine i     p . showChar   '{'  . new (i+1) ts
+-      "}" : ";":ts -> onNewLine (i-1) p . showString "};" . new (i-1) ts
+-      "}"      :ts -> onNewLine (i-1) p . showChar   '}'  . new (i-1) ts
++      "{"      :ts -> showChar   '{'  . new (i+1) ts
++      "}" : ";":ts -> onNewLine (i-1) p . showString "};" . neww (i-1) ts
++      "}" : ")":ts -> onNewLine (i-1) p . showString "})" . rend (i-1) False ts
++      "}" : "}":ts -> onNewLine (i-1) p . showChar   '}'  . new  (i-1) ("}" : ts)
++      "}"      :ts -> onNewLine (i-1) p . showChar   '}'  . neww (i-1) ts
+       [";"]        -> char ';'
+       ";"      :ts -> char ';' . new i ts
+       t  : ts@(s:_) | closingOrPunctuation s
+@@ -58,17 +68,12 @@
+     pending :: ShowS
+     pending = if p then indent i else id
+ 
+-  -- Indentation (spaces) for given indentation level.
+-  indent :: Int -> ShowS
+-  indent i = replicateS (2*i) (showChar ' ')
+-
+   -- Continue rendering in new line with new indentation.
+   new :: Int -> [String] -> ShowS
+   new j ts = showChar '\n' . rend j True ts
+ 
+-  -- Make sure we are on a fresh line.
+-  onNewLine :: Int -> Bool -> ShowS
+-  onNewLine i p = (if p then id else showChar '\n') . indent i
++  neww :: Int -> [String] -> ShowS
++  neww j ts = showString "\n\n" . rend j True ts
+ 
+   -- Separate given string from following text by a space (if needed).
+   space :: String -> ShowS
+@@ -151,20 +156,20 @@
+ 
+ instance Print (Syntax.AbsStella.LanguageDecl' a) where
+   prt i = \case
+-    Syntax.AbsStella.LanguageCore _ -> prPrec i 0 (concatD [doc (showString "language"), doc (showString "core"), doc (showString ";")])
++    Syntax.AbsStella.LanguageCore _ -> prPrec i 0 (concatD [doc (showString "language"), doc (showString "core"), doc (showString ";"), doc (onNewLine 0 False)])
+ 
+ instance Print (Syntax.AbsStella.Extension' a) where
+   prt i = \case
+-    Syntax.AbsStella.AnExtension _ extensionnames -> prPrec i 0 (concatD [doc (showString "extend"), doc (showString "with"), prt 0 extensionnames])
++    Syntax.AbsStella.AnExtension _ extensionnames -> prPrec i 0 (concatD [doc (showString "extend"), doc (showString "with"), doc (onNewLine (i + 1) False), prt 0 extensionnames])
+ 
+ instance Print [Syntax.AbsStella.ExtensionName] where
+   prt _ [] = concatD []
+   prt _ [x] = concatD [prt 0 x]
+-  prt _ (x:xs) = concatD [prt 0 x, doc (showString ","), prt 0 xs]
++  prt i (x:xs) = concatD [prt 0 x, doc (showString ","), doc (onNewLine (i + 1) False), prt 0 xs]
+ 
+ instance Print [Syntax.AbsStella.Extension' a] where
+   prt _ [] = concatD []
+-  prt _ (x:xs) = concatD [prt 0 x, doc (showString ";"), prt 0 xs]
++  prt _ (x:xs) = concatD [prt 0 x, doc (showString ";"), doc (onNewLine 0 False), prt 0 xs]
+ 
+ instance Print (Syntax.AbsStella.Decl' a) where
+   prt i = \case

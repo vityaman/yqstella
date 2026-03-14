@@ -12,7 +12,7 @@ SRCS=(
 )
 
 DIR="Syntax"
-TARGET="../src/Syntax"
+TARGET="${1:-../src/Syntax}"
 
 bnfc --haskell -m -p "$DIR" --functor Stella.cf
 
@@ -28,3 +28,7 @@ done
 
 rm -rf "$DIR"
 rm Makefile
+
+if [ -z "$1" ]; then
+    patch "$TARGET/PrintStella.hs" PrintStella.hs.patch
+fi

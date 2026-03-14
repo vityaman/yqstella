@@ -30,7 +30,7 @@ scan input =
     visit' :: AlexToken -> Writer Diagnostics (Maybe StellaToken)
     visit' alex = case alex of
       (Err posn) -> do
-        tell [Diagnostic Error (pointRange $ Position posn) "illegal token"]
+        _ <- tell [Diagnostic Error (pointRange $ Position posn) "illegal token"]
         return Nothing
       token ->
         return $ Just $ StellaToken token
