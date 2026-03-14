@@ -1,6 +1,6 @@
 # YQStella
 
-<img src="./docs/stella.webp" alt="Stella" width="30%">
+<img src="./docs/stella.webp" alt="Stella" width="50%">
 
 Yandex Query [Stella](https://fizruk.github.io/stella/) is
 an experimental [YQL](https://ytsaurus.tech/docs/en/yql/)
