@@ -6,6 +6,7 @@ module CLI
     inputPath,
     diagnosticsPath,
     tokensPath,
+    parseTreePath,
     parseArgs,
   )
 where
