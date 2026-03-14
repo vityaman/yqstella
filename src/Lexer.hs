@@ -7,7 +7,8 @@ module Lexer
 where
 
 import Control.Monad (foldM)
-import Control.Monad.State
+import Control.Monad.Writer
+import Data.List (singleton)
 import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Position (Position (Position), pointRange)
 import Syntax.LexStella (Token (Err, PT), tokenText)
@@ -22,17 +23,22 @@ instance Show StellaToken where
     ":" ++ show (Position position) ++ "\t" ++ tokenText token
   show (StellaToken (Err _)) = undefined
 
-scan :: String -> State Diagnostics [StellaToken]
+scan :: String -> Writer Diagnostics [StellaToken]
 scan input =
-  foldM
-    ( \ts t -> case t of
-        (Err posn) -> do
-          modify (Diagnostic Error (pointRange $ Position posn) "illegal token" :)
-          return ts
-        token -> return (StellaToken token : ts)
-    )
-    []
-    $ myLexer input
+  foldM visit [] $ myLexer input
+  where
+    visit' :: AlexToken -> Writer Diagnostics (Maybe StellaToken)
+    visit' alex = case alex of
+      (Err posn) -> do
+        tell [Diagnostic Error (pointRange $ Position posn) "illegal token"]
+        return Nothing
+      token ->
+        return $ Just $ StellaToken token
+
+    visit :: [StellaToken] -> AlexToken -> Writer Diagnostics [StellaToken]
+    visit acc alex = do
+      token' <- visit' alex
+      return $ acc ++ maybe [] singleton token'
 
 display :: [StellaToken] -> String
 display = unlines . map show

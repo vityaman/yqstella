@@ -1,7 +1,7 @@
 module Main (main) where
 
 import qualified CLI
-import Control.Monad.State
+import Control.Monad.Writer (runWriter)
 import qualified Diagnostic
 import qualified Lexer
 
@@ -16,7 +16,7 @@ main = do
 
   content <- readFile inputPath
 
-  let (tokens, diagnostics) = runState (Lexer.scan content) []
+  let (tokens, diagnostics) = runWriter $ Lexer.scan content
 
   writeFile diagnosticsPath (Diagnostic.displays diagnostics)
   writeFile tokensPath (Lexer.display tokens)
