@@ -19,10 +19,10 @@ activateExtensions program = do
 
   tell $ do
     (position, extensions) <- toList $ annotateExtensions program
-    let disabled = Set.difference enabled extensions
-    guard $ Set.size disabled == 1
+    let disabled = Set.difference extensions enabled
+    guard $ not $ Set.null disabled
     let disabledNames = intercalate ", " (extensionName <$> Set.toList disabled)
-        message = "disabled extensions usage: " ++ disabledNames
+        message = "disabled extension usage: " ++ disabledNames
     return (Diagnostic Error (pointRange position) message)
 
   return ()

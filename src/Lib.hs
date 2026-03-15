@@ -10,6 +10,7 @@ where
 
 import Control.Monad.Writer
 import Diagnostic (Diagnostics)
+import Extension.Activation (activateExtensions)
 import qualified Lexer
 import qualified Parser
 import Position (Position)
@@ -28,6 +29,7 @@ build (Source source) =
   let (project, diagnostics') = runWriter $ do
         tokens' <- Lexer.scan source
         parseTree' <- Parser.parse tokens'
+        _ <- maybe (return ()) activateExtensions parseTree'
         return $
           Project
             { diagnostics = [],

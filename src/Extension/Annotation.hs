@@ -1,6 +1,5 @@
 module Extension.Annotation (annotateExtensions) where
 
-import Annotation (annotation)
 import qualified Data.Set as Set
 import Extension.Core (Extensions)
 import qualified Extension.Core as Extension
