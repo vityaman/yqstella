@@ -43,6 +43,7 @@ data Extension
   | StructuralSubtyping
   | TopType
   | BottomType
+  | TypeCast
   | UniversalTypes
   | FixpointCombinator
   deriving (Eq, Ord, Show)
@@ -93,6 +94,7 @@ extensionNameMap =
       (StructuralSubtyping, "#structural-subtyping"),
       (TopType, "#top-type"),
       (BottomType, "#bottom-type"),
+      (TypeCast, "#type-cast"),
       -- Universal Types
       (UniversalTypes, "#universal-types"),
       -- Other
@@ -114,4 +116,5 @@ extensionFromName name =
 
 closure :: Extension -> [Extension]
 closure Tuples = [Tuples, Pairs]
+closure CurriedMultiparameterFunctions = [CurriedMultiparameterFunctions, MultiparameterFunctions]
 closure x = [x]

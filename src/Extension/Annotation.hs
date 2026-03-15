@@ -30,7 +30,11 @@ instance ExtensionsAnnotatable AST.Decl' where
   annotateExtensions (AST.DeclFun p annotations stellaident paramdecls returntype throwtype decls expr) =
     AST.DeclFun (p, p'') annotations' stellaident paramdecls' returntype' throwtype' decls' expr'
     where
-      p'' = Set.empty
+      p'' =
+        Set.singleton $
+          if null paramdecls
+            then Extension.NullaryFunctions
+            else Extension.MultiparameterFunctions
 
       annotations' = fmap annotateExtensions annotations
       paramdecls' = fmap annotateExtensions paramdecls
@@ -41,7 +45,13 @@ instance ExtensionsAnnotatable AST.Decl' where
   annotateExtensions (AST.DeclFunGeneric p annotations stellaident stellaidents paramdecls returntype throwtype decls expr) =
     AST.DeclFunGeneric (p, p'') annotations' stellaident stellaidents paramdecls' returntype' throwtype' decls' expr'
     where
-      p'' = Set.empty
+      p'' =
+        Set.fromList
+          [ if null paramdecls
+              then Extension.NullaryFunctions
+              else Extension.MultiparameterFunctions,
+            Extension.UniversalTypes
+          ]
 
       annotations' = fmap annotateExtensions annotations
       paramdecls' = fmap annotateExtensions paramdecls
@@ -50,21 +60,21 @@ instance ExtensionsAnnotatable AST.Decl' where
       decls' = fmap annotateExtensions decls
       expr' = annotateExtensions expr
   annotateExtensions (AST.DeclTypeAlias p stellaident type_) =
-    AST.DeclTypeAlias (p, Set.empty) stellaident type_'
+    AST.DeclTypeAlias (p, Set.singleton Extension.TypeAliases) stellaident type_'
     where
       type_' = annotateExtensions type_
   annotateExtensions (AST.DeclExceptionType p type_) =
-    AST.DeclExceptionType (p, Set.empty) type_'
+    AST.DeclExceptionType (p, Set.singleton Extension.ExceptionTypeDeclaration) type_'
     where
       type_' = annotateExtensions type_
   annotateExtensions (AST.DeclExceptionVariant p stellaident type_) =
-    AST.DeclExceptionVariant (p, Set.empty) stellaident type_'
+    AST.DeclExceptionVariant (p, Set.singleton Extension.OpenVariantExceptions) stellaident type_'
     where
       type_' = annotateExtensions type_
 
 instance ExtensionsAnnotatable AST.LocalDecl' where
   annotateExtensions (AST.ALocalDecl p decl) =
-    AST.ALocalDecl (p, Set.empty) decl'
+    AST.ALocalDecl (p, Set.fromList [Extension.NestedFunctionDeclarations]) decl'
     where
       decl' = annotateExtensions decl
 
@@ -143,11 +153,11 @@ instance ExtensionsAnnotatable AST.Type' where
   annotateExtensions (AST.TypeUnit p) =
     AST.TypeUnit (p, Set.singleton Extension.UnitType)
   annotateExtensions (AST.TypeTop p) =
-    AST.TypeTop (p, Set.empty)
+    AST.TypeTop (p, Set.singleton Extension.TopType)
   annotateExtensions (AST.TypeBottom p) =
-    AST.TypeBottom (p, Set.empty)
+    AST.TypeBottom (p, Set.singleton Extension.BottomType)
   annotateExtensions (AST.TypeRef p type_) =
-    AST.TypeRef (p, Set.empty) type_'
+    AST.TypeRef (p, Set.singleton Extension.References) type_'
     where
       type_' = annotateExtensions type_
   annotateExtensions (AST.TypeVar p stellaident) =
@@ -186,7 +196,7 @@ instance ExtensionsAnnotatable AST.ExprData' where
 
 instance ExtensionsAnnotatable AST.Pattern' where
   annotateExtensions (AST.PatternCastAs p pattern_ type_) =
-    AST.PatternCastAs (p, Set.empty) pattern_' type_'
+    AST.PatternCastAs (p, Set.singleton Extension.TypeCast) pattern_' type_'
     where
       pattern_' = annotateExtensions pattern_
       type_' = annotateExtensions type_
@@ -196,48 +206,55 @@ instance ExtensionsAnnotatable AST.Pattern' where
       pattern_' = annotateExtensions pattern_
       type_' = annotateExtensions type_
   annotateExtensions (AST.PatternVariant p stellaident patterndata) =
-    AST.PatternVariant (p, Set.singleton Extension.Variants) stellaident patterndata'
+    AST.PatternVariant (p, Set.fromList [Extension.Variants, Extension.StructuralPatterns]) stellaident patterndata'
     where
       patterndata' = annotateExtensions patterndata
   annotateExtensions (AST.PatternInl p pattern_) =
-    AST.PatternInl (p, Set.singleton Extension.SumTypes) pattern_'
+    AST.PatternInl (p, Set.fromList [Extension.SumTypes, Extension.StructuralPatterns]) pattern_'
     where
       pattern_' = annotateExtensions pattern_
   annotateExtensions (AST.PatternInr p pattern_) =
-    AST.PatternInr (p, Set.empty) pattern_'
+    AST.PatternInr (p, Set.fromList [Extension.SumTypes, Extension.StructuralPatterns]) pattern_'
     where
       pattern_' = annotateExtensions pattern_
   annotateExtensions (AST.PatternTuple p patterns) =
-    AST.PatternTuple (p, Set.empty) patterns'
+    AST.PatternTuple (p, Set.fromList [extension, Extension.LetBindings]) patterns'
     where
       patterns' = fmap annotateExtensions patterns
+
+      extension = if isPair patterns then Extension.Pairs else Extension.Tuples
+
+      isPair [_, _] = True
+      isPair _ = False
   annotateExtensions (AST.PatternRecord p labelledpatterns) =
-    AST.PatternRecord (p, Set.empty) labelledpatterns'
+    AST.PatternRecord (p, Set.fromList [Extension.Records, Extension.LetBindings]) labelledpatterns'
     where
       labelledpatterns' = fmap annotateExtensions labelledpatterns
   annotateExtensions (AST.PatternList p patterns) =
-    AST.PatternList (p, Set.empty) patterns'
+    AST.PatternList (p, Set.fromList [Extension.Lists, Extension.StructuralPatterns]) patterns'
     where
       patterns' = fmap annotateExtensions patterns
   annotateExtensions (AST.PatternCons p pattern_1 pattern_2) =
-    AST.PatternCons (p, Set.empty) pattern_1' pattern_2'
+    AST.PatternCons (p, Set.fromList [Extension.Lists, Extension.StructuralPatterns]) pattern_1' pattern_2'
     where
       pattern_1' = annotateExtensions pattern_1
       pattern_2' = annotateExtensions pattern_2
   annotateExtensions (AST.PatternFalse p) =
-    AST.PatternFalse (p, Set.empty)
+    AST.PatternFalse (p, Set.fromList [Extension.StructuralPatterns])
   annotateExtensions (AST.PatternTrue p) =
-    AST.PatternTrue (p, Set.empty)
+    AST.PatternTrue (p, Set.fromList [Extension.StructuralPatterns])
   annotateExtensions (AST.PatternUnit p) =
-    AST.PatternUnit (p, Set.empty)
+    AST.PatternUnit (p, Set.fromList [Extension.LetBindings])
   annotateExtensions (AST.PatternInt p n) =
-    AST.PatternInt (p, Set.empty) n
+    AST.PatternInt (p, Set.fromList [Extension.StructuralPatterns]) n
   annotateExtensions (AST.PatternSucc p pattern_) =
-    AST.PatternSucc (p, Set.empty) pattern_'
+    AST.PatternSucc (p, Set.fromList [Extension.NaturalLiterals, Extension.StructuralPatterns]) pattern_'
     where
       pattern_' = annotateExtensions pattern_
-  annotateExtensions (AST.PatternVar p stellaident) =
-    AST.PatternVar (p, Set.singleton Extension.LetBindings) stellaident
+  annotateExtensions (AST.PatternVar p stellaident'@(AST.StellaIdent stellaident)) =
+    AST.PatternVar (p, Set.fromList $ wildcard ++ [Extension.LetBindings]) stellaident'
+    where
+      wildcard = [Extension.WildcardBinders | stellaident == "_"]
 
 instance ExtensionsAnnotatable AST.LabelledPattern' where
   annotateExtensions (AST.ALabelledPattern p stellaident pattern_) =
@@ -253,7 +270,7 @@ instance ExtensionsAnnotatable AST.Binding' where
 
 instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.Sequence p expr1 expr2) =
-    AST.Sequence (p, Set.empty) expr1' expr2'
+    AST.Sequence (p, Set.singleton Extension.Sequencing) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
@@ -283,32 +300,32 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.LessThan p expr1 expr2) =
-    AST.LessThan (p, Set.empty) expr1' expr2'
+    AST.LessThan (p, Set.singleton Extension.ComparisonOperations) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.LessThanOrEqual p expr1 expr2) =
-    AST.LessThanOrEqual (p, Set.empty) expr1' expr2'
+    AST.LessThanOrEqual (p, Set.singleton Extension.ComparisonOperations) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.GreaterThan p expr1 expr2) =
-    AST.GreaterThan (p, Set.empty) expr1' expr2'
+    AST.GreaterThan (p, Set.singleton Extension.ComparisonOperations) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.GreaterThanOrEqual p expr1 expr2) =
-    AST.GreaterThanOrEqual (p, Set.empty) expr1' expr2'
+    AST.GreaterThanOrEqual (p, Set.singleton Extension.ComparisonOperations) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.Equal p expr1 expr2) =
-    AST.Equal (p, Set.empty) expr1' expr2'
+    AST.Equal (p, Set.singleton Extension.ComparisonOperations) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.NotEqual p expr1 expr2) =
-    AST.NotEqual (p, Set.empty) expr1' expr2'
+    AST.NotEqual (p, Set.singleton Extension.ComparisonOperations) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
@@ -341,12 +358,12 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       exprs' = fmap annotateExtensions exprs
   annotateExtensions (AST.Add p expr1 expr2) =
-    AST.Add (p, Set.empty) expr1' expr2'
+    AST.Add (p, Set.singleton Extension.ArithmeticOperators) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.Subtract p expr1 expr2) =
-    AST.Subtract (p, Set.empty) expr1' expr2'
+    AST.Subtract (p, Set.singleton Extension.ArithmeticOperators) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
@@ -356,12 +373,12 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.Multiply p expr1 expr2) =
-    AST.Multiply (p, Set.empty) expr1' expr2'
+    AST.Multiply (p, Set.singleton Extension.ArithmeticOperators) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.Divide p expr1 expr2) =
-    AST.Divide (p, Set.empty) expr1' expr2'
+    AST.Divide (p, Set.singleton Extension.ArithmeticOperators) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
@@ -371,11 +388,11 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.Ref p expr) =
-    AST.Ref (p, Set.empty) expr'
+    AST.Ref (p, Set.singleton Extension.References) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Deref p expr) =
-    AST.Deref (p, Set.empty) expr'
+    AST.Deref (p, Set.singleton Extension.References) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Application p expr exprs) =
@@ -430,24 +447,24 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Panic p) =
-    AST.Panic (p, Set.empty)
+    AST.Panic (p, Set.singleton Extension.Panic)
   annotateExtensions (AST.Throw p expr) =
-    AST.Throw (p, Set.empty) expr'
+    AST.Throw (p, Set.singleton Extension.Exceptions) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.TryCatch p expr1 pattern_ expr2) =
-    AST.TryCatch (p, Set.empty) expr1' pattern_' expr2'
+    AST.TryCatch (p, Set.singleton Extension.Exceptions) expr1' pattern_' expr2'
     where
       expr1' = annotateExtensions expr1
       pattern_' = annotateExtensions pattern_
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.TryWith p expr1 expr2) =
-    AST.TryWith (p, Set.empty) expr1' expr2'
+    AST.TryWith (p, Set.singleton Extension.Exceptions) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.TryCastAs p expr1 type_ pattern_ expr2 expr3) =
-    AST.TryCastAs (p, Set.empty) expr1' type_' pattern_' expr2' expr3'
+    AST.TryCastAs (p, Set.fromList [Extension.TypeCast, Extension.Exceptions]) expr1' type_' pattern_' expr2' expr3'
     where
       expr1' = annotateExtensions expr1
       type_' = annotateExtensions type_
@@ -463,7 +480,7 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Succ p expr) =
-    AST.Succ (p, Set.empty) expr'
+    AST.Succ (p, Set.singleton Extension.NaturalLiterals) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.LogicNot p expr) =
