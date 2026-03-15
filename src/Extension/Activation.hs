@@ -9,6 +9,7 @@ import qualified Data.Set as Set
 import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Extension.Annotation (annotateExtensions)
 import Extension.Core (Extensions, extensionFromName, extensionName)
+import qualified Extension.Core as Extension
 import Position (Position, pointRange)
 import qualified Syntax.AbsStella as AST
 
@@ -39,5 +40,10 @@ enabledExtensions (AST.AProgram _ _ extensions _) = do
       diagnostics = lefts names'
       extensions' = Set.fromList $ rights names'
 
+      extensions'' =
+        if Set.member Extension.Tuples extensions'
+          then Set.insert Extension.Pairs extensions'
+          else extensions'
+
   tell diagnostics
-  return extensions'
+  return extensions''

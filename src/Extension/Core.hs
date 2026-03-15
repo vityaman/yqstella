@@ -1,4 +1,4 @@
-module Extension.Core (Extension, Extensions, extensionName, extensionFromName) where
+module Extension.Core (Extension (..), Extensions, extensionName, extensionFromName) where
 
 import Data.Bimap (Bimap)
 import qualified Data.Bimap as Bimap
@@ -71,6 +71,7 @@ data Extension
   | UniversalTypes
   | ImpredicativeTypes
   | LetPolymorphism
+  | FixpointCombinator
   deriving (Eq, Ord, Show)
 
 type Extensions = Set Extension
@@ -141,7 +142,8 @@ extensionNameMap =
       (TypeInference, "#type-inference"),
       (UniversalTypes, "#universal-types"),
       (ImpredicativeTypes, "#impredicative-types"),
-      (LetPolymorphism, "#let-polymorphism")
+      (LetPolymorphism, "#let-polymorphism"),
+      (FixpointCombinator, "#fixpoint-combinator")
     ]
 
 extensionName :: Extension -> String

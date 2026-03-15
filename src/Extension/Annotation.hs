@@ -3,6 +3,7 @@ module Extension.Annotation (annotateExtensions) where
 import Annotation (annotation)
 import qualified Data.Set as Set
 import Extension.Core (Extensions)
+import qualified Extension.Core as Extension
 import qualified Syntax.AbsStella as AST
 
 class ExtensionsAnnotatable f where
@@ -145,7 +146,7 @@ instance ExtensionsAnnotatable AST.Type' where
   annotateExtensions (AST.TypeSum p type_1 type_2) =
     AST.TypeSum (p, p'') type_1' type_2'
     where
-      p'' = Set.unions [type_1'', type_2'']
+      p'' = Set.insert Extension.SumTypes $ Set.unions [type_1'', type_2'']
 
       type_1'' = (snd . annotation) type_1'
       type_2'' = (snd . annotation) type_2'
@@ -155,29 +156,34 @@ instance ExtensionsAnnotatable AST.Type' where
   annotateExtensions (AST.TypeTuple p types) =
     AST.TypeTuple (p, types'') types'
     where
-      types'' = Set.unions $ fmap (snd . annotation) types'
+      types'' = Set.insert extension $ Set.unions $ fmap (snd . annotation) types'
       types' = fmap annotateExtensions types
+
+      extension = if isPair types then Extension.Pairs else Extension.Tuples
+
+      isPair [_, _] = True
+      isPair _ = False
   annotateExtensions (AST.TypeRecord p recordfieldtypes) =
     AST.TypeRecord (p, recordfieldtypes'') recordfieldtypes'
     where
-      recordfieldtypes'' = Set.unions $ fmap (snd . annotation) recordfieldtypes'
+      recordfieldtypes'' = Set.insert Extension.Records $ Set.unions $ fmap (snd . annotation) recordfieldtypes'
       recordfieldtypes' = fmap annotateExtensions recordfieldtypes
   annotateExtensions (AST.TypeVariant p variantfieldtypes) =
     AST.TypeVariant (p, variantfieldtypes'') variantfieldtypes'
     where
-      variantfieldtypes'' = Set.unions $ fmap (snd . annotation) variantfieldtypes'
+      variantfieldtypes'' = Set.insert Extension.Variants $ Set.unions $ fmap (snd . annotation) variantfieldtypes'
       variantfieldtypes' = fmap annotateExtensions variantfieldtypes
   annotateExtensions (AST.TypeList p type_) =
     AST.TypeList (p, type_'') type_'
     where
-      type_'' = (snd . annotation) type_'
+      type_'' = Set.insert Extension.Lists $ (snd . annotation) type_'
       type_' = annotateExtensions type_
   annotateExtensions (AST.TypeBool p) =
     AST.TypeBool (p, Set.empty)
   annotateExtensions (AST.TypeNat p) =
     AST.TypeNat (p, Set.empty)
   annotateExtensions (AST.TypeUnit p) =
-    AST.TypeUnit (p, Set.empty)
+    AST.TypeUnit (p, Set.singleton Extension.UnitType)
   annotateExtensions (AST.TypeTop p) =
     AST.TypeTop (p, Set.empty)
   annotateExtensions (AST.TypeBottom p) =
@@ -194,7 +200,7 @@ instance ExtensionsAnnotatable AST.MatchCase' where
   annotateExtensions (AST.AMatchCase p pattern_ expr) =
     AST.AMatchCase (p, p'') pattern_' expr'
     where
-      p'' = Set.unions [pattern_'', expr'']
+      p'' = Set.insert Extension.SumTypes $ Set.unions [pattern_'', expr'']
 
       pattern_'' = (snd . annotation) pattern_'
       expr'' = (snd . annotation) expr'
@@ -208,7 +214,7 @@ instance ExtensionsAnnotatable AST.OptionalTyping' where
   annotateExtensions (AST.SomeTyping p type_) =
     AST.SomeTyping (p, type_'') type_'
     where
-      type_'' = (snd . annotation) type_'
+      type_'' = Set.insert Extension.Variants $ (snd . annotation) type_'
       type_' = annotateExtensions type_
 
 instance ExtensionsAnnotatable AST.PatternData' where
@@ -217,7 +223,7 @@ instance ExtensionsAnnotatable AST.PatternData' where
   annotateExtensions (AST.SomePatternData p pattern_) =
     AST.SomePatternData (p, pattern_'') pattern_'
     where
-      pattern_'' = (snd . annotation) pattern_'
+      pattern_'' = Set.insert Extension.Variants $ (snd . annotation) pattern_'
       pattern_' = annotateExtensions pattern_
 
 instance ExtensionsAnnotatable AST.ExprData' where
@@ -226,7 +232,7 @@ instance ExtensionsAnnotatable AST.ExprData' where
   annotateExtensions (AST.SomeExprData p expr) =
     AST.SomeExprData (p, expr'') expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.Variants $ (snd . annotation) expr'
       expr' = annotateExtensions expr
 
 instance ExtensionsAnnotatable AST.Pattern' where
@@ -253,12 +259,12 @@ instance ExtensionsAnnotatable AST.Pattern' where
   annotateExtensions (AST.PatternVariant p stellaident patterndata) =
     AST.PatternVariant (p, patterndata'') stellaident patterndata'
     where
-      patterndata'' = (snd . annotation) patterndata'
+      patterndata'' = Set.insert Extension.Variants $ (snd . annotation) patterndata'
       patterndata' = annotateExtensions patterndata
   annotateExtensions (AST.PatternInl p pattern_) =
     AST.PatternInl (p, pattern_'') pattern_'
     where
-      pattern_'' = (snd . annotation) pattern_'
+      pattern_'' = Set.insert Extension.SumTypes $ (snd . annotation) pattern_'
       pattern_' = annotateExtensions pattern_
   annotateExtensions (AST.PatternInr p pattern_) =
     AST.PatternInr (p, pattern_'') pattern_'
@@ -304,7 +310,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
       pattern_'' = (snd . annotation) pattern_'
       pattern_' = annotateExtensions pattern_
   annotateExtensions (AST.PatternVar p stellaident) =
-    AST.PatternVar (p, Set.empty) stellaident
+    AST.PatternVar (p, Set.singleton Extension.LetBindings) stellaident
 
 instance ExtensionsAnnotatable AST.LabelledPattern' where
   annotateExtensions (AST.ALabelledPattern p stellaident pattern_) =
@@ -317,7 +323,7 @@ instance ExtensionsAnnotatable AST.Binding' where
   annotateExtensions (AST.ABinding p stellaident expr) =
     AST.ABinding (p, expr'') stellaident expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.Records $ (snd . annotation) expr'
       expr' = annotateExtensions expr
 
 instance ExtensionsAnnotatable AST.Expr' where
@@ -356,7 +362,7 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.Let p patternbindings expr) =
     AST.Let (p, p'') patternbindings' expr'
     where
-      p'' = Set.unions [patternbindings'', expr'']
+      p'' = Set.insert Extension.LetBindings $ Set.unions [patternbindings'', expr'']
 
       patternbindings'' = Set.unions $ fmap (snd . annotation) patternbindings'
       expr'' = (snd . annotation) expr'
@@ -441,7 +447,7 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.TypeAsc p expr type_) =
     AST.TypeAsc (p, p'') expr' type_'
     where
-      p'' = Set.unions [expr'', type_'']
+      p'' = Set.insert Extension.TypeAscriptions $ Set.unions [expr'', type_'']
 
       expr'' = (snd . annotation) expr'
       type_'' = (snd . annotation) type_'
@@ -471,12 +477,12 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.Variant p stellaident exprdata) =
     AST.Variant (p, exprdata'') stellaident exprdata'
     where
-      exprdata'' = (snd . annotation) exprdata'
+      exprdata'' = Set.insert Extension.Variants $ (snd . annotation) exprdata'
       exprdata' = annotateExtensions exprdata
   annotateExtensions (AST.Match p expr matchcases) =
     AST.Match (p, p'') expr' matchcases'
     where
-      p'' = Set.unions [expr'', matchcases'']
+      p'' = Set.insert Extension.SumTypes $ Set.unions [expr'', matchcases'']
 
       expr'' = (snd . annotation) expr'
       matchcases'' = Set.unions $ fmap (snd . annotation) matchcases'
@@ -486,7 +492,7 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.List p exprs) =
     AST.List (p, exprs'') exprs'
     where
-      exprs'' = Set.unions $ fmap (snd . annotation) exprs'
+      exprs'' = Set.insert Extension.Lists $ Set.unions $ fmap (snd . annotation) exprs'
       exprs' = fmap annotateExtensions exprs
   annotateExtensions (AST.Add p expr1 expr2) =
     AST.Add (p, p'') expr1' expr2'
@@ -581,27 +587,36 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.DotRecord p expr stellaident) =
     AST.DotRecord (p, expr'') expr' stellaident
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.Records $ (snd . annotation) expr'
       expr' = annotateExtensions expr
   annotateExtensions (AST.DotTuple p expr n) =
     AST.DotTuple (p, expr'') expr' n
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert extension $ (snd . annotation) expr'
       expr' = annotateExtensions expr
+
+      extension = if isPair then Extension.Pairs else Extension.Tuples
+
+      isPair = n == 0 || n == 1
   annotateExtensions (AST.Tuple p exprs) =
     AST.Tuple (p, exprs'') exprs'
     where
-      exprs'' = Set.unions $ fmap (snd . annotation) exprs'
+      exprs'' = Set.insert extension $ Set.unions $ fmap (snd . annotation) exprs'
       exprs' = fmap annotateExtensions exprs
+
+      extension = if isPair exprs then Extension.Pairs else Extension.Tuples
+
+      isPair [_, _] = True
+      isPair _ = False
   annotateExtensions (AST.Record p bindings) =
     AST.Record (p, bindings'') bindings'
     where
-      bindings'' = Set.unions $ fmap (snd . annotation) bindings'
+      bindings'' = Set.insert Extension.Records $ Set.unions $ fmap (snd . annotation) bindings'
       bindings' = fmap annotateExtensions bindings
   annotateExtensions (AST.ConsList p expr1 expr2) =
     AST.ConsList (p, p'') expr1' expr2'
     where
-      p'' = Set.unions [expr1'', expr2'']
+      p'' = Set.insert Extension.Lists $ Set.unions [expr1'', expr2'']
 
       expr1'' = (snd . annotation) expr1'
       expr2'' = (snd . annotation) expr2'
@@ -611,17 +626,17 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.Head p expr) =
     AST.Head (p, expr'') expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.Lists $ (snd . annotation) expr'
       expr' = annotateExtensions expr
   annotateExtensions (AST.IsEmpty p expr) =
     AST.IsEmpty (p, expr'') expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.Lists $ (snd . annotation) expr'
       expr' = annotateExtensions expr
   annotateExtensions (AST.Tail p expr) =
     AST.Tail (p, expr'') expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.Lists $ (snd . annotation) expr'
       expr' = annotateExtensions expr
   annotateExtensions (AST.Panic p) =
     AST.Panic (p, Set.empty)
@@ -671,12 +686,12 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.Inl p expr) =
     AST.Inl (p, expr'') expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.SumTypes $ (snd . annotation) expr'
       expr' = annotateExtensions expr
   annotateExtensions (AST.Inr p expr) =
     AST.Inr (p, expr'') expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.SumTypes $ (snd . annotation) expr'
       expr' = annotateExtensions expr
   annotateExtensions (AST.Succ p expr) =
     AST.Succ (p, expr'') expr'
@@ -701,7 +716,7 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.Fix p expr) =
     AST.Fix (p, expr'') expr'
     where
-      expr'' = (snd . annotation) expr'
+      expr'' = Set.insert Extension.FixpointCombinator $ (snd . annotation) expr'
       expr' = annotateExtensions expr
   annotateExtensions (AST.NatRec p expr1 expr2 expr3) =
     AST.NatRec (p, p'') expr1' expr2' expr3'
@@ -740,7 +755,7 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.ConstFalse p) =
     AST.ConstFalse (p, Set.empty)
   annotateExtensions (AST.ConstUnit p) =
-    AST.ConstUnit (p, Set.empty)
+    AST.ConstUnit (p, Set.singleton Extension.UnitType)
   annotateExtensions (AST.ConstInt p n) =
     AST.ConstInt (p, Set.empty) n
   annotateExtensions (AST.ConstMemory p memoryaddress) =
@@ -752,7 +767,7 @@ instance ExtensionsAnnotatable AST.PatternBinding' where
   annotateExtensions (AST.APatternBinding p pattern_ expr) =
     AST.APatternBinding (p, p'') pattern_' expr'
     where
-      p'' = Set.unions [pattern_'', expr'']
+      p'' = Set.insert Extension.LetBindings $ Set.unions [pattern_'', expr'']
 
       pattern_'' = (snd . annotation) pattern_'
       expr'' = (snd . annotation) expr'
@@ -764,14 +779,14 @@ instance ExtensionsAnnotatable AST.VariantFieldType' where
   annotateExtensions (AST.AVariantFieldType p stellaident optionaltyping) =
     AST.AVariantFieldType (p, optionaltyping'') stellaident optionaltyping'
     where
-      optionaltyping'' = (snd . annotation) optionaltyping'
+      optionaltyping'' = Set.insert Extension.Variants $ (snd . annotation) optionaltyping'
       optionaltyping' = annotateExtensions optionaltyping
 
 instance ExtensionsAnnotatable AST.RecordFieldType' where
   annotateExtensions (AST.ARecordFieldType p stellaident type_) =
     AST.ARecordFieldType (p, type_'') stellaident type_'
     where
-      type_'' = (snd . annotation) type_'
+      type_'' = Set.insert Extension.Records $ (snd . annotation) type_'
       type_' = annotateExtensions type_
 
 instance ExtensionsAnnotatable AST.Typing' where
