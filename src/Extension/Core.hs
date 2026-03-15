@@ -1,4 +1,4 @@
-module Extension.Core (Extension (..), Extensions, extensionName, extensionFromName) where
+module Extension.Core (Extension (..), Extensions, extensionName, extensionFromName, closure) where
 
 import Data.Bimap (Bimap)
 import qualified Data.Bimap as Bimap
@@ -112,5 +112,6 @@ extensionFromName name =
     Right
     (Bimap.lookupR name extensionNameMap)
 
-consequences :: Extension -> [Extension]
-consequences = undefined
+closure :: Extension -> [Extension]
+closure Tuples = [Tuples, Pairs]
+closure x = [x]

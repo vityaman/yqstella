@@ -37,13 +37,8 @@ enabledExtensions (AST.AProgram _ _ extensions _) = do
         (AST.ExtensionName name) <- names
         return (position, name)
 
-      diagnostics = lefts names'
-      extensions' = Set.fromList $ rights names'
+      diagnostics' = lefts names'
+      extensions' = Set.fromList $ concatMap Extension.closure (rights names')
 
-      extensions'' =
-        if Set.member Extension.Tuples extensions'
-          then Set.insert Extension.Pairs extensions'
-          else extensions'
-
-  tell diagnostics
-  return extensions''
+  tell diagnostics'
+  return extensions'
