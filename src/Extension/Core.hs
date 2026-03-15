@@ -7,7 +7,8 @@ import Data.Set (Set)
 
 -- | See [Language Extensions Overview](https://fizruk.github.io/stella/?page=%2Fstella%2Fsite%2Fextensions%2Foverview%2F).
 data Extension
-  = LetBindings
+  = StructuralPatterns
+  | LetBindings
   | NestedFunctionDeclarations
   | WildcardBinders
   | NaturalLiterals
@@ -16,6 +17,7 @@ data Extension
   | NullaryFunctions
   | MultiparameterFunctions
   | CurriedMultiparameterFunctions
+  | Sequencing
   | CharType
   | StringType
   | IntegerType
@@ -23,8 +25,6 @@ data Extension
   | DecimalTypes
   | RationalTypes
   | ComplexNumberTypes
-  | ModularArithmeticTypes
-  | MatrixTypes
   | TypeAscriptions
   | TypeAliases
   | UnitType
@@ -35,42 +35,15 @@ data Extension
   | Variants
   | Enumerations
   | Lists
-  | ReferenceTypes
-  | MutableArrays
-  | Panics
-  | BoringExceptions
-  | CodeExceptions
-  | StringExceptions
-  | ClosedVariantExceptions
+  | References
+  | ExceptionTypeDeclaration
   | OpenVariantExceptions
-  | SubclassExceptions
-  | CheckedExceptions
-  | Patterns
-  | NestedPatterns
-  | ExhaustiveChecker
-  | PatternSynonyms
+  | Exceptions
+  | Panic
   | StructuralSubtyping
   | TopType
   | BottomType
-  | Downcasting
-  | NumericSubtyping
-  | DynamicTypeTests
-  | SourceAndSinkReferences
-  | IntersectionTypes
-  | UnionTypes
-  | ImperativeObjects
-  | StructuralClasses
-  | ClassInstanceVariables
-  | SuperclassVariables
-  | OpenRecursion
-  | NominalClasses
-  | EquirecursiveTypes
-  | IsorecursiveTypes
-  | NominalTypes
-  | TypeInference
   | UniversalTypes
-  | ImpredicativeTypes
-  | LetPolymorphism
   | FixpointCombinator
   deriving (Eq, Ord, Show)
 
@@ -79,7 +52,9 @@ type Extensions = Set Extension
 extensionNameMap :: Bimap Extension String
 extensionNameMap =
   Bimap.fromList
-    [ (LetBindings, "#let-bindings"),
+    [ -- Syntactic Sugar and Derived Forms
+      (StructuralPatterns, "#structural-patterns"),
+      (LetBindings, "#let-bindings"),
       (NestedFunctionDeclarations, "#nested-function-declarations"),
       (WildcardBinders, "#wildcard-binders"),
       (NaturalLiterals, "#natural-literals"),
@@ -88,6 +63,8 @@ extensionNameMap =
       (NullaryFunctions, "#nullary-functions"),
       (MultiparameterFunctions, "#multiparameter-functions"),
       (CurriedMultiparameterFunctions, "#curried-multiparameter-functions"),
+      (Sequencing, "#sequencing"),
+      -- Base Types
       (CharType, "#char-type"),
       (StringType, "#string-type"),
       (IntegerType, "#integer-type"),
@@ -95,8 +72,7 @@ extensionNameMap =
       (DecimalTypes, "#decimal-types"),
       (RationalTypes, "#rational-types"),
       (ComplexNumberTypes, "#complex-number-types"),
-      (ModularArithmeticTypes, "#modular-arithmetic-types"),
-      (MatrixTypes, "#matrix-types"),
+      -- Simple Types
       (TypeAscriptions, "#type-ascriptions"),
       (TypeAliases, "#type-aliases"),
       (UnitType, "#unit-type"),
@@ -107,42 +83,19 @@ extensionNameMap =
       (Variants, "#variants"),
       (Enumerations, "#enumerations"),
       (Lists, "#lists"),
-      (ReferenceTypes, "#reference-types"),
-      (MutableArrays, "#mutable-arrays"),
-      (Panics, "#panics"),
-      (BoringExceptions, "#boring-exceptions"),
-      (CodeExceptions, "#code-exceptions"),
-      (StringExceptions, "#string-exceptions"),
-      (ClosedVariantExceptions, "#closed-variant-exceptions"),
+      (References, "#references"),
+      -- Exceptions
+      (ExceptionTypeDeclaration, "#exception-type-declaration"),
       (OpenVariantExceptions, "#open-variant-exceptions"),
-      (SubclassExceptions, "#subclass-exceptions"),
-      (CheckedExceptions, "#checked-exceptions"),
-      (Patterns, "#patterns"),
-      (NestedPatterns, "#nested-patterns"),
-      (ExhaustiveChecker, "#exhaustive-checker"),
-      (PatternSynonyms, "#pattern-synonyms"),
+      (Exceptions, "#exceptions"),
+      (Panic, "#panic"),
+      -- Subtyping
       (StructuralSubtyping, "#structural-subtyping"),
       (TopType, "#top-type"),
       (BottomType, "#bottom-type"),
-      (Downcasting, "#downcasting"),
-      (NumericSubtyping, "#numeric-subtyping"),
-      (DynamicTypeTests, "#dynamic-type-tests"),
-      (SourceAndSinkReferences, "#source-and-sink-references"),
-      (IntersectionTypes, "#intersection-types"),
-      (UnionTypes, "#union-types"),
-      (ImperativeObjects, "#imperative-objects"),
-      (StructuralClasses, "#structural-classes"),
-      (ClassInstanceVariables, "#class-instance-variables"),
-      (SuperclassVariables, "#superclass-variables"),
-      (OpenRecursion, "#open-recursion"),
-      (NominalClasses, "#nominal-classes"),
-      (EquirecursiveTypes, "#equirecursive-types"),
-      (IsorecursiveTypes, "#isorecursive-types"),
-      (NominalTypes, "#nominal-types"),
-      (TypeInference, "#type-inference"),
+      -- Universal Types
       (UniversalTypes, "#universal-types"),
-      (ImpredicativeTypes, "#impredicative-types"),
-      (LetPolymorphism, "#let-polymorphism"),
+      -- Other
       (FixpointCombinator, "#fixpoint-combinator")
     ]
 
@@ -158,3 +111,6 @@ extensionFromName name =
     (\_ -> Left $ "unknown extension " ++ name)
     Right
     (Bimap.lookupR name extensionNameMap)
+
+consequences :: Extension -> [Extension]
+consequences = undefined
