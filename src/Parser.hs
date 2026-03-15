@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Parser (StellaParseTree (StellaParseTree), parse) where
+module Parser (parse) where
 
 import Control.Monad.Writer
 import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
@@ -10,12 +10,10 @@ import qualified Position
 import Syntax.AbsStella (BNFC'Position, Program')
 import Syntax.ParStella (pProgram)
 
-newtype StellaParseTree f a = StellaParseTree (f a)
-
-parse :: [StellaToken] -> Writer Diagnostics (Maybe (StellaParseTree Program' Position))
+parse :: [StellaToken] -> Writer Diagnostics (Maybe (Program' Position))
 parse tokens = case pProgram $ fmap (\(StellaToken x) -> x) tokens of
   (Right program) ->
-    return $ Just $ StellaParseTree $ fmap toStellaPosition program
+    return $ Just $ fmap toStellaPosition program
   (Left message) -> do
     _ <- tell [Diagnostic Error (pointRange Position.unknown) message]
     return Nothing
