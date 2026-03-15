@@ -1,11 +1,10 @@
 module Main (main) where
 
 import qualified CLI
-import Control.Monad.Writer (runWriter)
 import qualified Diagnostic
 import qualified Lexer
-import qualified Parser
 import qualified PrettyPrint
+import qualified Lib as Stella
 
 main :: IO ()
 main = do
@@ -19,15 +18,12 @@ main = do
 
   content <- readFile inputPath
 
-  let ((tokens, parseTree), diagnostics) = runWriter $ do
-        tokens' <- Lexer.scan content
-        parseTree' <- Parser.parse tokens'
-        return (tokens', parseTree')
+  let project = Stella.build (Stella.Source content)
 
-  let formatted' = maybe "" PrettyPrint.printTree parseTree
+  let formatted' = maybe "" PrettyPrint.printTree $ Stella.parseTree project
 
-  writeFile diagnosticsPath (Diagnostic.displays diagnostics)
-  writeFile tokensPath (Lexer.display tokens)
+  writeFile diagnosticsPath (Diagnostic.displays $ Stella.diagnostics project)
+  writeFile tokensPath (Lexer.display $ Stella.tokens project)
   writeFile parseTreePath formatted'
 
   return ()
