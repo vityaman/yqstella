@@ -5,7 +5,6 @@ import Control.Monad.Writer (runWriter)
 import qualified Diagnostic
 import qualified Lexer
 import qualified Parser
-import Parser (StellaParseTree (StellaParseTree))
 import qualified PrettyPrint
 
 main :: IO ()
@@ -25,7 +24,7 @@ main = do
         parseTree' <- Parser.parse tokens'
         return (tokens', parseTree')
 
-  let formatted' = maybe "" (\(StellaParseTree x) -> PrettyPrint.printTree x) parseTree
+  let formatted' = maybe "" PrettyPrint.printTree parseTree
 
   writeFile diagnosticsPath (Diagnostic.displays diagnostics)
   writeFile tokensPath (Lexer.display tokens)
