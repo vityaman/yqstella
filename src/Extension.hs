@@ -78,16 +78,16 @@ class ExtensionsAnnotatable f where
 
 instance ExtensionsAnnotatable AST.Program' where
   annotateExtensions (AST.AProgram p languagedecl extensions decls) =
-    AST.AProgram (p, program'') languagedecl' extensions' decls'
+    AST.AProgram (p, p'') languagedecl' extensions' decls'
     where
-      program'' = Set.unions [languagedecl'', extensions'', decls'']
+      p'' = Set.unions [languagedecl'', extensions'', decls'']
 
       languagedecl'' = (snd . annotation) languagedecl'
       extensions'' = Set.unions $ fmap (snd . annotation) extensions'
       decls'' = Set.unions $ fmap (snd . annotation) decls'
 
-      extensions' = fmap annotateExtensions extensions
       languagedecl' = annotateExtensions languagedecl
+      extensions' = fmap annotateExtensions extensions
       decls' = fmap annotateExtensions decls
 
 instance ExtensionsAnnotatable AST.LanguageDecl' where
