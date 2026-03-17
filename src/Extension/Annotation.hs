@@ -31,10 +31,9 @@ instance ExtensionsAnnotatable AST.Decl' where
     AST.DeclFun (p, p'') annotations' stellaident paramdecls' returntype' throwtype' decls' expr'
     where
       p'' =
-        Set.singleton $
-          if null paramdecls
-            then Extension.NullaryFunctions
-            else Extension.MultiparameterFunctions
+        Set.fromList $
+          [Extension.NestedFunctionDeclarations | not (null decls)]
+            ++ paramdeclsExtension paramdecls
 
       annotations' = fmap annotateExtensions annotations
       paramdecls' = fmap annotateExtensions paramdecls
@@ -46,12 +45,10 @@ instance ExtensionsAnnotatable AST.Decl' where
     AST.DeclFunGeneric (p, p'') annotations' stellaident stellaidents paramdecls' returntype' throwtype' decls' expr'
     where
       p'' =
-        Set.fromList
-          [ if null paramdecls
-              then Extension.NullaryFunctions
-              else Extension.MultiparameterFunctions,
-            Extension.UniversalTypes
-          ]
+        Set.fromList $
+          [Extension.NestedFunctionDeclarations | not (null decls)]
+            ++ paramdeclsExtension paramdecls
+            ++ [Extension.UniversalTypes]
 
       annotations' = fmap annotateExtensions annotations
       paramdecls' = fmap annotateExtensions paramdecls
@@ -340,7 +337,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr' = annotateExtensions expr
       type_' = annotateExtensions type_
   annotateExtensions (AST.Abstraction p paramdecls expr) =
-    AST.Abstraction (p, Set.empty) paramdecls' expr'
+    AST.Abstraction (p, Set.fromList $ paramdeclsExtension paramdecls) paramdecls' expr'
     where
       paramdecls' = fmap annotateExtensions paramdecls
       expr' = annotateExtensions expr
@@ -553,3 +550,8 @@ instance ExtensionsAnnotatable AST.Typing' where
     where
       expr' = annotateExtensions expr
       type_' = annotateExtensions type_
+
+paramdeclsExtension :: [AST.ParamDecl' a] -> [Extension.Extension]
+paramdeclsExtension [] = [Extension.NullaryFunctions]
+paramdeclsExtension [_] = []
+paramdeclsExtension _ = [Extension.MultiparameterFunctions]
