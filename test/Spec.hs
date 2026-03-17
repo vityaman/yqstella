@@ -1,2 +1,5 @@
+import qualified Golden
+import Test.Tasty (defaultMain)
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = Golden.main >>= defaultMain

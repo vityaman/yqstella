@@ -62,6 +62,7 @@ jobs:
       - name: Check Haskell Formatting
         run: |
           ormolu --mode check $(find . -path './src/*.hs' -not -path './src/Syntax/*')
+          ormolu --mode check $(find . -path './test/*.hs')
 
       - name: Install HLint
         run: stack install hlint
