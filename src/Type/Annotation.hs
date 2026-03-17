@@ -101,9 +101,31 @@ instance TypeAnnotatable AST.Expr' where
   annotateType x@(AST.Assign {}) = do
     tell [notImplemented (annotation x) "Assign"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.If {}) = do
-    tell [notImplemented (annotation x) "If"]
-    return $ fmap (,Nothing) x
+  annotateType (AST.If p condition thenB elseB) = do
+    condition' <- annotateType condition
+    thenB' <- annotateType thenB
+    elseB' <- annotateType elseB
+
+    condition'Type <-
+      let (position', type') = annotation condition'
+       in matchType position' AST.TypeBool type'
+
+    let thenB'Type = snd $ annotation thenB'
+        elseB'Type = snd $ annotation elseB'
+
+    type' <- case (thenB'Type, elseB'Type) of
+      (Just then', Just else') | then' == else' -> pure $ Just then'
+      (Just then', Just else') -> do
+        let message =
+              "type mismatch: then branch type is "
+                ++ show then'
+                ++ ", else branch type is "
+                ++ show else'
+        tell [Diagnostic Error (pointRange p) message]
+        return Nothing
+      _ -> pure Nothing
+
+    return $ AST.If (p, condition'Type >> type') condition' thenB' elseB'
   annotateType x@(AST.Let {}) = do
     tell [notImplemented (annotation x) "Let"]
     return $ fmap (,Nothing) x
@@ -224,18 +246,25 @@ instance TypeAnnotatable AST.Expr' where
   annotateType x@(AST.Inr {}) = do
     tell [notImplemented (annotation x) "Inr"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.Succ {}) = do
-    tell [notImplemented (annotation x) "Succ"]
-    return $ fmap (,Nothing) x
+  annotateType (AST.Succ p expr) = do
+    expr' <- annotateType expr
+
+    type' <- matchType p AST.TypeNat (snd $ annotation expr')
+
+    return $ AST.Succ (p, type') expr'
   annotateType x@(AST.LogicNot {}) = do
     tell [notImplemented (annotation x) "LogicNot"]
     return $ fmap (,Nothing) x
   annotateType x@(AST.Pred {}) = do
     tell [notImplemented (annotation x) "Pred"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.IsZero {}) = do
-    tell [notImplemented (annotation x) "IsZero"]
-    return $ fmap (,Nothing) x
+  annotateType (AST.IsZero p expr) = do
+    expr' <- annotateType expr
+
+    expr'Type <- matchType p AST.TypeNat (snd $ annotation expr')
+    let type' = fmap (const $ Type.fromAST' AST.TypeBool) expr'Type
+
+    return $ AST.IsZero (p, type') expr'
   annotateType x@(AST.Fix {}) = do
     tell [notImplemented (annotation x) "Fix"]
     return $ fmap (,Nothing) x
@@ -248,18 +277,17 @@ instance TypeAnnotatable AST.Expr' where
   annotateType x@(AST.Unfold {}) = do
     tell [notImplemented (annotation x) "Unfold"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.ConstTrue {}) = do
-    tell [notImplemented (annotation x) "ConstTrue"]
-    return $ fmap (,Nothing) x
-  annotateType x@(AST.ConstFalse {}) = do
-    tell [notImplemented (annotation x) "ConstFalse"]
-    return $ fmap (,Nothing) x
+  annotateType x@(AST.ConstTrue _) = do
+    return $ fmap (,Just $ Type.fromAST' AST.TypeBool) x
+  annotateType x@(AST.ConstFalse _) = do
+    return $ fmap (,Just $ Type.fromAST' AST.TypeBool) x
   annotateType x@(AST.ConstUnit {}) = do
     tell [notImplemented (annotation x) "ConstUnit"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.ConstInt {}) = do
-    tell [notImplemented (annotation x) "ConstInt"]
-    return $ fmap (,Nothing) x
+  annotateType x@(AST.ConstInt p n) = do
+    unless (n == 0) $ tell [notImplemented p "Non-Zero Integer"]
+    let type' = if n == 0 then Just $ Type.fromAST' AST.TypeNat else Nothing
+    return $ fmap (,type') x
   annotateType x@(AST.ConstMemory {}) = do
     tell [notImplemented (annotation x) "ConstMemory"]
     return $ fmap (,Nothing) x
@@ -268,6 +296,15 @@ instance TypeAnnotatable AST.Expr' where
     let type' = Context.typeOf name context
     when (null type') $ tell [Context.unknownName p name]
     return $ AST.Var (p, type') stellaident
+
+matchType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
+matchType position expected actual =
+  case actual of
+    Just type' | type' == expected' -> pure $ pure type'
+    Just actual' -> tell [mismatch position expected' actual'] >> pure Nothing
+    Nothing -> pure Nothing
+  where
+    expected' = Type.fromAST' expected
 
 mismatch :: Position -> Type -> Type -> Diagnostic
 mismatch position expected actual =

@@ -1,4 +1,4 @@
-module Type.Core (Type (Type), fromAST, fn) where
+module Type.Core (Type (Type), fromAST, fromAST', eqT, neqT, fn) where
 
 import Control.Monad (void)
 import PrettyPrint (printTree)
@@ -11,6 +11,15 @@ instance Show Type where
 
 fromAST :: AST.Type' a -> Type
 fromAST t = Type $ void t
+
+fromAST' :: (() -> AST.Type' ()) -> Type
+fromAST' t = fromAST $ t ()
+
+eqT :: Type -> (() -> AST.Type' ()) -> Bool
+eqT (Type lhs) rhs = lhs == rhs ()
+
+neqT :: Type -> (() -> AST.Type' ()) -> Bool
+neqT lhs rhs = not $ eqT lhs rhs
 
 fn :: [Type] -> Type -> Type
 fn args (Type return') = Type $ AST.TypeFun () (fmap toAST args) return'
