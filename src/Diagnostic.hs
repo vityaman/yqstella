@@ -1,5 +1,5 @@
 module Diagnostic
-  ( Severity (Error),
+  ( Severity (Fatal, Error),
     Diagnostic (Diagnostic),
     severity,
     range,
@@ -7,12 +7,16 @@ module Diagnostic
     Diagnostics,
     display,
     displays,
+    notImplemented,
   )
 where
 
-import Position (PositionRange (PositionRange))
+import Position (Position, PositionRange (PositionRange), pointRange)
 
-data Severity = Error deriving (Show)
+data Severity
+  = Fatal
+  | Error
+  deriving (Show)
 
 data Diagnostic = Diagnostic
   { severity :: Severity,
@@ -28,3 +32,8 @@ display (Diagnostic s (PositionRange b _) m) =
 
 displays :: Diagnostics -> String
 displays = unlines . map display
+
+notImplemented :: Position -> String -> Diagnostic
+notImplemented position feature =
+  let message' = feature ++ " not implemented"
+   in Diagnostic Fatal (pointRange position) message'
