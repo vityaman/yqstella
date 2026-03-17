@@ -46,6 +46,7 @@ data Extension
   | TypeCast
   | UniversalTypes
   | FixpointCombinator
+  | GeneralRecursion
   deriving (Eq, Ord, Show)
 
 type Extensions = Set Extension
@@ -97,8 +98,9 @@ extensionNameMap =
       (TypeCast, "#type-cast"),
       -- Universal Types
       (UniversalTypes, "#universal-types"),
-      -- Other
-      (FixpointCombinator, "#fixpoint-combinator")
+      -- Recursion
+      (FixpointCombinator, "#fixpoint-combinator"),
+      (GeneralRecursion, "#general-recursion")
     ]
 
 extensionName :: Extension -> String
