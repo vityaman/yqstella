@@ -5,6 +5,7 @@ import qualified Diagnostic
 import qualified Lexer
 import qualified PrettyPrint
 import qualified Lib as Stella
+import System.Exit (exitFailure, exitSuccess)
 
 main :: IO ()
 main = do
@@ -26,4 +27,6 @@ main = do
   writeFile tokensPath (Lexer.display $ Stella.tokens project)
   writeFile parseTreePath formatted'
 
-  return ()
+  if Stella.areTypesCorrect project
+    then exitSuccess
+    else exitFailure
