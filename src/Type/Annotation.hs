@@ -113,7 +113,6 @@ instance TypeAnnotatable AST.Expr' where
     let thenB'Type = snd $ annotation thenB'
         elseB'Type = snd $ annotation elseB'
 
-    -- TODO(vityaman): make then branch a source of truth.
     type' <- case (thenB'Type, elseB'Type) of
       (Just then', Just else') | then' == else' -> pure $ Just then'
       (Just then', Just else') -> do
