@@ -1,0 +1,9 @@
+language core;
+
+fn main(x : Nat) -> Bool {
+  return Nat::rec(x, false, fn(i : Nat) {
+    return fn(a : Bool) {
+      return a
+    }
+  });
+}

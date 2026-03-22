@@ -1,0 +1,1 @@
+Error at :4:29: type mismatch: expected fn (Nat) -> fn (Bool) -> Bool, got fn (Nat) -> fn (Bool) -> Nat

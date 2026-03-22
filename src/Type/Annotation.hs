@@ -8,6 +8,7 @@ import Control.Monad.State
 import Control.Monad.Writer
 import Data.Either (partitionEithers)
 import Data.Foldable (find)
+import Data.Functor (void)
 import Data.Maybe (fromMaybe)
 import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error), notImplemented)
 import Position (Position, pointRange)
@@ -302,9 +303,30 @@ instance TypeAnnotatable AST.Expr' where
   annotateType x@(AST.Fix {}) = do
     tell [notImplemented (annotation x) "Fix"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.NatRec {}) = do
-    tell [notImplemented (annotation x) "NatRec"]
-    return $ fmap (,Nothing) x
+  annotateType (AST.NatRec p n z s) = do
+    n' <- annotateType n
+    z' <- annotateType z
+    s' <- annotateType s
+
+    _ <- matchType p AST.TypeNat (snd $ annotation n')
+
+    let z'Type = (snd . annotation) z'
+    let (s'Position, s'Type) = annotation s'
+    _ <- case (z'Type, s'Type) of
+      (Just (Type t), Just (Type factual)) ->
+        let fexpected = AST.TypeFun () [AST.TypeNat ()] (AST.TypeFun () [t] t)
+         in void $ matchType' s'Position (Type fexpected) (Just $ Type factual)
+      (Nothing, Just (Type (AST.TypeFun () [AST.TypeNat ()] (AST.TypeFun () [t] t'))))
+        | t == t' -> return ()
+      (Nothing, Just (Type factual)) ->
+        let t = AST.TypeVar () (AST.StellaIdent "T")
+            fexpected = AST.TypeFun () [AST.TypeNat ()] (AST.TypeFun () [t] t)
+         in void $ matchType' s'Position (Type fexpected) (Just $ Type factual)
+      _ -> return ()
+
+    let type' = z'Type
+
+    return $ AST.NatRec (p, type') n' z' s'
   annotateType x@(AST.Fold {}) = do
     tell [notImplemented (annotation x) "Fold"]
     return $ fmap (,Nothing) x
@@ -374,7 +396,10 @@ matchType' position expected actual =
     Just actual' -> tell [mismatch position expected actual'] >> pure Nothing
     Nothing -> pure Nothing
 
-mismatch :: Position -> Type -> Type -> Diagnostic
-mismatch position expected actual =
-  let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
+mismatchS :: Position -> String -> Type -> Diagnostic
+mismatchS position expected actual =
+  let message = "type mismatch: expected " ++ expected ++ ", got " ++ show actual
    in Diagnostic Error (pointRange position) message
+
+mismatch :: Position -> Type -> Type -> Diagnostic
+mismatch position expected = mismatchS position (show expected)
