@@ -1,0 +1,14 @@
+language core;
+
+fn f (x : Nat) -> Nat {
+  return g(x)
+}
+
+fn g (x : Nat) -> Nat {
+  return f(x)
+}
+
+// FIXME(vityaman): https://github.com/vityaman/yqstella/issues/20
+fn main(x : Nat) -> Nat {
+  return f(x)
+}

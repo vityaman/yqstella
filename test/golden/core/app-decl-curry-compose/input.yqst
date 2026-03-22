@@ -1,0 +1,21 @@
+language core;
+
+fn compose(f : fn(Nat) -> Bool) -> fn(fn(Bool) -> Nat) -> fn(Nat) -> Nat {
+  return fn (g : fn(Bool) -> Nat) {
+    return fn (x : Nat) {
+      return g(f(x))
+    }
+  }
+}
+
+fn f(x : Nat) -> Bool {
+  return false
+}
+
+fn g(x : Bool) -> Nat {
+  return 0
+}
+
+fn main(x : Nat) -> Nat {
+  return compose(f)(g)(x);
+}

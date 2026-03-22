@@ -6,13 +6,16 @@ import Annotation (annotation)
 import Control.Monad (unless, when)
 import Control.Monad.State
 import Control.Monad.Writer
+import Data.Either (partitionEithers)
 import Data.Foldable (find)
+import Data.Maybe (fromMaybe)
 import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error), notImplemented)
 import Position (Position, pointRange)
 import qualified Syntax.AbsStella as AST
 import Type.Context (Context)
 import qualified Type.Context as Context
-import Type.Core (Type)
+import Type.Core (Type (Type))
+import qualified Type.Core as AST
 import qualified Type.Core as Type
 
 type TypeAnnotationEnv a = WriterT Diagnostics (State Context) a
@@ -32,18 +35,20 @@ instance TypeAnnotatable AST.Program' where
   annotateType (AST.AProgram p languagedecl extensions decls) = do
     let languagedecl' = fmap (,Nothing) languagedecl
         extensions' = fmap (fmap (,Nothing)) extensions
-    decls' <- mapM annotateType decls
+
+    context' <- get >>= ctxExtendByDecls decls
+    decls' <- withStateTAE (const context') (mapM annotateType decls)
 
     let main = find isMain decls'
-        type_ = main >>= declFunType
+        type_ = main >>= declFunType'
 
     return (AST.AProgram (p, type_) languagedecl' extensions' decls')
     where
       isMain (AST.DeclFun _ _ (AST.StellaIdent name) _ _ _ _ _) | name == "main" = True
       isMain _ = False
 
-      declFunType (AST.DeclFun (_, type_') _ _ _ _ _ _ _) = type_'
-      declFunType _ = error "Main declaration must be a function"
+      declFunType' (AST.DeclFun (_, type_') _ _ _ _ _ _ _) = type_'
+      declFunType' _ = error "Main declaration must be a function"
 
 instance TypeAnnotatable AST.Decl' where
   annotateType (AST.DeclFun p annotations stellaident paramdecls returntype throwtype decls expr) = do
@@ -61,11 +66,7 @@ instance TypeAnnotatable AST.Decl' where
       (AST.NoThrowType _) -> pure ()
       (AST.SomeThrowType _ _) -> tell [notImplemented p "DeclFun ThrowType"]
 
-    let toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = (key, Type.fromAST t)
-        withDecl paramdecl = let (key, t) = toPair paramdecl in Context.withTyped key t
-        extend paramdecls'' context = foldr withDecl context paramdecls''
-
-    expr' <- withStateTAE (extend paramdecls) (annotateType expr)
+    expr' <- withStateTAE (ctxExtendByParamDecls paramdecls) (annotateType expr)
     let (actualPosition, actualType) = annotation expr'
         argTypes = fmap (snd . toPair) paramdecls'
         type' = fmap (Type.fn argTypes) actualType
@@ -159,9 +160,15 @@ instance TypeAnnotatable AST.Expr' where
   annotateType x@(AST.TypeCast {}) = do
     tell [notImplemented (annotation x) "TypeCast"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.Abstraction {}) = do
-    tell [notImplemented (annotation x) "Abstraction"]
-    return $ fmap (,Nothing) x
+  annotateType (AST.Abstraction p paramdecls expr) = do
+    let paramdecls' = fmap (fmap (,Nothing)) paramdecls
+
+    expr' <- withStateTAE (ctxExtendByParamDecls paramdecls) (annotateType expr)
+    let (_, actualType) = annotation expr'
+        argTypes = fmap (snd . toPair) paramdecls'
+        type' = fmap (Type.fn argTypes) actualType
+
+    return $ AST.Abstraction (p, type') paramdecls' expr'
   annotateType x@(AST.Variant {}) = do
     tell [notImplemented (annotation x) "Variant"]
     return $ fmap (,Nothing) x
@@ -195,9 +202,36 @@ instance TypeAnnotatable AST.Expr' where
   annotateType x@(AST.Deref {}) = do
     tell [notImplemented (annotation x) "Deref"]
     return $ fmap (,Nothing) x
-  annotateType x@(AST.Application {}) = do
-    tell [notImplemented (annotation x) "Application"]
-    return $ fmap (,Nothing) x
+  annotateType (AST.Application p expr exprs) = do
+    expr' <- annotateType expr
+    exprs' <- mapM annotateType exprs
+
+    let (expr'Position, expr'Type) = annotation expr'
+
+    type' <- case expr'Type of
+      Just (Type (AST.TypeFun _ argTypes returnType)) -> do
+        let expectedArgTypes = fmap Type argTypes
+
+        tell $
+          [ mismatch p' e a
+            | ((p', Just a), e) <- zip (fmap annotation exprs') expectedArgTypes,
+              a /= e
+          ]
+
+        return $ Just $ Type returnType
+      Just actual -> do
+        let unknown = Type.fromAST' AST.TypeAuto
+            expectedArgTypes = fmap (fromMaybe unknown . snd . annotation) exprs'
+            expected = Type.fn expectedArgTypes unknown
+
+        let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
+        tell [Diagnostic Error (pointRange expr'Position) message]
+
+        return Nothing
+      Nothing ->
+        return Nothing
+
+    return $ AST.Application (p, type') expr' exprs'
   annotateType x@(AST.TypeApplication {}) = do
     tell [notImplemented (annotation x) "TypeApplication"]
     return $ fmap (,Nothing) x
@@ -297,14 +331,48 @@ instance TypeAnnotatable AST.Expr' where
     when (null type') $ tell [Context.unknownName p name]
     return $ AST.Var (p, type') stellaident
 
+toPair :: AST.ParamDecl' a -> (String, Type)
+toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = (key, Type.fromAST t)
+
+ctxExtendByParamDecls :: (Foldable f) => f (AST.ParamDecl' a) -> Context -> Context
+ctxExtendByParamDecls paramdecls context = foldr withDecl context paramdecls
+  where
+    withDecl paramdecl = let (key, t) = toPair paramdecl in Context.withTyped key t
+
+ctxExtendByDecls :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
+ctxExtendByDecls decls context = do
+  let (diagnostics, kvs) = partitionEithers $ fmap visit decls
+  tell diagnostics
+  return $ foldr (uncurry Context.withTyped) context kvs
+  where
+    visit :: AST.Decl' Position -> Either Diagnostic (String, Type)
+    visit (AST.DeclFun _ _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) =
+      Right (name, Type.fn args' returntype')
+      where
+        args' = fmap (snd . toPair) paramdecls
+        returntype' = Type.fromAST returntype
+    visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) =
+      Left $ notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"
+    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) =
+      Left $ notImplemented p $ "name resolution for DeclFunGeneric " ++ name
+    visit (AST.DeclTypeAlias p (AST.StellaIdent name) _) =
+      Left $ notImplemented p $ "name resolution for DeclTypeAlias " ++ name
+    visit (AST.DeclExceptionType p type_) =
+      Left $ notImplemented p $ "name resolution for DeclExceptionType " ++ show (AST.fromAST type_)
+    visit (AST.DeclExceptionVariant p (AST.StellaIdent name) _) =
+      Left $ notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name
+
 matchType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
-matchType position expected actual =
-  case actual of
-    Just type' | type' == expected' -> pure $ pure type'
-    Just actual' -> tell [mismatch position expected' actual'] >> pure Nothing
-    Nothing -> pure Nothing
+matchType position expected = matchType' position expected'
   where
     expected' = Type.fromAST' expected
+
+matchType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
+matchType' position expected actual =
+  case actual of
+    Just type' | type' == expected -> pure $ pure type'
+    Just actual' -> tell [mismatch position expected actual'] >> pure Nothing
+    Nothing -> pure Nothing
 
 mismatch :: Position -> Type -> Type -> Diagnostic
 mismatch position expected actual =

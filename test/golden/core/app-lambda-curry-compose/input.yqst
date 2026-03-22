@@ -1,0 +1,15 @@
+language core;
+
+fn main(x : Nat) -> Nat {
+  return (
+    (fn (f : fn(Nat) -> Bool) {
+      return fn (g : fn(Bool) -> Nat) {
+        return fn (x : Nat) {
+          return g(f(x))
+        }
+      }
+    })
+    (fn (x : Nat) { return false })
+    (fn (x : Bool) { return 0 })
+  )(x)
+}
