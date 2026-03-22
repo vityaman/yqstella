@@ -44,6 +44,8 @@ instance TypeAnnotatable AST.Program' where
     let main = find isMain decls'
         type_ = main >>= declFunType'
 
+    when (null main) $ tell [Diagnostic Error (pointRange p) "not found: main function"]
+
     return (AST.AProgram (p, type_) languagedecl' extensions' decls')
     where
       isMain (AST.DeclFun _ _ (AST.StellaIdent name) _ _ _ _ _) | name == "main" = True
