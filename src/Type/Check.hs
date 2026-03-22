@@ -1,10 +1,8 @@
 module Type.Check (checkTypes) where
 
-import Annotation (Annotated (annotation))
 import Control.Monad.State (evalState)
 import Control.Monad.Writer
-import Data.Functor (void)
-import Diagnostic (Diagnostics)
+import Diagnostic.Core (Diagnostic (severity), Diagnostics, Severity (Error, Fatal))
 import Position (Position)
 import qualified Syntax.AbsStella as AST
 import Type.Annotation (annotateType)
@@ -12,7 +10,14 @@ import qualified Type.Context as Context
 
 checkTypes :: AST.Program' Position -> Writer Diagnostics (Maybe ())
 checkTypes program = do
-  let (program', diagnostics) = (evalState . runWriterT . annotateType) program Context.empty
-      type' = (snd . annotation) program'
+  let (_, diagnostics) = (evalState . runWriterT . annotateType) program Context.empty
+
+  let isFailure Fatal = True
+      isFailure Error = True
+
   tell diagnostics
-  return $ void type'
+
+  return $
+    if not (any (isFailure . severity) diagnostics)
+      then Just ()
+      else Nothing

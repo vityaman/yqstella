@@ -1,1 +1,1 @@
-Error at :4:10: type mismatch: then branch type is Nat, else branch type is Bool
+<source>:4:10: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: then branch type is Nat, else branch type is Bool

@@ -1,1 +1,1 @@
-Error at :4:10: Unknown name a
+<source>:4:10: ERROR_UNDEFINED_VARIABLE: undefined variable a

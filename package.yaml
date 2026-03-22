@@ -63,6 +63,9 @@ tests:
     - yqstella
     - tasty
     - tasty-golden
+    - tasty-hunit
     - bytestring
     - directory
     - filepath
+    - process
+    - regex-tdfa

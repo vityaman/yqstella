@@ -1,7 +1,8 @@
-module Diagnostic
+module Diagnostic.Core
   ( Severity (Fatal, Error),
     Diagnostic (Diagnostic),
     severity,
+    code,
     range,
     message,
     Diagnostics,
@@ -11,15 +12,18 @@ module Diagnostic
   )
 where
 
+import Data.Char (toTitle)
+import Diagnostic.Code (Code (..))
 import Position (Position, PositionRange (PositionRange), pointRange)
 
 data Severity
   = Fatal
   | Error
-  deriving (Show)
+  deriving (Show, Eq)
 
 data Diagnostic = Diagnostic
   { severity :: Severity,
+    code :: Code,
     range :: PositionRange,
     message :: String
   }
@@ -27,8 +31,10 @@ data Diagnostic = Diagnostic
 type Diagnostics = [Diagnostic]
 
 display :: Diagnostic -> String
-display (Diagnostic s (PositionRange b _) m) =
-  show s ++ " at :" ++ show b ++ ": " ++ m
+display (Diagnostic s c (PositionRange b _) m) =
+  "<source>:" ++ show b ++ ": " ++ withSeverity s c ++ ": " ++ m
+  where
+    withSeverity s' c' = map toTitle (show s') ++ "_" ++ show c'
 
 displays :: Diagnostics -> String
 displays = unlines . map display
@@ -36,4 +42,4 @@ displays = unlines . map display
 notImplemented :: Position -> String -> Diagnostic
 notImplemented position feature =
   let message' = feature ++ " not implemented"
-   in Diagnostic Fatal (pointRange position) message'
+   in Diagnostic Fatal NOT_IMPLEMENTED (pointRange position) message'

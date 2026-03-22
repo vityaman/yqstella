@@ -1,1 +1,1 @@
-Error at :4:29: type mismatch: expected fn (Nat) -> fn (Bool) -> Bool, got fn (Nat) -> fn (Bool) -> Nat
+<source>:4:29: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: expected fn (Nat) -> fn (Bool) -> Bool, got fn (Nat) -> fn (Bool) -> Nat

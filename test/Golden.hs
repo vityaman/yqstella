@@ -4,24 +4,30 @@ import Control.Monad (filterM)
 import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char (toUpper)
 import Data.List (sort)
-import qualified Diagnostic
+import qualified Diagnostic.Core as Diagnostic
 import qualified Lib as Stella
 import System.Directory (doesDirectoryExist, listDirectory)
+import System.Exit (ExitCode (..))
 import System.FilePath (dropExtension, takeFileName, (</>))
+import System.Process (readProcessWithExitCode)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsStringDiff)
+import Test.Tasty.HUnit (assertEqual, testCase)
+import Text.Regex.TDFA (AllTextMatches (..), getAllTextMatches, (=~))
 
 newtype Input = Input String
 
-newtype Output = Output
-  { diagnostics :: String
+data Output = Output
+  { diagnostics :: String,
+    areTypesCorrect :: Bool
   }
 
 test :: Input -> Output
 test (Input source) =
   let project = Stella.build (Stella.Source source)
    in Output
-        { diagnostics = Diagnostic.displays $ Stella.diagnostics project
+        { diagnostics = Diagnostic.displays $ Stella.diagnostics project,
+          areTypesCorrect = Stella.areTypesCorrect project
         }
 
 main :: IO TestTree
@@ -42,18 +48,35 @@ makeTestCase :: FilePath -> IO TestTree
 makeTestCase casePath = do
   let caseName = "Test " ++ takeFileName casePath
 
-  input <- Input <$> readFile (casePath </> "input.yqst")
+  source <- readFile (casePath </> "input.yqst")
+  let input = Input source
 
   let Output
-        { diagnostics = diagnostics'
+        { diagnostics = diagnostics',
+          areTypesCorrect = areTypesCorrect'
         } = test input
 
   let artifact fileName content =
         let name = toTitleWord $ dropExtension $ takeFileName fileName
          in goldenVsStringDiff name diff (casePath </> fileName) (pure $ pack content)
 
+  let nikolai =
+        testCase "Nikolai Kudasov" $ do
+          (exitCode, stdout, _) <-
+            readProcessWithExitCode "docker" ["run", "-i", "fizruk/stella", "typecheck"] source
+
+          let yqStellaCodes = parseErrorCodes diagnostics'
+              fizrukStellaCodes = parseErrorCodes stdout
+              missingCodes = filter (`notElem` yqStellaCodes) fizrukStellaCodes
+
+          let areFizrukTypesCorrect' = exitCode == ExitSuccess
+
+          assertEqual "yqstella vs fizruk stella status" areFizrukTypesCorrect' areTypesCorrect'
+          assertEqual "yqstella missing some fizruk diagnostics: " [] missingCodes
+
   let artifacts =
-        [ artifact "diagnostics.txt" diagnostics'
+        [ artifact "diagnostics.txt" diagnostics',
+          nikolai
         ]
 
   return $ testGroup caseName artifacts
@@ -69,3 +92,7 @@ diff ref new = ["diff", ref, new]
 toTitleWord :: String -> String
 toTitleWord [] = []
 toTitleWord (x : xs) = toUpper x : xs
+
+parseErrorCodes :: String -> [String]
+parseErrorCodes t =
+  getAllTextMatches (t =~ "ERROR_[A-Z][A-Z0-9_]*" :: AllTextMatches [] String)

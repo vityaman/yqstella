@@ -1,1 +1,1 @@
-Error at :15:5: type mismatch: expected fn (Nat) -> auto, got Nat
+<source>:15:5: ERROR_NOT_A_FUNCTION: type mismatch: expected fn (Nat) -> auto, got Nat

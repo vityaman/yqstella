@@ -9,7 +9,8 @@ where
 import Control.Monad (foldM)
 import Control.Monad.Writer
 import Data.List (singleton)
-import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
+import Diagnostic.Code (Code (LEXICS))
+import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Position (Position (Position), pointRange)
 import Syntax.LexStella (Token (Err, PT), tokenText)
 import Syntax.ParStella (myLexer)
@@ -30,7 +31,7 @@ scan input =
     visit' :: AlexToken -> Writer Diagnostics (Maybe StellaToken)
     visit' alex = case alex of
       (Err posn) -> do
-        _ <- tell [Diagnostic Error (pointRange $ Position posn) "illegal token"]
+        _ <- tell [Diagnostic Error LEXICS (pointRange $ Position posn) "illegal token"]
         return Nothing
       token ->
         return $ Just $ StellaToken token

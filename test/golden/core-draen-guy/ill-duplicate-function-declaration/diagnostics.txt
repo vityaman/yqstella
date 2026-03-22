@@ -1,2 +1,2 @@
-Error at :1:0: duplicate parameter: func
-Error at :1:0: duplicate parameter: func
+<source>:1:0: ERROR_DUPLICATE_FUNCTION_DECLARATION: duplicate declaration: func
+<source>:1:0: ERROR_DUPLICATE_FUNCTION_DECLARATION: duplicate declaration: func
