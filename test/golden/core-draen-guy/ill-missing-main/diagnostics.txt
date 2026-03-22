@@ -1,1 +1,1 @@
-Error at :1:1: not found: main function
+<source>:1:1: ERROR_MISSING_MAIN: not found: main function

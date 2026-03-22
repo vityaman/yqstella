@@ -12,6 +12,7 @@ import Extension.Core (Extensions, extensionFromName, extensionName)
 import qualified Extension.Core as Extension
 import Position (Position, pointRange)
 import qualified Syntax.AbsStella as AST
+import Diagnostic.Code (Code(BAD_EXTENSION))
 
 activateExtensions :: AST.Program' Position -> Writer Diagnostics ()
 activateExtensions program = do
@@ -23,14 +24,14 @@ activateExtensions program = do
     guard $ not $ Set.null disabled
     let disabledNames = intercalate ", " (extensionName <$> Set.toList disabled)
         message = "disabled extension usage: " ++ disabledNames
-    return (Diagnostic Error (pointRange position) message)
+    return (Diagnostic Error BAD_EXTENSION (pointRange position) message)
 
   return ()
 
 enabledExtensions :: AST.Program' Position -> Writer Diagnostics Extensions
 enabledExtensions (AST.AProgram _ _ extensions _) = do
   let parse (position, name) =
-        either (Left . Diagnostic Error (pointRange position)) Right (extensionFromName name)
+        either (Left . Diagnostic Error BAD_EXTENSION (pointRange position)) Right (extensionFromName name)
 
       names' = fmap parse $ do
         (AST.AnExtension position names) <- extensions

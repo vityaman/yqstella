@@ -11,6 +11,7 @@ import Data.Foldable (find)
 import Data.Functor (void)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
+import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error), notImplemented)
 import Position (Position, pointRange)
 import qualified Syntax.AbsStella as AST
@@ -44,7 +45,7 @@ instance TypeAnnotatable AST.Program' where
     let main = find isMain decls'
         type_ = main >>= declFunType'
 
-    when (null main) $ tell [Diagnostic Error (pointRange p) "not found: main function"]
+    when (null main) $ tell [Diagnostic Error MISSING_MAIN (pointRange p) "not found: main function"]
 
     return (AST.AProgram (p, type_) languagedecl' extensions' decls')
     where
@@ -127,7 +128,7 @@ instance TypeAnnotatable AST.Expr' where
                 ++ show then'
                 ++ ", else branch type is "
                 ++ show else'
-        tell [Diagnostic Error (pointRange p) message]
+        tell [Diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
         return Nothing
       _ -> pure Nothing
 
@@ -231,7 +232,7 @@ instance TypeAnnotatable AST.Expr' where
             expected = Type.fn expectedArgTypes unknown
 
         let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
-        tell [Diagnostic Error (pointRange expr'Position) message]
+        tell [Diagnostic Error NOT_A_FUNCTION (pointRange expr'Position) message]
 
         return Nothing
       Nothing ->
@@ -375,7 +376,7 @@ ctxExtendByParamDecls paramdecls context = do
 
       toDiagnostic (AST.AParamDecl p (AST.StellaIdent name) _) =
         let message = "duplicate parameter: " ++ name
-         in Diagnostic Error (pointRange p) message
+         in Diagnostic Error DUPLICATE_FUNCTION_PARAMETER (pointRange p) message
 
       withDecl paramdecl = let (key, t) = toPair paramdecl in Context.withTyped key t
 
@@ -394,8 +395,8 @@ ctxExtendByDecls decls context = do
         ]
 
       toDiagnostic (name, p) =
-        let message = "duplicate parameter: " ++ name
-         in Diagnostic Error (pointRange p) message
+        let message = "duplicate declaration: " ++ name
+         in Diagnostic Error DUPLICATE_FUNCTION_DECLARATION (pointRange p) message
 
       kvs = fmap unpack kpvs
       unpack (k, [(_, t)]) = (k, t)
@@ -436,7 +437,7 @@ matchType' position expected actual =
 mismatchS :: Position -> String -> Type -> Diagnostic
 mismatchS position expected actual =
   let message = "type mismatch: expected " ++ expected ++ ", got " ++ show actual
-   in Diagnostic Error (pointRange position) message
+   in Diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange position) message
 
 mismatch :: Position -> Type -> Type -> Diagnostic
 mismatch position expected = mismatchS position (show expected)
