@@ -19,7 +19,7 @@ import Position (Position, PositionRange (PositionRange), pointRange)
 data Severity
   = Fatal
   | Error
-  deriving (Show)
+  deriving (Show, Eq)
 
 data Diagnostic = Diagnostic
   { severity :: Severity,

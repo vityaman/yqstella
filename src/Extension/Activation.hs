@@ -6,13 +6,13 @@ import Data.Either (lefts, rights)
 import Data.Foldable (toList)
 import Data.List (intercalate)
 import qualified Data.Set as Set
+import Diagnostic.Code (Code (BAD_EXTENSION))
 import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Extension.Annotation (annotateExtensions)
 import Extension.Core (Extensions, extensionFromName, extensionName)
 import qualified Extension.Core as Extension
 import Position (Position, pointRange)
 import qualified Syntax.AbsStella as AST
-import Diagnostic.Code (Code(BAD_EXTENSION))
 
 activateExtensions :: AST.Program' Position -> Writer Diagnostics ()
 activateExtensions program = do

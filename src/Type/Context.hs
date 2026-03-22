@@ -2,8 +2,8 @@ module Type.Context (Context, empty, withTyped, typeOf, unknownName) where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Diagnostic.Code (Code (UNDEFINED_VARIABLE))
 import Diagnostic.Core (Diagnostic (Diagnostic), Severity (Error))
-import Diagnostic.Code (Code(UNDEFINED_VARIABLE))
 import Position (Position, pointRange)
 import Type.Core (Type)
 
