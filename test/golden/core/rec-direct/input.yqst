@@ -1,0 +1,6 @@
+language core;
+
+// FIXME(vityaman): https://github.com/vityaman/yqstella/issues/20
+fn main(x : Nat) -> Nat {
+  return main(x);
+}
