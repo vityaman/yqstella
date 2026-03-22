@@ -477,7 +477,7 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Succ p expr) =
-    AST.Succ (p, Set.singleton Extension.NaturalLiterals) expr'
+    AST.Succ (p, Set.empty) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.LogicNot p expr) =
@@ -519,7 +519,9 @@ instance ExtensionsAnnotatable AST.Expr' where
   annotateExtensions (AST.ConstUnit p) =
     AST.ConstUnit (p, Set.singleton Extension.UnitType)
   annotateExtensions (AST.ConstInt p n) =
-    AST.ConstInt (p, Set.empty) n
+    AST.ConstInt (p, Set.fromList extensions) n
+    where
+      extensions = [Extension.NaturalLiterals | n /= 0]
   annotateExtensions (AST.ConstMemory p memoryaddress) =
     AST.ConstMemory (p, Set.empty) memoryaddress
   annotateExtensions (AST.Var p stellaident) =
