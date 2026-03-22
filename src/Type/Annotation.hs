@@ -9,6 +9,7 @@ import Control.Monad.Writer
 import Data.Either (partitionEithers)
 import Data.Foldable (find)
 import Data.Functor (void)
+import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error), notImplemented)
 import Position (Position, pointRange)
@@ -67,7 +68,8 @@ instance TypeAnnotatable AST.Decl' where
       (AST.NoThrowType _) -> pure ()
       (AST.SomeThrowType _ _) -> tell [notImplemented p "DeclFun ThrowType"]
 
-    expr' <- withStateTAE (ctxExtendByParamDecls paramdecls) (annotateType expr)
+    context' <- get >>= ctxExtendByParamDecls paramdecls
+    expr' <- withStateTAE (const context') (annotateType expr)
     let (actualPosition, actualType) = annotation expr'
         argTypes = fmap (snd . toPair) paramdecls'
         type' = fmap (Type.fn argTypes) actualType
@@ -164,7 +166,8 @@ instance TypeAnnotatable AST.Expr' where
   annotateType (AST.Abstraction p paramdecls expr) = do
     let paramdecls' = fmap (fmap (,Nothing)) paramdecls
 
-    expr' <- withStateTAE (ctxExtendByParamDecls paramdecls) (annotateType expr)
+    context' <- get >>= ctxExtendByParamDecls paramdecls
+    expr' <- withStateTAE (const context') (annotateType expr)
     let (_, actualType) = annotation expr'
         argTypes = fmap (snd . toPair) paramdecls'
         type' = fmap (Type.fn argTypes) actualType
@@ -356,20 +359,52 @@ instance TypeAnnotatable AST.Expr' where
 toPair :: AST.ParamDecl' a -> (String, Type)
 toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = (key, Type.fromAST t)
 
-ctxExtendByParamDecls :: (Foldable f) => f (AST.ParamDecl' a) -> Context -> Context
-ctxExtendByParamDecls paramdecls context = foldr withDecl context paramdecls
-  where
-    withDecl paramdecl = let (key, t) = toPair paramdecl in Context.withTyped key t
+ctxExtendByParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
+ctxExtendByParamDecls paramdecls context = do
+  let paramdecls' = Map.fromListWith (++) $ fmap toPair' paramdecls
+      toPair' x@(AST.AParamDecl _ (AST.StellaIdent name) _) = (name, [x])
+
+      duplicates =
+        [ decl
+          | (_, decls) <- Map.toList paramdecls',
+            1 < length decls,
+            decl <- decls
+        ]
+
+      toDiagnostic (AST.AParamDecl p (AST.StellaIdent name) _) =
+        let message = "duplicate parameter: " ++ name
+         in Diagnostic Error (pointRange p) message
+
+      withDecl paramdecl = let (key, t) = toPair paramdecl in Context.withTyped key t
+
+  tell $ fmap toDiagnostic duplicates
+  return $ foldr withDecl context paramdecls
 
 ctxExtendByDecls :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
 ctxExtendByDecls decls context = do
-  let (diagnostics, kvs) = partitionEithers $ fmap visit decls
-  tell diagnostics
+  let (diagnostics, kpvs) = partitionEithers $ fmap visit decls
+
+      duplicates =
+        [ (name, position)
+          | (name, pvs) <- Map.toList $ Map.fromListWith (++) kpvs,
+            1 < length pvs,
+            (position, _) <- pvs
+        ]
+
+      toDiagnostic (name, p) =
+        let message = "duplicate parameter: " ++ name
+         in Diagnostic Error (pointRange p) message
+
+      kvs = fmap unpack kpvs
+      unpack (k, [(_, t)]) = (k, t)
+      unpack _ = undefined
+
+  tell $ diagnostics ++ fmap toDiagnostic duplicates
   return $ foldr (uncurry Context.withTyped) context kvs
   where
-    visit :: AST.Decl' Position -> Either Diagnostic (String, Type)
-    visit (AST.DeclFun _ _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) =
-      Right (name, Type.fn args' returntype')
+    visit :: AST.Decl' Position -> Either Diagnostic (String, [(Position, Type)])
+    visit (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) =
+      Right (name, [(p, Type.fn args' returntype')])
       where
         args' = fmap (snd . toPair) paramdecls
         returntype' = Type.fromAST returntype

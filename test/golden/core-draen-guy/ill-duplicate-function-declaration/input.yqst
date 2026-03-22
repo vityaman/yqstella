@@ -1,0 +1,13 @@
+language core;
+
+fn func(b : Nat) -> Bool {
+  return false;
+}
+
+fn func(a : Bool) -> Nat {
+  return 0;
+}
+
+fn main(n : Nat) -> Nat {
+  return 0
+}
