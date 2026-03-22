@@ -1,0 +1,20 @@
+language core;
+
+fn plus2(n : Nat) -> Nat {
+  return succ(succ(n))
+}
+
+fn Bool::not(b : Bool) -> Bool {
+  return
+    if b then false else true
+}
+
+fn twice(f : fn(Bool) -> Bool) -> (fn(Bool) -> Bool) {
+  return fn(x : Bool) {
+    return f(f(x))
+  }
+}
+
+fn main(b : Bool) -> Bool {
+  return twice(Bool::not)(b)
+}
