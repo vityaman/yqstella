@@ -11,7 +11,7 @@ import Data.Foldable (find)
 import Data.Functor (void)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
-import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error), notImplemented)
+import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error), notImplemented)
 import Position (Position, pointRange)
 import qualified Syntax.AbsStella as AST
 import Type.Context (Context)

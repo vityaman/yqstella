@@ -1,7 +1,7 @@
 module Main (main) where
 
 import qualified CLI
-import qualified Diagnostic
+import qualified Diagnostic.Core as Diagnostic
 import qualified Lexer
 import qualified PrettyPrint
 import qualified Lib as Stella

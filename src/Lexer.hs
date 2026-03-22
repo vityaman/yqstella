@@ -9,7 +9,7 @@ where
 import Control.Monad (foldM)
 import Control.Monad.Writer
 import Data.List (singleton)
-import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
+import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Position (Position (Position), pointRange)
 import Syntax.LexStella (Token (Err, PT), tokenText)
 import Syntax.ParStella (myLexer)

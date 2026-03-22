@@ -3,7 +3,7 @@
 module Parser (parse) where
 
 import Control.Monad.Writer
-import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
+import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Lexer (StellaToken (StellaToken))
 import Position (Position, pointRange, position)
 import qualified Position

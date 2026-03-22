@@ -4,7 +4,7 @@ import Annotation (Annotated (annotation))
 import Control.Monad.State (evalState)
 import Control.Monad.Writer
 import Data.Functor (void)
-import Diagnostic (Diagnostics)
+import Diagnostic.Core (Diagnostics)
 import Position (Position)
 import qualified Syntax.AbsStella as AST
 import Type.Annotation (annotateType)

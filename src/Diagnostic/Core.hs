@@ -1,4 +1,4 @@
-module Diagnostic
+module Diagnostic.Core
   ( Severity (Fatal, Error),
     Diagnostic (Diagnostic),
     severity,

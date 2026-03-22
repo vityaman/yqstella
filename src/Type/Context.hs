@@ -2,7 +2,7 @@ module Type.Context (Context, empty, withTyped, typeOf, unknownName) where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Diagnostic (Diagnostic (Diagnostic), Severity (Error))
+import Diagnostic.Core (Diagnostic (Diagnostic), Severity (Error))
 import Position (Position, pointRange)
 import Type.Core (Type)
 

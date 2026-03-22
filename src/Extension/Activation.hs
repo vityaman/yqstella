@@ -6,7 +6,7 @@ import Data.Either (lefts, rights)
 import Data.Foldable (toList)
 import Data.List (intercalate)
 import qualified Data.Set as Set
-import Diagnostic (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
+import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Extension.Annotation (annotateExtensions)
 import Extension.Core (Extensions, extensionFromName, extensionName)
 import qualified Extension.Core as Extension

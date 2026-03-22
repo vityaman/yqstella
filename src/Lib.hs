@@ -10,7 +10,7 @@ module Lib
 where
 
 import Control.Monad.Writer
-import Diagnostic (Diagnostics)
+import Diagnostic.Core (Diagnostics)
 import Extension.Activation (activateExtensions)
 import qualified Lexer
 import qualified Parser

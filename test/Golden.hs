@@ -4,7 +4,7 @@ import Control.Monad (filterM)
 import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char (toUpper)
 import Data.List (sort)
-import qualified Diagnostic
+import qualified Diagnostic.Core as Diagnostic
 import qualified Lib as Stella
 import System.Directory (doesDirectoryExist, listDirectory)
 import System.FilePath (dropExtension, takeFileName, (</>))
