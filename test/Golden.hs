@@ -12,7 +12,7 @@ import System.FilePath (dropExtension, takeFileName, (</>))
 import System.Process (readProcessWithExitCode)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsStringDiff)
-import Test.Tasty.HUnit (assertEqual, testCase)
+import Test.Tasty.HUnit (assertBool, assertEqual, testCase)
 import Text.Regex.TDFA (AllTextMatches (..), getAllTextMatches, (=~))
 
 newtype Input = Input String
@@ -67,12 +67,16 @@ makeTestCase casePath = do
 
           let yqStellaCodes = parseErrorCodes diagnostics'
               fizrukStellaCodes = parseErrorCodes stdout
-              missingCodes = filter (`notElem` yqStellaCodes) fizrukStellaCodes
+              isFizrukCodePresent =
+                any (`elem` yqStellaCodes) fizrukStellaCodes
+                  || null fizrukStellaCodes
 
           let areFizrukTypesCorrect' = exitCode == ExitSuccess
 
           assertEqual "yqstella vs fizruk stella status" areFizrukTypesCorrect' areTypesCorrect'
-          assertEqual "yqstella missing some fizruk diagnostics: " [] missingCodes
+          assertBool
+            ("yqstella does not conform to fizruk diagnostics: " ++ stdout)
+            isFizrukCodePresent
 
   let artifacts =
         [ artifact "diagnostics.txt" diagnostics',

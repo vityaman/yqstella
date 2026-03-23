@@ -1,1 +1,2 @@
-<source>:4:10: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: then branch type is Nat, else branch type is Bool
+<source>:4:24: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: expected Bool, got Nat
+<source>:4:31: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: expected Nat, got Bool
