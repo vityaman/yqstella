@@ -1,1 +1,1 @@
-<source>:4:10: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: expected Nat, got fn (Bool) -> Nat
+<source>:4:10: ERROR_UNEXPECTED_LAMBDA: type mismatch: expected Nat, got fn (Bool) -> Nat
