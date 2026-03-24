@@ -3,21 +3,20 @@ module Type.Check (checkTypes) where
 import Control.Monad.State (evalState)
 import Control.Monad.Writer
 import Diagnostic.Core (Diagnostic (severity), Diagnostics, Severity (Error, Fatal))
-import Position (Position)
+import Diagnostic.Position (Position)
 import qualified Syntax.AbsStella as AST
 import Type.Annotation (inferType)
 import qualified Type.Context as Context
+import Type.Core (Type)
 
-checkTypes :: AST.Program' Position -> Writer Diagnostics (Maybe ())
+checkTypes :: AST.Program' Position -> Writer Diagnostics (Bool, AST.Program' (Position, Maybe Type))
 checkTypes program = do
-  let (_, diagnostics) = (evalState . runWriterT . inferType) program Context.empty
+  let (program', diagnostics) = (run . inferType) program Context.empty
+      run = evalState . runWriterT
 
-  let isFailure Fatal = True
+      areTypesCorrect = not (any (isFailure . severity) diagnostics)
+      isFailure Fatal = True
       isFailure Error = True
 
   tell diagnostics
-
-  return $
-    if not (any (isFailure . severity) diagnostics)
-      then Just ()
-      else Nothing
+  return (areTypesCorrect, program')

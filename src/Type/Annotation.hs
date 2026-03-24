@@ -13,7 +13,7 @@ import qualified Data.Map as Map
 import Data.Maybe (fromMaybe, mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error), notImplemented)
-import Position (Position, pointRange)
+import Diagnostic.Position (Position, pointRange)
 import qualified Syntax.AbsStella as AST
 import Type.Context (Context)
 import qualified Type.Context as Context

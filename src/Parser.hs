@@ -5,9 +5,9 @@ module Parser (parse) where
 import Control.Monad.Writer
 import Diagnostic.Code (Code (SYNTAX))
 import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
+import Diagnostic.Position (Position, pointRange, position)
+import qualified Diagnostic.Position as Position
 import Lexer (StellaToken (StellaToken))
-import Position (Position, pointRange, position)
-import qualified Position
 import Syntax.AbsStella (BNFC'Position, Program')
 import Syntax.ParStella (pProgram)
 

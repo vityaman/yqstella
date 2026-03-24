@@ -1,11 +1,12 @@
 module Main (main) where
 
 import qualified CLI
-import qualified Diagnostic.Core as Diagnostic
-import qualified Lexer
-import qualified PrettyPrint
+import Diagnostic.Core (display)
+import Lib (Project (Project))
 import qualified Lib as Stella
+import PrettyPrint (displayAST)
 import System.Exit (exitFailure, exitSuccess)
+import YQL.PrettyPrint (displayYQL)
 
 main :: IO ()
 main = do
@@ -13,20 +14,37 @@ main = do
     { CLI.inputPath = inputPath,
       CLI.diagnosticsPath = diagnosticsPath,
       CLI.tokensPath = tokensPath,
-      CLI.parseTreePath = parseTreePath
+      CLI.parseTreePath = parseTreePath,
+      CLI.outputPath = outputPath
     } <-
     CLI.parseArgs
 
   content <- readFile inputPath
 
-  let project = Stella.build (Stella.Source content)
+  let Project
+        { Stella.diagnostics = diagnostics,
+          Stella.tokens = tokens,
+          Stella.program = program,
+          Stella.areTypesCorrect = areTypesCorrect,
+          Stella.yql = yql
+        } = Stella.build (Stella.Source content)
 
-  let formatted' = maybe "" PrettyPrint.printTree $ Stella.parseTree project
+      diagnostics' = display diagnostics
+      tokens' = display tokens
+      formatted' = displayAST <$> program
+      yql' = displayYQL <$> yql
 
-  writeFile diagnosticsPath (Diagnostic.displays $ Stella.diagnostics project)
-  writeFile tokensPath (Lexer.display $ Stella.tokens project)
-  writeFile parseTreePath formatted'
+      isOk = areTypesCorrect && not (null yql)
 
-  if Stella.areTypesCorrect project
+  writeFile diagnosticsPath diagnostics'
+  writeFile tokensPath tokens'
+  writeFile' parseTreePath formatted'
+  writeFile' outputPath yql'
+
+  if isOk
     then exitSuccess
     else exitFailure
+
+writeFile' :: FilePath -> Maybe String -> IO ()
+writeFile' path (Just content) = writeFile path content
+writeFile' _ Nothing = pure ()

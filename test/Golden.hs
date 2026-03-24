@@ -4,7 +4,7 @@ import Control.Monad (filterM)
 import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char (toUpper)
 import Data.List (sort)
-import qualified Diagnostic.Core as Diagnostic
+import Diagnostic.Core (display)
 import qualified Lib as Stella
 import System.Directory (doesDirectoryExist, listDirectory)
 import System.Exit (ExitCode (..))
@@ -14,20 +14,27 @@ import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsStringDiff)
 import Test.Tasty.HUnit (assertBool, assertEqual, testCase)
 import Text.Regex.TDFA (AllTextMatches (..), getAllTextMatches, (=~))
+import YQL.PrettyPrint (displayYQL)
 
 newtype Input = Input String
 
 data Output = Output
   { diagnostics :: String,
-    areTypesCorrect :: Bool
+    areTypesCorrect :: Bool,
+    yql :: String
   }
 
 test :: Input -> Output
 test (Input source) =
-  let project = Stella.build (Stella.Source source)
+  let Stella.Project
+        { Stella.diagnostics = diagnostics',
+          Stella.areTypesCorrect = areTypesCorrect',
+          Stella.yql = yql'
+        } = Stella.build (Stella.Source source)
    in Output
-        { diagnostics = Diagnostic.displays $ Stella.diagnostics project,
-          areTypesCorrect = Stella.areTypesCorrect project
+        { diagnostics = display diagnostics',
+          areTypesCorrect = areTypesCorrect',
+          yql = maybe "" displayYQL yql'
         }
 
 main :: IO TestTree
@@ -53,7 +60,8 @@ makeTestCase casePath = do
 
   let Output
         { diagnostics = diagnostics',
-          areTypesCorrect = areTypesCorrect'
+          areTypesCorrect = areTypesCorrect',
+          yql = yql'
         } = test input
 
   let artifact fileName content =
@@ -80,6 +88,7 @@ makeTestCase casePath = do
 
   let artifacts =
         [ artifact "diagnostics.txt" diagnostics',
+          artifact "yql.yqls" yql',
           nikolai
         ]
 

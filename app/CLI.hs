@@ -7,6 +7,7 @@ module CLI
     diagnosticsPath,
     tokensPath,
     parseTreePath,
+    outputPath,
     parseArgs,
   )
 where
@@ -98,7 +99,7 @@ parseArgs =
                 <> metavar "OUTPUT_PATH"
                 <> showDefault
                 <> value "/dev/stdout"
-                <> help "Where to write YQLS output"
+                <> help "Where to write YQLs output"
             )
 
         return Args {..}

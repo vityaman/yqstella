@@ -1,6 +1,6 @@
-module PrettyPrint (printTree) where
+module PrettyPrint (displayAST) where
 
 import qualified Syntax.PrintStella as Syntax
 
-printTree :: (Syntax.Print a) => a -> String
-printTree = Syntax.printTree
+displayAST :: (Syntax.Print a) => a -> String
+displayAST = Syntax.printTree
