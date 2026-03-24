@@ -1,4 +1,4 @@
-module Position
+module Diagnostic.Position
   ( Position (Position),
     PositionRange (PositionRange),
     position,

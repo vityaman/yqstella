@@ -1,13 +1,13 @@
 module Type.Core (Type (Type), fromAST, fromAST', eqT, neqT, fn) where
 
 import Control.Monad (void)
-import PrettyPrint (printTree)
+import PrettyPrint (displayAST)
 import qualified Syntax.AbsStella as AST
 
 newtype Type = Type (AST.Type' ()) deriving (Eq, Ord)
 
 instance Show Type where
-  show (Type x) = printTree x
+  show (Type x) = displayAST x
 
 fromAST :: AST.Type' a -> Type
 fromAST t = Type $ void t

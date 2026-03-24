@@ -4,7 +4,7 @@ import Control.Monad (filterM)
 import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char (toUpper)
 import Data.List (sort)
-import qualified Diagnostic.Core as Diagnostic
+import Diagnostic.Core (display)
 import qualified Lib as Stella
 import System.Directory (doesDirectoryExist, listDirectory)
 import System.Exit (ExitCode (..))
@@ -26,7 +26,7 @@ test :: Input -> Output
 test (Input source) =
   let project = Stella.build (Stella.Source source)
    in Output
-        { diagnostics = Diagnostic.displays $ Stella.diagnostics project,
+        { diagnostics = display $ Stella.diagnostics project,
           areTypesCorrect = Stella.areTypesCorrect project
         }
 

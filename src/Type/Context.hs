@@ -4,7 +4,7 @@ import Data.Map (Map)
 import qualified Data.Map as Map
 import Diagnostic.Code (Code (UNDEFINED_VARIABLE))
 import Diagnostic.Core (Diagnostic (Diagnostic), Severity (Error))
-import Position (Position, pointRange)
+import Diagnostic.Position (Position, pointRange)
 import Type.Core (Type)
 
 newtype Binding = Binding Type

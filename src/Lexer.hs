@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Lexer
   ( AlexToken,
     StellaToken (StellaToken),
@@ -11,7 +13,8 @@ import Control.Monad.Writer
 import Data.List (singleton)
 import Diagnostic.Code (Code (LEXICS))
 import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
-import Position (Position (Position), pointRange)
+import Diagnostic.Position (Position (Position), pointRange)
+import Misc.Display (Display (display))
 import Syntax.LexStella (Token (Err, PT), tokenText)
 import Syntax.ParStella (myLexer)
 
@@ -23,6 +26,9 @@ instance Show StellaToken where
   show (StellaToken token@(PT position _)) =
     ":" ++ show (Position position) ++ "\t" ++ tokenText token
   show (StellaToken (Err _)) = undefined
+
+instance Display [StellaToken] where
+  display = unlines . map show
 
 scan :: String -> Writer Diagnostics [StellaToken]
 scan input =
@@ -40,6 +46,3 @@ scan input =
     visit acc alex = do
       token' <- visit' alex
       return $ acc ++ maybe [] singleton token'
-
-display :: [StellaToken] -> String
-display = unlines . map show
