@@ -80,7 +80,7 @@ makeTestCase casePath = do
 
           let areFizrukTypesCorrect' = exitCode == ExitSuccess
 
-          assertEqual "yqstella vs fizruk stella status" areFizrukTypesCorrect' areTypesCorrect'
+          assertEqual "fizruk vs yqstella status" areFizrukTypesCorrect' areTypesCorrect'
           assertBool
             ("yqstella does not conform to fizruk diagnostics: " ++ stdout)
             isFizrukCodePresent

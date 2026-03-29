@@ -1,8 +1,13 @@
 module YQL.Translation (toYQL) where
 
 import Annotation (Annotated (annotation))
+import Control.Monad.Writer (runWriter)
+import Data.Foldable (find)
+import qualified Data.Set as Set
 import Diagnostic.Core (Diagnostic, notImplemented)
-import Diagnostic.Position (Position)
+import Diagnostic.Position (Position, unknown)
+import Extension.Activation (enabledExtensions)
+import Extension.Core (Extension (..), extensionName)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type)
 import YQL.AST (Node (..))
@@ -11,10 +16,13 @@ class YQLTranslatable f where
   toYQL :: f (Position, Maybe Type) -> Either Diagnostic Node
 
 instance YQLTranslatable AST.Program' where
-  toYQL f@(AST.AProgram _ _ [] decls) = do
+  toYQL f@(AST.AProgram _ _ _ decls) = do
     paramdecls <- case mainparams decls of
       [x] -> Right x
       xs -> Left $ unsupported f $ "expected an only main, got " ++ show (length xs)
+
+    let (extensions', _) = runWriter $ enabledExtensions $ fmap fst f
+    () <- checkExtensions $ Set.toList extensions'
 
     topdecls' <- mapM toYQL decls
     paramdecls' <- mapM declare paramdecls
@@ -38,7 +46,6 @@ instance YQLTranslatable AST.Program' where
       declare (AST.AParamDecl _ (AST.StellaIdent name') t) = do
         t' <- toYQL t
         return $ Y [A "declare", A name', t']
-  toYQL x = Left $ unsupported x "AST.Program'"
 
 instance YQLTranslatable AST.Decl' where
   toYQL (AST.DeclFun p _ (AST.StellaIdent name) paramdecls _ (AST.NoThrowType _) [] expr) = do
@@ -76,6 +83,8 @@ instance YQLTranslatable AST.Expr' where
     return $ Y [A "Bool", Q (A "false")]
   toYQL (AST.ConstInt _ n) = do
     return $ Y [A "Uint64", Q (A $ show n)]
+  toYQL (AST.ConstUnit _) = do
+    return $ Y [A "Void"]
   toYQL (AST.Var _ (AST.StellaIdent name)) = do
     return $ A name
   toYQL x = Left $ unsupported x "AST.Expr'"
@@ -85,10 +94,25 @@ instance YQLTranslatable AST.Type' where
   toYQL (AST.TypeNat _) = Right $ Y [A "DataType", Q $ A "Uint64"]
   toYQL x = Left $ unsupported x "AST.Type'"
 
+checkExtensions :: [Extension] -> Either Diagnostic ()
+checkExtensions extensions = case findUnsupported extensions of
+  Nothing -> Right ()
+  Just e -> Left $ unsupported' unknown ("Extension " ++ extensionName e)
+  where
+    isSupportedExtension :: Extension -> Bool
+    isSupportedExtension UnitType = True
+    isSupportedExtension _ = False
+
+    findUnsupported :: [Extension] -> Maybe Extension
+    findUnsupported = find (not . isSupportedExtension)
+
 unsupported :: (Annotated f) => f (Position, Maybe Type) -> String -> Diagnostic
-unsupported f reason =
+unsupported f = unsupported' (fst $ annotation f)
+
+unsupported' :: Position -> String -> Diagnostic
+unsupported' p reason =
   let message = "YQL translation unsupported: " ++ reason
-   in notImplemented (fst $ annotation f) message
+   in notImplemented p message
 
 prelude :: String -> [Node]
 prelude provider =

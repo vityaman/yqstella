@@ -1,0 +1,8 @@
+test/golden/unit-type/example-disabled/input.yqst:3:22: [ERROR_BAD_EXTENSION]
+disabled extension usage: #unit-type
+> fn main(xx : Nat) -> Unit {
+                       ^
+test/golden/unit-type/example-disabled/input.yqst:4:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #unit-type
+>   return unit
+           ^

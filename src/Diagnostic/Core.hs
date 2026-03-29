@@ -10,6 +10,7 @@ module Diagnostic.Core
     message,
     Diagnostics,
     display,
+    isFailure,
     diagnostic,
     withSourcePreview,
     notImplemented,
@@ -46,6 +47,10 @@ instance Display Diagnostic where
 
 instance Display Diagnostics where
   display = unlines . map display
+
+isFailure :: Severity -> Bool
+isFailure Fatal = True
+isFailure Error = True
 
 diagnostic :: Severity -> Code -> PositionRange -> String -> Diagnostic
 diagnostic s c = Diagnostic s c "<source>"
