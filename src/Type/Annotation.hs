@@ -262,6 +262,10 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- inferType expr
 
     t' <- case snd $ annotation expr' of
+      _ | index == 0 -> do
+        let message = "tuple index should be positive, got 0"
+        tell [diagnostic Error TUPLE_INDEX_OUT_OF_BOUNDS (pointRange p) message]
+        return Nothing
       Just actual@(Type (AST.TypeTuple _ ts)) | length ts < fromInteger index -> do
         let message =
               "type mismatch: expected tuple "

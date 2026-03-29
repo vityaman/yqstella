@@ -1,0 +1,4 @@
+test/golden/tuples/dot0/input.yqst:6:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+tuple index should be positive, got 0
+>   return {n}.0
+           ^
