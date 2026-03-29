@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE InstanceSigs #-}
 
 module Diagnostic.Core
   ( Severity (Fatal, Error),
@@ -6,9 +7,11 @@ module Diagnostic.Core
     severity,
     code,
     range,
+    path,
     message,
     Diagnostics,
     display,
+    diagnostic,
     withSourcePreview,
     notImplemented,
   )
@@ -29,6 +32,7 @@ data Severity
 data Diagnostic = Diagnostic
   { severity :: Severity,
     code :: Code,
+    path :: FilePath,
     range :: PositionRange,
     message :: String
   }
@@ -36,17 +40,21 @@ data Diagnostic = Diagnostic
 type Diagnostics = [Diagnostic]
 
 instance Display Diagnostic where
-  display (Diagnostic s c (PositionRange b _) m) =
-    "<source>:" ++ show b ++ ": " ++ withSeverity s c ++ ": " ++ m
+  display :: Diagnostic -> String
+  display (Diagnostic s c p (PositionRange b _) m) =
+    p ++ ":" ++ show b ++ ": [" ++ withSeverity s c ++ "]\n" ++ m
     where
       withSeverity s' c' = map toTitle (show s') ++ "_" ++ show c'
 
 instance Display Diagnostics where
   display = unlines . map display
 
+diagnostic :: Severity -> Code -> PositionRange -> String -> Diagnostic
+diagnostic s c = Diagnostic s c "<source>"
+
 withSourcePreview :: Array Int String -> Diagnostic -> Diagnostic
-withSourcePreview lines' (Diagnostic s c r@(PositionRange b _) m) =
-  Diagnostic s c r (m ++ preview)
+withSourcePreview lines' (Diagnostic s c p r@(PositionRange b _) m) =
+  Diagnostic s c p r (m ++ preview)
   where
     (Position (Pn _ line column)) = b
     line' = (if line == 0 then 1 else line) - 1
@@ -59,4 +67,4 @@ withSourcePreview lines' (Diagnostic s c r@(PositionRange b _) m) =
 notImplemented :: Position -> String -> Diagnostic
 notImplemented position feature =
   let message' = feature ++ " not implemented"
-   in Diagnostic Fatal NOT_IMPLEMENTED (pointRange position) message'
+   in diagnostic Fatal NOT_IMPLEMENTED (pointRange position) message'

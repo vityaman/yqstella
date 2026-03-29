@@ -1,6 +1,8 @@
 module Lib
   ( Source (Source),
     Project (Project),
+    path,
+    text,
     diagnostics,
     tokens,
     program,
@@ -13,6 +15,7 @@ where
 import Control.Monad.Writer
 import qualified Data.Array as Array
 import Diagnostic.Core (Diagnostics, withSourcePreview)
+import qualified Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position)
 import Extension.Activation (activateExtensions)
 import qualified Syntax.Lexer as Lexer
@@ -23,7 +26,10 @@ import Type.Core (Type)
 import YQL.AST (Node)
 import YQL.Translation (toYQL)
 
-newtype Source = Source String
+data Source = Source
+  { path :: String,
+    text :: String
+  }
 
 data Project = Project
   { diagnostics :: Diagnostics,
@@ -34,7 +40,7 @@ data Project = Project
   }
 
 build :: Source -> Project
-build (Source source) =
+build (Source path' source) =
   let (project, diagnostics') = runWriter $ do
         tokens' <- Lexer.scan source
         parseTree' <- Parser.parse tokens'
@@ -70,5 +76,11 @@ build (Source source) =
 
       linesLst = lines source
       linesArr = Array.listArray (0, length linesLst - 1) linesLst
-      diagnostics'' = fmap (withSourcePreview linesArr) diagnostics'
-   in project {diagnostics = diagnostics''}
+      withSourcePreview' = withSourcePreview linesArr
+
+      withSourcePath x = x {Diagnostic.path = path'}
+
+      withMeta = (withSourcePreview' . withSourcePath)
+   in project
+        { diagnostics = fmap withMeta diagnostics'
+        }

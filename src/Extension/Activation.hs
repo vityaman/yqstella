@@ -7,7 +7,7 @@ import Data.Foldable (toList)
 import Data.List (intercalate)
 import qualified Data.Set as Set
 import Diagnostic.Code (Code (BAD_EXTENSION))
-import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
+import Diagnostic.Core (Diagnostics, Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import Extension.Annotation (annotateExtensions)
 import Extension.Core (Extensions, extensionFromName, extensionName)
@@ -24,14 +24,14 @@ activateExtensions program = do
     guard $ not $ Set.null disabled
     let disabledNames = intercalate ", " (extensionName <$> Set.toList disabled)
         message = "disabled extension usage: " ++ disabledNames
-    return (Diagnostic Error BAD_EXTENSION (pointRange position) message)
+    return (diagnostic Error BAD_EXTENSION (pointRange position) message)
 
   return ()
 
 enabledExtensions :: AST.Program' Position -> Writer Diagnostics Extensions
 enabledExtensions (AST.AProgram _ _ extensions _) = do
   let parse (position, name) =
-        either (Left . Diagnostic Error BAD_EXTENSION (pointRange position)) Right (extensionFromName name)
+        either (Left . diagnostic Error BAD_EXTENSION (pointRange position)) Right (extensionFromName name)
 
       names' = fmap parse $ do
         (AST.AnExtension position names) <- extensions

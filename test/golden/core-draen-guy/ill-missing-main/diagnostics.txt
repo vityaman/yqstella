@@ -1,3 +1,4 @@
-<source>:1:1: ERROR_MISSING_MAIN: not found: main function
+test/golden/core-draen-guy/ill-missing-main/input.yqst:1:1: [ERROR_MISSING_MAIN]
+not found: main function
 > language core;
   ^

@@ -1,3 +1,4 @@
-<source>:4:10: ERROR_UNDEFINED_VARIABLE: undefined variable y
+test/golden/core/name-resolution-unknown/input.yqst:4:10: [ERROR_UNDEFINED_VARIABLE]
+undefined variable y
 >   return y
            ^
