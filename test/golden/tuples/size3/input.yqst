@@ -1,0 +1,7 @@
+language core;
+
+extend with #tuples;
+
+fn main(n : Nat) -> {Nat, Nat, Nat} {
+  return {n, n, n}
+}
