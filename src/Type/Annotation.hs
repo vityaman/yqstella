@@ -284,26 +284,32 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Tuple p exprs) = do
     let untype (Type x) = x
 
-    exprs' <- case t of
-      Just (Type (AST.TypeTuple _ ts)) -> do
-        zipWithM checkType (fmap Type ts) exprs
+    (exprs', isReliable) <- case t of
+      Just (Type (AST.TypeTuple _ ts)) | length ts == length exprs -> do
+        exprs' <- zipWithM checkType (fmap Type ts) exprs
+        return (exprs', True)
       Just expected -> do
         exprs' <- mapM inferType exprs
+
+        let code = case expected of
+              (Type (AST.TypeTuple _ _)) -> UNEXPECTED_TUPLE_LENGTH
+              _ -> UNEXPECTED_TUPLE
 
         let unknown = AST.TypeAuto ()
             actualTypes = fmap (maybe unknown untype . snd . annotation) exprs'
             actual = Type.fromAST $ AST.TypeTuple () actualTypes
 
         let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
-        tell [diagnostic Error UNEXPECTED_TUPLE (pointRange p) message]
+        tell [diagnostic Error code (pointRange p) message]
 
-        return exprs'
-      Nothing ->
-        mapM inferType exprs
+        return (exprs', False)
+      Nothing -> do
+        exprs' <- mapM inferType exprs
+        return (exprs', False)
 
     let t' = Type . AST.TypeTuple () <$> traverse (fmap untype . snd . annotation) exprs'
 
-    return (AST.Tuple (p, t') exprs')
+    return (AST.Tuple (p, if isReliable then t' else Nothing) exprs')
   annotateType _ x@(AST.Record {}) = do
     tell [notImplemented (annotation x) "Record"]
     return $ fmap (,Nothing) x
