@@ -26,7 +26,7 @@ instance YQLTranslatable AST.Program' where
 
     topdecls' <- mapM toYQL decls
     paramdecls' <- mapM declare paramdecls
-    mainargs' <- mapM toYQL paramdecls
+    mainargs' <- mapM toMainArg paramdecls
 
     let main' =
           prelude "dq"
@@ -45,7 +45,10 @@ instance YQLTranslatable AST.Program' where
 
       declare (AST.AParamDecl _ (AST.StellaIdent name') t) = do
         t' <- toYQL t
-        return $ Y [A "declare", A name', t']
+        return $ Y [A "declare", A $ "__" ++ name' ++ "__", t']
+
+      toMainArg (AST.AParamDecl _ (AST.StellaIdent name') _) = do
+        Right $ A $ "__" ++ name' ++ "__"
 
 instance YQLTranslatable AST.Decl' where
   toYQL (AST.DeclFun p _ (AST.StellaIdent name) paramdecls _ (AST.NoThrowType _) [] expr) = do
@@ -71,6 +74,12 @@ instance YQLTranslatable AST.Expr' where
     f' <- toYQL f
     xs' <- mapM toYQL xs
     return $ Y $ [A "Apply", f'] ++ xs'
+  toYQL (AST.DotTuple _ expr index) = do
+    expr' <- toYQL expr
+    return $ Y [A "Nth", expr', Q $ A $ show (index - 1)]
+  toYQL (AST.Tuple _ exprs) = do
+    exprs' <- mapM toYQL exprs
+    return $ Q $ Y exprs'
   toYQL (AST.Succ _ expr) = do
     expr' <- toYQL expr
     return $ Y [A "+", expr', Y [A "Uint64", Q (A "1")]]
@@ -101,6 +110,8 @@ checkExtensions extensions = case findUnsupported extensions of
   where
     isSupportedExtension :: Extension -> Bool
     isSupportedExtension UnitType = True
+    isSupportedExtension Pairs = True
+    isSupportedExtension Tuples = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension
