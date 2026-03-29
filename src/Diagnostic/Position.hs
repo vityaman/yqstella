@@ -7,7 +7,7 @@ module Diagnostic.Position
   )
 where
 
-import Syntax.LexStella (Posn (Pn))
+import SyntaxGen.LexStella (Posn (Pn))
 
 newtype Position = Position Posn
 

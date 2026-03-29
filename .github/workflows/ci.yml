@@ -35,17 +35,17 @@ jobs:
       - name: Install HPack
         run: stack install hpack
 
-      - name: Generate Cabal File
-        run: hpack
-
       - name: Install BNFC
         run: |
           stack install BNFC
           stack install alex
           stack install happy
 
-      - name: Generate Syntax Modules
+      - name: Generate SyntaxGen Module
         run: ./syntax/codegen.bash
+
+      - name: Generate Cabal File
+        run: hpack
 
       - name: Build Dependencies
         run: stack build --only-dependencies
@@ -61,7 +61,7 @@ jobs:
 
       - name: Check Haskell Formatting
         run: |
-          ormolu --mode check $(find . -path './src/*.hs' -not -path './src/Syntax/*')
+          ormolu --mode check $(find . -path './src/*.hs' -not -path './src/SyntaxGen/*')
           ormolu --mode check $(find . -path './test/*.hs')
 
       - name: Install HLint

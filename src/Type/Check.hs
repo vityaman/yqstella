@@ -4,7 +4,7 @@ import Control.Monad.State (evalState)
 import Control.Monad.Writer
 import Diagnostic.Core (Diagnostic (severity), Diagnostics, Severity (Error, Fatal))
 import Diagnostic.Position (Position)
-import qualified Syntax.AbsStella as AST
+import qualified SyntaxGen.AbsStella as AST
 import Type.Annotation (inferType)
 import qualified Type.Context as Context
 import Type.Core (Type)

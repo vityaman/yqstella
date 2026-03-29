@@ -9,8 +9,8 @@ set -e
 
 cd "$(dirname "$0")"
 
-DIR="/tmp/Syntax"
-TARGET="../src/Syntax"
+DIR="/tmp/SyntaxGen"
+TARGET="../src/SyntaxGen"
 
 ./codegen.bash "$DIR"
 

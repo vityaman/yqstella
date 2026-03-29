@@ -11,8 +11,8 @@ SRCS=(
     PrintStella.hs
 )
 
-DIR="Syntax"
-TARGET="${1:-../src/Syntax}"
+DIR="SyntaxGen"
+TARGET="${1:-../src/SyntaxGen}"
 
 bnfc --haskell -m -p "$DIR" --functor Stella.cf
 

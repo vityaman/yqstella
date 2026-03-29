@@ -15,8 +15,8 @@ import Diagnostic.Code (Code (LEXICS))
 import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Diagnostic.Position (Position (Position), pointRange)
 import Misc.Display (Display (display))
-import Syntax.LexStella (Token (Err, PT), tokenText)
-import Syntax.ParStella (myLexer)
+import SyntaxGen.LexStella (Token (Err, PT), tokenText)
+import SyntaxGen.ParStella (myLexer)
 
 type AlexToken = Token
 

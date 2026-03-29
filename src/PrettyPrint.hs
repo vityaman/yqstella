@@ -1,6 +1,6 @@
 module PrettyPrint (displayAST) where
 
-import qualified Syntax.PrintStella as Syntax
+import qualified SyntaxGen.PrintStella as SyntaxGen
 
-displayAST :: (Syntax.Print a) => a -> String
-displayAST = Syntax.printTree
+displayAST :: (SyntaxGen.Print a) => a -> String
+displayAST = SyntaxGen.printTree

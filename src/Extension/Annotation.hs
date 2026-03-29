@@ -3,7 +3,7 @@ module Extension.Annotation (annotateExtensions) where
 import qualified Data.Set as Set
 import Extension.Core (Extensions)
 import qualified Extension.Core as Extension
-import qualified Syntax.AbsStella as AST
+import qualified SyntaxGen.AbsStella as AST
 
 class ExtensionsAnnotatable f where
   annotateExtensions :: f a -> f (a, Extensions)
