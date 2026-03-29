@@ -4,7 +4,7 @@ import qualified CLI
 import Diagnostic.Core (display)
 import Lib (Project (Project))
 import qualified Lib as Stella
-import PrettyPrint (displayAST)
+import Syntax.PrettyPrint (displayAST)
 import System.Exit (exitFailure, exitSuccess)
 import YQL.PrettyPrint (displayYQL)
 

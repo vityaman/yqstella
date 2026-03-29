@@ -1,7 +1,7 @@
 module Type.Core (Type (Type), fromAST, fromAST', eqT, neqT, fn) where
 
 import Control.Monad (void)
-import PrettyPrint (displayAST)
+import Syntax.PrettyPrint (displayAST)
 import qualified SyntaxGen.AbsStella as AST
 
 newtype Type = Type (AST.Type' ()) deriving (Eq, Ord)

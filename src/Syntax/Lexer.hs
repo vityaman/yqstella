@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Lexer
+module Syntax.Lexer
   ( AlexToken,
     StellaToken (StellaToken),
     scan,

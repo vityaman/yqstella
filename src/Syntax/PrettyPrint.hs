@@ -1,4 +1,4 @@
-module PrettyPrint (displayAST) where
+module Syntax.PrettyPrint (displayAST) where
 
 import qualified SyntaxGen.PrintStella as SyntaxGen
 
