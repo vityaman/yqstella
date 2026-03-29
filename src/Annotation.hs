@@ -2,7 +2,7 @@
 
 module Annotation (Annotated, annotation) where
 
-import Syntax.AbsStella
+import SyntaxGen.AbsStella
 
 class Annotated f where
   annotation :: f a -> a

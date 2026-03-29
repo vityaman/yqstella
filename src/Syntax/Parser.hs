@@ -1,15 +1,15 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Parser (parse) where
+module Syntax.Parser (parse) where
 
 import Control.Monad.Writer
 import Diagnostic.Code (Code (SYNTAX))
 import Diagnostic.Core (Diagnostic (Diagnostic), Diagnostics, Severity (Error))
 import Diagnostic.Position (Position, pointRange, position)
 import qualified Diagnostic.Position as Position
-import Lexer (StellaToken (StellaToken))
-import Syntax.AbsStella (BNFC'Position, Program')
-import Syntax.ParStella (pProgram)
+import Syntax.Lexer (StellaToken (StellaToken))
+import SyntaxGen.AbsStella (BNFC'Position, Program')
+import SyntaxGen.ParStella (pProgram)
 
 parse :: [StellaToken] -> Writer Diagnostics (Maybe (Program' Position))
 parse tokens = case pProgram $ fmap (\(StellaToken x) -> x) tokens of

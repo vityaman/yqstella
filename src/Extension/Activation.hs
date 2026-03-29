@@ -12,7 +12,7 @@ import Diagnostic.Position (Position, pointRange)
 import Extension.Annotation (annotateExtensions)
 import Extension.Core (Extensions, extensionFromName, extensionName)
 import qualified Extension.Core as Extension
-import qualified Syntax.AbsStella as AST
+import qualified SyntaxGen.AbsStella as AST
 
 activateExtensions :: AST.Program' Position -> Writer Diagnostics ()
 activateExtensions program = do

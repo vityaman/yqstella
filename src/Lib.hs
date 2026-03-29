@@ -14,9 +14,9 @@ import Control.Monad.Writer
 import Diagnostic.Core (Diagnostics)
 import Diagnostic.Position (Position)
 import Extension.Activation (activateExtensions)
-import qualified Lexer
-import qualified Parser
-import qualified Syntax.AbsStella as AST
+import qualified Syntax.Lexer as Lexer
+import qualified Syntax.Parser as Parser
+import qualified SyntaxGen.AbsStella as AST
 import Type.Check (checkTypes)
 import Type.Core (Type)
 import YQL.AST (Node)

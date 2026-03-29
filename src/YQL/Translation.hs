@@ -3,7 +3,7 @@ module YQL.Translation (toYQL) where
 import Annotation (Annotated (annotation))
 import Diagnostic.Core (Diagnostic, notImplemented)
 import Diagnostic.Position (Position)
-import qualified Syntax.AbsStella as AST
+import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type)
 import YQL.AST (Node (..))
 
