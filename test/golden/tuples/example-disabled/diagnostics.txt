@@ -1,0 +1,24 @@
+test/golden/tuples/example-disabled/input.yqst:3:13: [ERROR_BAD_EXTENSION]
+disabled extension usage: #tuples
+> fn noop(_ : {}) -> {} {
+              ^
+test/golden/tuples/example-disabled/input.yqst:3:20: [ERROR_BAD_EXTENSION]
+disabled extension usage: #tuples
+> fn noop(_ : {}) -> {} {
+                     ^
+test/golden/tuples/example-disabled/input.yqst:4:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #tuples
+>   return {}
+           ^
+test/golden/tuples/example-disabled/input.yqst:7:16: [ERROR_BAD_EXTENSION]
+disabled extension usage: #tuples
+> fn third(tup : {Nat, Nat, Nat}) -> Nat {
+                 ^
+test/golden/tuples/example-disabled/input.yqst:8:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #tuples
+>   return tup.3
+           ^
+test/golden/tuples/example-disabled/input.yqst:12:16: [ERROR_BAD_EXTENSION]
+disabled extension usage: #tuples
+>   return third({n, succ(n), succ(succ(n))})
+                 ^
