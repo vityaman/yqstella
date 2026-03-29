@@ -1,2 +1,6 @@
 <source>:1:0: ERROR_DUPLICATE_FUNCTION_DECLARATION: duplicate declaration: func
+> language core;
+  ^
 <source>:1:0: ERROR_DUPLICATE_FUNCTION_DECLARATION: duplicate declaration: func
+> language core;
+  ^

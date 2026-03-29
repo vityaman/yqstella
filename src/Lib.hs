@@ -11,7 +11,8 @@ module Lib
 where
 
 import Control.Monad.Writer
-import Diagnostic.Core (Diagnostics)
+import qualified Data.Array as Array
+import Diagnostic.Core (Diagnostics, withSourcePreview)
 import Diagnostic.Position (Position)
 import Extension.Activation (activateExtensions)
 import qualified Syntax.Lexer as Lexer
@@ -66,4 +67,8 @@ build (Source source) =
               areTypesCorrect = areTypesCorrect',
               yql = yql'
             }
-   in project {diagnostics = diagnostics'}
+
+      linesLst = lines source
+      linesArr = Array.listArray (0, length linesLst - 1) linesLst
+      diagnostics'' = fmap (withSourcePreview linesArr) diagnostics'
+   in project {diagnostics = diagnostics''}

@@ -1,1 +1,3 @@
 <source>:5:12: FATAL_NOT_IMPLEMENTED: YQL translation unsupported: AST.Expr' not implemented
+>     return Nat::rec(n, m, fn(i : Nat) {
+             ^

@@ -1,2 +1,6 @@
 <source>:4:24: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: expected Bool, got Nat
+>   return if false then 0 else true
+                         ^
 <source>:4:31: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: expected Nat, got Bool
+>   return if false then 0 else true
+                                ^

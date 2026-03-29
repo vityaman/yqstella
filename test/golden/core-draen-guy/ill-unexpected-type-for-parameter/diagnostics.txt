@@ -1,1 +1,3 @@
 <source>:4:14: ERROR_UNEXPECTED_TYPE_FOR_PARAMETER: type mismatch: expected Nat, got (a : Bool)
+>   return fn (a : Bool) {
+               ^
