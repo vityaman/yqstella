@@ -343,9 +343,9 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.ConstFalse p) = do
     t' <- liftType p AST.TypeBool t
     return $ AST.ConstFalse (p, Just t')
-  annotateType _ x@(AST.ConstUnit {}) = do
-    tell [notImplemented (annotation x) "ConstUnit"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.ConstUnit p) = do
+    t' <- liftType p AST.TypeUnit t
+    return (AST.ConstUnit (p, Just t'))
   annotateType t (AST.ConstInt p n) = do
     t' <-
       if n == 0

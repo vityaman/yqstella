@@ -14,7 +14,7 @@ where
 
 import Control.Monad.Writer
 import qualified Data.Array as Array
-import Diagnostic.Core (Diagnostics, withSourcePreview)
+import Diagnostic.Core (Diagnostic (severity), Diagnostics, isFailure, withSourcePreview)
 import qualified Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position)
 import Extension.Activation (activateExtensions)
@@ -44,7 +44,9 @@ build (Source path' source) =
   let (project, diagnostics') = runWriter $ do
         tokens' <- Lexer.scan source
         parseTree' <- Parser.parse tokens'
-        _ <- maybe (pure ()) activateExtensions parseTree'
+
+        (_, ediagnostics) <- listen (maybe (pure ()) activateExtensions parseTree')
+        let areExtensionsCorrect = not (any (isFailure . severity) ediagnostics)
 
         (areTypesCorrect', program') <- case parseTree' of
           Just parseTree'' -> do
@@ -53,8 +55,10 @@ build (Source path' source) =
           Nothing ->
             return (False, Nothing)
 
+        let areTypesCorrect'' = areTypesCorrect' && areExtensionsCorrect
+
         yql' <-
-          if not areTypesCorrect'
+          if not areTypesCorrect''
             then return Nothing
             else case fmap toYQL program' of
               Just (Right x) ->
@@ -70,7 +74,7 @@ build (Source path' source) =
             { diagnostics = [],
               tokens = tokens',
               program = program',
-              areTypesCorrect = areTypesCorrect',
+              areTypesCorrect = areTypesCorrect'',
               yql = yql'
             }
 

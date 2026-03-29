@@ -1,4 +1,4 @@
-module Extension.Activation (activateExtensions) where
+module Extension.Activation (activateExtensions, enabledExtensions) where
 
 import Control.Monad (guard)
 import Control.Monad.Writer (MonadWriter (tell), Writer)
