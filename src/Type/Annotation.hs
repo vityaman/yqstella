@@ -258,12 +258,52 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.DotRecord {}) = do
     tell [notImplemented (annotation x) "DotRecord"]
     return $ fmap (,Nothing) x
-  annotateType _ x@(AST.DotTuple {}) = do
-    tell [notImplemented (annotation x) "DotTuple"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Tuple {}) = do
-    tell [notImplemented (annotation x) "Tuple"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.DotTuple p expr index) = do
+    expr' <- inferType expr
+
+    t' <- case snd $ annotation expr' of
+      Just actual@(Type (AST.TypeTuple _ ts)) | length ts < fromInteger index -> do
+        let message =
+              "type mismatch: expected tuple "
+                ++ ("with size at least " ++ show index)
+                ++ (", got " ++ show actual)
+        tell [diagnostic Error TUPLE_INDEX_OUT_OF_BOUNDS (pointRange p) message]
+        return Nothing
+      Just (Type (AST.TypeTuple _ ts)) -> do
+        let actual = ts !! fromInteger (index - 1)
+        t' <- liftType p (const actual) t
+        return $ Just t'
+      Just actual -> do
+        let message = "type mismatch: expected tuple, got " ++ show actual
+        tell [diagnostic Error NOT_A_TUPLE (pointRange p) message]
+        return Nothing
+      Nothing ->
+        pure Nothing
+
+    return (AST.DotTuple (p, t') expr' index)
+  annotateType t (AST.Tuple p exprs) = do
+    let untype (Type x) = x
+
+    exprs' <- case t of
+      Just (Type (AST.TypeTuple _ ts)) -> do
+        zipWithM checkType (fmap Type ts) exprs
+      Just expected -> do
+        exprs' <- mapM inferType exprs
+
+        let unknown = AST.TypeAuto ()
+            actualTypes = fmap (maybe unknown untype . snd . annotation) exprs'
+            actual = Type.fromAST $ AST.TypeTuple () actualTypes
+
+        let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
+        tell [diagnostic Error UNEXPECTED_TUPLE (pointRange p) message]
+
+        return exprs'
+      Nothing ->
+        mapM inferType exprs
+
+    let t' = Type . AST.TypeTuple () <$> traverse (fmap untype . snd . annotation) exprs'
+
+    return (AST.Tuple (p, t') exprs')
   annotateType _ x@(AST.Record {}) = do
     tell [notImplemented (annotation x) "Record"]
     return $ fmap (,Nothing) x

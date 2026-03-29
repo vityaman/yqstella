@@ -1,0 +1,11 @@
+language core;
+
+extend with #pairs;
+
+fn add(t : {Nat, Nat}) -> Nat {
+  return t.1
+}
+
+fn main(n : Nat) -> Nat {
+  return {succ(n), {succ(succ(n)), n}}.2.1
+}

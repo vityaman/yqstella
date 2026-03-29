@@ -1,0 +1,24 @@
+test/golden/pairs/example-disabled/input.yqst:3:12: [ERROR_BAD_EXTENSION]
+disabled extension usage: #pairs
+> fn add(t : {Nat, Nat}) -> Nat {
+             ^
+test/golden/pairs/example-disabled/input.yqst:4:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #pairs
+>   return t.1
+           ^
+test/golden/pairs/example-disabled/input.yqst:8:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #pairs
+>   return {succ(n), {succ(succ(n)), n}}.2.1
+           ^
+test/golden/pairs/example-disabled/input.yqst:8:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #pairs
+>   return {succ(n), {succ(succ(n)), n}}.2.1
+           ^
+test/golden/pairs/example-disabled/input.yqst:8:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #pairs
+>   return {succ(n), {succ(succ(n)), n}}.2.1
+           ^
+test/golden/pairs/example-disabled/input.yqst:8:20: [ERROR_BAD_EXTENSION]
+disabled extension usage: #pairs
+>   return {succ(n), {succ(succ(n)), n}}.2.1
+                     ^
