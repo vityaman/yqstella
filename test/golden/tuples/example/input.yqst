@@ -1,0 +1,15 @@
+language core;
+
+extend with #tuples;
+
+fn noop(_ : {}) -> {} {
+  return {}
+}
+
+fn third(tup : {Nat, Nat, Nat}) -> Nat {
+  return tup.3
+}
+
+fn main(n : Nat) -> Nat {
+  return third({n, succ(n), succ(succ(n))})
+}

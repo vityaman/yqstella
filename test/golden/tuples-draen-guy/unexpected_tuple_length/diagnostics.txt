@@ -1,0 +1,12 @@
+test/golden/tuples-draen-guy/unexpected_tuple_length/input.yqst:5:10: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+type mismatch: expected {
+  Nat, Bool
+}
+
+, got {
+  Nat, Bool, Nat
+}
+
+
+>   return {0, false, succ(0)}
+           ^
