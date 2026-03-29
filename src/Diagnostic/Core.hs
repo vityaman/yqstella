@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE InstanceSigs #-}
 
 module Diagnostic.Core
   ( Severity (Fatal, Error),
@@ -40,7 +39,6 @@ data Diagnostic = Diagnostic
 type Diagnostics = [Diagnostic]
 
 instance Display Diagnostic where
-  display :: Diagnostic -> String
   display (Diagnostic s c p (PositionRange b _) m) =
     p ++ ":" ++ show b ++ ": [" ++ withSeverity s c ++ "]\n" ++ m
     where
