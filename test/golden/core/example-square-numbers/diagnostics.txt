@@ -1,1 +1,4 @@
-<source>:6:12: FATAL_NOT_IMPLEMENTED: YQL translation unsupported: AST.Expr' not implemented
+test/golden/core/example-square-numbers/input.yqst:6:12: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Expr' not implemented
+>     return Nat::rec(n, m, fn(i : Nat) {
+             ^

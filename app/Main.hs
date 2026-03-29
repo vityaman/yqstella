@@ -21,13 +21,15 @@ main = do
 
   content <- readFile inputPath
 
+  let source = Stella.Source { Stella.path = inputPath, Stella.text = content }
+
   let Project
         { Stella.diagnostics = diagnostics,
           Stella.tokens = tokens,
           Stella.program = program,
           Stella.areTypesCorrect = areTypesCorrect,
           Stella.yql = yql
-        } = Stella.build (Stella.Source content)
+        } = Stella.build source
 
       diagnostics' = display diagnostics
       tokens' = display tokens

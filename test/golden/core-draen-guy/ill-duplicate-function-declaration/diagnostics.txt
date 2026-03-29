@@ -1,2 +1,8 @@
-<source>:1:0: ERROR_DUPLICATE_FUNCTION_DECLARATION: duplicate declaration: func
-<source>:1:0: ERROR_DUPLICATE_FUNCTION_DECLARATION: duplicate declaration: func
+test/golden/core-draen-guy/ill-duplicate-function-declaration/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: func
+> language core;
+  ^
+test/golden/core-draen-guy/ill-duplicate-function-declaration/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: func
+> language core;
+  ^

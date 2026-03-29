@@ -1,1 +1,4 @@
-<source>:4:10: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION: type mismatch: expected Nat, got Bool
+test/golden/core-draen-guy/ill-unexpected-type-for-expression/input.yqst:4:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return false;
+           ^

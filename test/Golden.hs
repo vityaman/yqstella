@@ -16,21 +16,19 @@ import Test.Tasty.HUnit (assertBool, assertEqual, testCase)
 import Text.Regex.TDFA (AllTextMatches (..), getAllTextMatches, (=~))
 import YQL.PrettyPrint (displayYQL)
 
-newtype Input = Input String
-
 data Output = Output
   { diagnostics :: String,
     areTypesCorrect :: Bool,
     yql :: String
   }
 
-test :: Input -> Output
-test (Input source) =
+test :: Stella.Source -> Output
+test source =
   let Stella.Project
         { Stella.diagnostics = diagnostics',
           Stella.areTypesCorrect = areTypesCorrect',
           Stella.yql = yql'
-        } = Stella.build (Stella.Source source)
+        } = Stella.build source
    in Output
         { diagnostics = display diagnostics',
           areTypesCorrect = areTypesCorrect',
@@ -55,8 +53,9 @@ makeTestCase :: FilePath -> IO TestTree
 makeTestCase casePath = do
   let caseName = "Test " ++ takeFileName casePath
 
-  source <- readFile (casePath </> "input.yqst")
-  let input = Input source
+  let sourcePath = casePath </> "input.yqst"
+  source <- readFile sourcePath
+  let input = Stella.Source sourcePath source
 
   let Output
         { diagnostics = diagnostics',

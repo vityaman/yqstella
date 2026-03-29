@@ -3,7 +3,7 @@ module Type.Context (Context, empty, withTyped, typeOf, unknownName) where
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Diagnostic.Code (Code (UNDEFINED_VARIABLE))
-import Diagnostic.Core (Diagnostic (Diagnostic), Severity (Error))
+import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import Type.Core (Type)
 
@@ -23,4 +23,4 @@ typeOf key (Context bindings) = (\(Binding x) -> x) <$> Map.lookup key bindings
 unknownName :: Position -> String -> Diagnostic
 unknownName position name =
   let message = "undefined variable " ++ name
-   in Diagnostic Error UNDEFINED_VARIABLE (pointRange position) message
+   in diagnostic Error UNDEFINED_VARIABLE (pointRange position) message
