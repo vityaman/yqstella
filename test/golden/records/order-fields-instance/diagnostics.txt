@@ -1,4 +1,0 @@
-test/golden/records/order-fields-instance/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
-YQL translation unsupported: Extension #records not implemented
-> language core;
-  ^

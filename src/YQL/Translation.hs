@@ -60,6 +60,11 @@ instance YQLTranslatable AST.ParamDecl' where
   toYQL (AST.AParamDecl _ (AST.StellaIdent name) _) = do
     return $ A name
 
+instance YQLTranslatable AST.Binding' where
+  toYQL (AST.ABinding _ (AST.StellaIdent name) expr) = do
+    expr' <- toYQL expr
+    return $ Q $ Y [Q $ A name, expr']
+
 instance YQLTranslatable AST.Expr' where
   toYQL (AST.If _ condition thenB elseB) = do
     condition' <- toYQL condition
@@ -74,12 +79,18 @@ instance YQLTranslatable AST.Expr' where
     f' <- toYQL f
     xs' <- mapM toYQL xs
     return $ Y $ [A "Apply", f'] ++ xs'
+  toYQL (AST.DotRecord _ expr (AST.StellaIdent field)) = do
+    expr' <- toYQL expr
+    return $ Y [A "Member", expr', Q (A field)]
   toYQL (AST.DotTuple _ expr index) = do
     expr' <- toYQL expr
     return $ Y [A "Nth", expr', Q $ A $ show (index - 1)]
   toYQL (AST.Tuple _ exprs) = do
     exprs' <- mapM toYQL exprs
     return $ Q $ Y exprs'
+  toYQL (AST.Record _ bindings) = do
+    bindings' <- mapM toYQL bindings
+    return $ Y $ A "AsStruct" : bindings'
   toYQL (AST.Succ _ expr) = do
     expr' <- toYQL expr
     return $ Y [A "+", expr', Y [A "Uint64", Q (A "1")]]
@@ -112,6 +123,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension UnitType = True
     isSupportedExtension Pairs = True
     isSupportedExtension Tuples = True
+    isSupportedExtension Records = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension
