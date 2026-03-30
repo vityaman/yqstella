@@ -1,0 +1,4 @@
+test/golden/records/misssing-fields-instance/input.yqst:6:10: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: b
+>   return { a = 0 }
+           ^

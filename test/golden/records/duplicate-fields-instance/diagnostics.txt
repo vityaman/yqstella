@@ -1,0 +1,4 @@
+test/golden/records/duplicate-fields-instance/input.yqst:6:19: [ERROR_DUPLICATE_RECORD_FIELDS]
+duplicate field: a
+>   return { a = x, a = 0 }
+                    ^

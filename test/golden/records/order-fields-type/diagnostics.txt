@@ -1,0 +1,12 @@
+test/golden/records/order-fields-type/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected {
+  a : Nat, b : Bool
+}
+
+, got {
+  b : Bool, a : Nat
+}
+
+
+>   return x
+           ^
