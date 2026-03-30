@@ -1,0 +1,4 @@
+test/golden/records/duplicate-fields-type/input.yqst:5:32: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: a
+> fn main(x : Nat) -> { a : Nat, a : Nat } {
+                                 ^

@@ -7,13 +7,12 @@ import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (guard, unless, when, zipWithM)
 import Control.Monad.State
 import Control.Monad.Writer
-import qualified Data.Bimap as List
-import Data.Either (partitionEithers)
+import qualified Data.Bifunctor
 import Data.Foldable (find)
 import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
@@ -89,9 +88,10 @@ instance TypeAnnotatable AST.Decl' where
     context' <- get >>= ctxExtendByParamDecls paramdecls
     expr' <- withStateTAE (const context') (annotateType returntype'' expr)
 
+    argTypes <- mapM toPair paramdecls
+
     let actualType = snd $ annotation expr'
-        argTypes = fmap (snd . toPair) paramdecls'
-        type' = fmap (Type.fn argTypes) actualType
+        type' = fmap (Type.fn $ fmap snd argTypes) actualType
 
     return (AST.DeclFun (p, type') annotations' stellaident paramdecls' returntype' throwtype' decls' expr')
   annotateType _ f@(AST.DeclFunGeneric {}) = do
@@ -165,14 +165,16 @@ instance TypeAnnotatable AST.Expr' where
 
     let infer' = do
           expr' <- withStateTAE (const context') (inferType expr)
-          let argTypes = fmap (snd . toPair) paramdecls'
-              returnType = snd $ annotation expr'
-          return (fmap (Type.fn argTypes) returnType, expr')
+          argTypes <- mapM toPair paramdecls
+          let returntype = snd $ annotation expr'
+          return (fmap (Type.fn $ fmap snd argTypes) returntype, expr')
 
     (t', expr') <- case t of
-      Just t'@(Type (AST.TypeFun () argTypes returnType)) -> do
-        let actual = fmap (\x -> (annotation x, toPair x)) paramdecls
-            expected = fmap Type.fromAST argTypes
+      Just t'@(Type (AST.TypeFun () argtypes returntype)) -> do
+        paramdecls'' <- mapM toPair paramdecls
+        let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls''
+
+        let expected = fmap Type.fromAST argtypes
 
             toDiagnostic ((p', (name, actual')), expected') = do
               guard $ actual' /= expected'
@@ -180,7 +182,7 @@ instance TypeAnnotatable AST.Expr' where
               return $ mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p' (show expected') m
 
         tell $ mapMaybe toDiagnostic (zip actual expected)
-        expr' <- withStateTAE (const context') (checkType (Type returnType) expr)
+        expr' <- withStateTAE (const context') (checkType (Type returntype) expr)
 
         return (Just t', expr')
       Just t'' -> do
@@ -516,34 +518,47 @@ instance TypeAnnotatable AST.Expr' where
 
     return $ AST.Var (p, t') stellaident
 
-toPair :: AST.ParamDecl' a -> (String, Type)
-toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = (key, Type.fromAST t)
+sanitizeT :: AST.Type' Position -> TypeAnnotationEnv (AST.Type' Position)
+sanitizeT (AST.TypeRecord p fields) = do
+  let sanitizeF (AST.ARecordFieldType p' n t) = do
+        t' <- sanitizeT t
+        return (AST.ARecordFieldType p' n t')
+
+  fields' <- mapM sanitizeF fields
+  let (uniq, dup) = sepUniqDupBy (\(AST.ARecordFieldType _ n _) -> n) fields'
+
+      toDiagnostic (AST.ARecordFieldType p' (AST.StellaIdent name') _) =
+        let message = "duplicate field: " ++ name'
+         in diagnostic Error DUPLICATE_RECORD_TYPE_FIELDS (pointRange p') message
+
+  tell $ fmap toDiagnostic dup
+  return (AST.TypeRecord p uniq)
+sanitizeT t = pure t
+
+toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
+toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = do
+  t' <- sanitizeT t
+  return (key, Type.fromAST t')
 
 ctxExtendByParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
 ctxExtendByParamDecls paramdecls context = do
-  let -- TODO(vityaman): use sepUniqDupBy
-      paramdecls' = Map.fromListWith (++) $ fmap toPair' paramdecls
-      toPair' x@(AST.AParamDecl _ (AST.StellaIdent name) _) = (name, [x])
-
-      duplicates =
-        [ decl
-          | (_, decls) <- Map.toList paramdecls',
-            1 < length decls,
-            decl <- decls
-        ]
+  let (uniq, dup) = sepUniqDupBy (\(AST.AParamDecl _ (AST.StellaIdent n) _) -> n) paramdecls
 
       toDiagnostic (AST.AParamDecl p (AST.StellaIdent name) _) =
         let message = "duplicate parameter: " ++ name
          in diagnostic Error DUPLICATE_FUNCTION_PARAMETER (pointRange p) message
 
-      withDecl paramdecl = let (key, t) = toPair paramdecl in Context.withTyped key t
+  paramdecls' <- mapM toPair uniq
+  mapM_ toPair dup
 
-  tell $ fmap toDiagnostic duplicates
-  return $ foldr withDecl context paramdecls
+  tell $ fmap toDiagnostic dup
+  return $ foldr (uncurry Context.withTyped) context paramdecls'
 
 ctxExtendByDecls :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
 ctxExtendByDecls decls context = do
-  let (diagnostics, kpvs) = partitionEithers $ fmap visit decls
+  decls' <- mapM visit decls
+
+  let kpvs = catMaybes decls'
 
       duplicates =
         [ (name, position)
@@ -560,25 +575,32 @@ ctxExtendByDecls decls context = do
       unpack (k, [(_, t)]) = (k, t)
       unpack _ = undefined
 
-  tell $ diagnostics ++ fmap toDiagnostic duplicates
+  tell $ fmap toDiagnostic duplicates
   return $ foldr (uncurry Context.withTyped) context kvs
   where
-    visit :: AST.Decl' Position -> Either Diagnostic (String, [(Position, Type)])
-    visit (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) =
-      Right (name, [(p, Type.fn args' returntype')])
-      where
-        args' = fmap (snd . toPair) paramdecls
-        returntype' = Type.fromAST returntype
-    visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) =
-      Left $ notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"
-    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) =
-      Left $ notImplemented p $ "name resolution for DeclFunGeneric " ++ name
-    visit (AST.DeclTypeAlias p (AST.StellaIdent name) _) =
-      Left $ notImplemented p $ "name resolution for DeclTypeAlias " ++ name
-    visit (AST.DeclExceptionType p type_) =
-      Left $ notImplemented p $ "name resolution for DeclExceptionType " ++ show (AST.fromAST type_)
-    visit (AST.DeclExceptionVariant p (AST.StellaIdent name) _) =
-      Left $ notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name
+    visit :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
+    visit (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
+      args'' <- mapM toPair paramdecls
+      let args' = fmap snd args''
+
+      returntype' <- Type.fromAST <$> sanitizeT returntype
+
+      return $ Just (name, [(p, Type.fn args' returntype')])
+    visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
+      tell [notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"]
+      return Nothing
+    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
+      tell [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
+      return Nothing
+    visit (AST.DeclTypeAlias p (AST.StellaIdent name) _) = do
+      tell [notImplemented p $ "name resolution for DeclTypeAlias " ++ name]
+      return Nothing
+    visit (AST.DeclExceptionType p type_) = do
+      tell [notImplemented p $ "name resolution for DeclExceptionType " ++ show (AST.fromAST type_)]
+      return Nothing
+    visit (AST.DeclExceptionVariant p (AST.StellaIdent name) _) = do
+      tell [notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name]
+      return Nothing
 
 liftType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
 liftType p lifting = liftType' p (Type $ lifting ())

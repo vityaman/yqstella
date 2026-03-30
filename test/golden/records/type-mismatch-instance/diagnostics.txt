@@ -1,0 +1,4 @@
+test/golden/records/type-mismatch-instance/input.yqst:6:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return { a = false, b = false }
+                 ^

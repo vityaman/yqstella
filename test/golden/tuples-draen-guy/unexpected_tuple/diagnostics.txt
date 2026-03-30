@@ -1,8 +1,0 @@
-test/golden/tuples-draen-guy/unexpected_tuple/input.yqst:5:10: [ERROR_UNEXPECTED_TUPLE]
-type mismatch: expected Nat, got {
-  Nat, Bool
-}
-
-
->   return {0, false}
-           ^

@@ -1,0 +1,4 @@
+test/golden/records/misssing-fields-type/input.yqst:6:10: [ERROR_UNEXPECTED_RECORD_FIELDS]
+unexpected record fields: 
+>   return { a = 0, b = false, c = 0 }
+           ^

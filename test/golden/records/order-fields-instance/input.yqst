@@ -1,0 +1,7 @@
+language core;
+
+extend with #records;
+
+fn main(x : Nat) -> { a : Nat, b : Bool } {
+  return { b = false, a = 0 }
+}
