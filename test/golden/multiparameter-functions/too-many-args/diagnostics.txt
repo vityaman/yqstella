@@ -1,0 +1,4 @@
+test/golden/multiparameter-functions/too-many-args/input.yqst:10:10: [ERROR_INCORRECT_NUMBER_OF_ARGUMENTS]
+expected 2 arguments, got 3
+>   return f(x, x, x)
+           ^

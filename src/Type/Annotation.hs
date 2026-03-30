@@ -57,6 +57,13 @@ instance TypeAnnotatable AST.Program' where
 
     when (null main) $ tell [diagnostic Error MISSING_MAIN (pointRange p) "not found: main function"]
 
+    () <- case (main, type_) of
+      (Just (AST.DeclFun (p', _) _ _ _ _ _ _ _), Just (Type (AST.TypeFun _ args _))) | length args /= 1 -> do
+        let message = "main function must have exactly one parameter, got " ++ show (length args)
+        tell [diagnostic Error INCORRECT_ARITY_OF_MAIN (pointRange p') message]
+      _ ->
+        return ()
+
     return (AST.AProgram (p, type_) languagedecl' extensions' decls')
     where
       isMain (AST.DeclFun _ _ (AST.StellaIdent name) _ _ _ _ _) | name == "main" = True
@@ -232,11 +239,24 @@ instance TypeAnnotatable AST.Expr' where
 
     (xs', type') <- case f'Type of
       Just (Type (AST.TypeFun _ argTypes returnType)) -> do
-        let argTypes' = fmap Type argTypes
-            returnType' = Type returnType
+        let argtypes' = fmap Type argTypes
+            returntype' = Type returnType
 
-        xs' <- zipWithM annotateType (fmap Just argTypes') xs
-        return (xs', Just returnType')
+        xs' <- zipWithM annotateType (fmap Just argtypes') xs
+
+        let expectedLen = length argtypes'
+            actualLen = length xs
+
+        returntype'' <-
+          if expectedLen /= actualLen
+            then do
+              let message = "expected " ++ show expectedLen ++ " arguments, got " ++ show actualLen
+              tell [diagnostic Error INCORRECT_NUMBER_OF_ARGUMENTS (pointRange p) message]
+              return Nothing
+            else
+              return $ Just returntype'
+
+        return (xs', returntype'')
       Just actual -> do
         xs' <- mapM inferType xs
 

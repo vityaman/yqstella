@@ -1,0 +1,4 @@
+test/golden/nullary-functions/main-arity/input.yqst:1:0: [ERROR_INCORRECT_ARITY_OF_MAIN]
+main function must have exactly one parameter, got 0
+> language core;
+  ^
