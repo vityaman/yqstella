@@ -1,0 +1,7 @@
+language core;
+
+extend with #natural-literals;
+
+fn main(_ : Nat) -> Nat {
+  return 7
+}

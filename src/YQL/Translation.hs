@@ -9,7 +9,7 @@ import Diagnostic.Position (Position, unknown)
 import Extension.Activation (enabledExtensions)
 import Extension.Core (Extension (..), extensionName)
 import qualified SyntaxGen.AbsStella as AST
-import Type.Core (Type)
+import Type.Core (Type (Type))
 import YQL.AST (Node (..))
 
 class YQLTranslatable f where
@@ -101,7 +101,7 @@ instance YQLTranslatable AST.Expr' where
     return $ Y [A "Bool", Q (A "true")]
   toYQL (AST.ConstFalse _) = do
     return $ Y [A "Bool", Q (A "false")]
-  toYQL (AST.ConstInt _ n) = do
+  toYQL (AST.ConstInt (_, Just (Type (AST.TypeNat _))) n) =
     return $ Y [A "Uint64", Q (A $ show n)]
   toYQL (AST.ConstUnit _) = do
     return $ Y [A "Void"]
@@ -126,6 +126,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension Records = True
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
+    isSupportedExtension NaturalLiterals = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension

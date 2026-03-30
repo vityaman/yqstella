@@ -1,0 +1,5 @@
+language core;
+
+fn main(_ : Nat) -> Nat {
+  return 7
+}

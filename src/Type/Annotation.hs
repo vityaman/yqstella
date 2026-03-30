@@ -515,7 +515,7 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.ConstUnit (p, Just t'))
   annotateType t (AST.ConstInt p n) = do
     t' <-
-      if n == 0
+      if 0 <= n
         then
           Just <$> liftType p AST.TypeNat t
         else do

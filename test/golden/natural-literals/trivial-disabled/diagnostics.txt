@@ -1,0 +1,4 @@
+test/golden/natural-literals/trivial-disabled/input.yqst:4:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>   return 7
+           ^
