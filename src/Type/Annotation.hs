@@ -275,7 +275,7 @@ instance TypeAnnotatable AST.Expr' where
 
         when (null t') $
           let message = "missing record field " ++ field ++ " : " ++ maybe "?" show t
-           in tell [diagnostic Error MISSING_RECORD_FIELDS (pointRange p) message]
+           in tell [diagnostic Error UNEXPECTED_FIELD_ACCESS (pointRange p) message]
 
         return t'
       Just actual -> do

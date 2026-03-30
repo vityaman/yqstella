@@ -1,0 +1,4 @@
+test/golden/records/unexpected-field-access/input.yqst:6:10: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field b : Nat
+>   return x.b
+           ^
