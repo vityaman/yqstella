@@ -1,0 +1,11 @@
+language core;
+
+extend with #nullary-functions;
+
+fn f() -> Nat {
+  return 0
+}
+
+fn main(_ : Nat) -> Nat {
+  return f()
+}

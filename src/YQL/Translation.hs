@@ -124,6 +124,8 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension Pairs = True
     isSupportedExtension Tuples = True
     isSupportedExtension Records = True
+    isSupportedExtension NullaryFunctions = True
+    isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension

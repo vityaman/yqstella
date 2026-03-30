@@ -1,0 +1,4 @@
+test/golden/nullary-functions/too-many-args/input.yqst:10:10: [ERROR_INCORRECT_NUMBER_OF_ARGUMENTS]
+expected 0 arguments, got 1
+>   return f(x)
+           ^

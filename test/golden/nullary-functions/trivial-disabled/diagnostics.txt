@@ -1,0 +1,4 @@
+test/golden/nullary-functions/trivial-disabled/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #nullary-functions
+> language core;
+  ^

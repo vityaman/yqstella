@@ -1,0 +1,4 @@
+test/golden/multiparameter-functions/trivial-disabled/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #multiparameter-functions
+> language core;
+  ^
