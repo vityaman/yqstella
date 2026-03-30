@@ -1,0 +1,28 @@
+test/golden/records/example-disabled/input.yqst:3:24: [ERROR_BAD_EXTENSION]
+disabled extension usage: #records
+> fn iterate(n : Nat) -> { current : Nat, next : Nat} {
+                         ^
+test/golden/records/example-disabled/input.yqst:3:26: [ERROR_BAD_EXTENSION]
+disabled extension usage: #records
+> fn iterate(n : Nat) -> { current : Nat, next : Nat} {
+                           ^
+test/golden/records/example-disabled/input.yqst:3:41: [ERROR_BAD_EXTENSION]
+disabled extension usage: #records
+> fn iterate(n : Nat) -> { current : Nat, next : Nat} {
+                                          ^
+test/golden/records/example-disabled/input.yqst:4:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #records
+>   return { current = n, next = succ(n) }
+           ^
+test/golden/records/example-disabled/input.yqst:4:12: [ERROR_BAD_EXTENSION]
+disabled extension usage: #records
+>   return { current = n, next = succ(n) }
+             ^
+test/golden/records/example-disabled/input.yqst:4:25: [ERROR_BAD_EXTENSION]
+disabled extension usage: #records
+>   return { current = n, next = succ(n) }
+                          ^
+test/golden/records/example-disabled/input.yqst:8:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #records
+>   return iterate(0).next
+           ^

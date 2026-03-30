@@ -7,13 +7,18 @@ import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (guard, unless, when, zipWithM)
 import Control.Monad.State
 import Control.Monad.Writer
+import qualified Data.Bimap as List
 import Data.Either (partitionEithers)
 import Data.Foldable (find)
+import Data.List (intercalate)
+import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe, mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
+import Misc.Duplicate (sepUniqDupBy)
+import SyntaxGen.AbsStella (Binding')
 import qualified SyntaxGen.AbsStella as AST
 import Type.Context (Context)
 import qualified Type.Context as Context
@@ -255,9 +260,33 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.TypeApplication {}) = do
     tell [notImplemented (annotation x) "TypeApplication"]
     return $ fmap (,Nothing) x
-  annotateType _ x@(AST.DotRecord {}) = do
-    tell [notImplemented (annotation x) "DotRecord"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.DotRecord p expr (AST.StellaIdent field)) = do
+    expr' <- inferType expr
+
+    t' <- case snd $ annotation expr' of
+      Just (Type (AST.TypeRecord _ fields)) -> do
+        -- TODO(vityaman): make commons for records
+        let toKV (AST.ARecordFieldType () (AST.StellaIdent k) v) = (k, Type v)
+            tmap = Map.fromList $ fmap toKV fields
+
+            t' = Map.lookup field tmap
+
+        when (null t') $
+          let message = "missing record field " ++ field ++ " : " ++ maybe "?" show t
+           in tell [diagnostic Error MISSING_RECORD_FIELDS (pointRange p) message]
+
+        return t'
+      Just actual -> do
+        let message =
+              "type mismatch: expected record with "
+                ++ (field ++ ": " ++ maybe "?" show t)
+                ++ (", got " ++ show actual)
+        tell [diagnostic Error NOT_A_RECORD (pointRange p) message]
+        return Nothing
+      Nothing ->
+        return Nothing
+
+    return (AST.DotRecord (p, t') expr' (AST.StellaIdent field))
   annotateType t (AST.DotTuple p expr index) = do
     expr' <- inferType expr
 
@@ -282,7 +311,7 @@ instance TypeAnnotatable AST.Expr' where
         tell [diagnostic Error NOT_A_TUPLE (pointRange p) message]
         return Nothing
       Nothing ->
-        pure Nothing
+        return Nothing
 
     return (AST.DotTuple (p, t') expr' index)
   annotateType t (AST.Tuple p exprs) = do
@@ -314,9 +343,75 @@ instance TypeAnnotatable AST.Expr' where
     let t' = Type . AST.TypeTuple () <$> traverse (fmap untype . snd . annotation) exprs'
 
     return (AST.Tuple (p, if isReliable then t' else Nothing) exprs')
-  annotateType _ x@(AST.Record {}) = do
-    tell [notImplemented (annotation x) "Record"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.Record p bindings) = do
+    let name (AST.ABinding _ (AST.StellaIdent name') _) = name'
+
+        toDiagnostic (AST.ABinding p' (AST.StellaIdent name') _) =
+          let message = "duplicate field: " ++ name'
+           in diagnostic Error DUPLICATE_RECORD_FIELDS (pointRange p') message
+
+        toMap :: Maybe Type -> Maybe (Map String Type)
+        toMap (Just (Type (AST.TypeRecord () fields))) =
+          let toKV (AST.ARecordFieldType () (AST.StellaIdent k) v) = (k, Type v)
+           in Just $ Map.fromList $ fmap toKV fields
+        toMap _ = Nothing
+
+        toMap' :: [Binding' (a, Maybe Type)] -> Maybe (Map String Type)
+        toMap' bindingsUniq = Map.fromList <$> traverse toKV bindingsUniq
+          where
+            toKV (AST.ABinding (_, t') (AST.StellaIdent name') _) = fmap (name',) t'
+
+        lookup' :: String -> Maybe (Map String Type) -> Maybe Type
+        lookup' _ Nothing = Nothing
+        lookup' k (Just m) = Map.lookup k m
+
+        annotateType' t'' (AST.ABinding p' name' expr) = do
+          expr' <- annotateType t'' expr
+          let t' = snd $ annotation expr'
+          return (AST.ABinding (p', t') name' expr')
+
+        annotateType'' tmap' x =
+          annotateType' (lookup' (name x) tmap') x
+
+    let (bindingsUniq, bindingsDup) = sepUniqDupBy name bindings
+        expectedTMap = toMap t
+
+    bindingsUniq' <- mapM (annotateType'' expectedTMap) bindingsUniq
+    bindingsDup' <- mapM (annotateType'' expectedTMap) bindingsDup
+    let bindings' = bindingsUniq' ++ bindingsDup'
+
+    tell $ fmap toDiagnostic bindingsDup
+
+    let actualTMap = toMap' bindingsUniq'
+
+    t'' <- case (expectedTMap, actualTMap) of
+      (Just expected, Just actual) -> do
+        let missing = Map.keys $ Map.difference expected actual
+        unless (null missing) $
+          let message = "missing record fields: " ++ intercalate ", " missing
+           in tell [diagnostic Error MISSING_RECORD_FIELDS (pointRange p) message]
+
+        let unexpected = Map.keys $ Map.difference actual expected
+        unless (null unexpected) $
+          let message = "unexpected record fields: " ++ intercalate ", " missing
+           in tell [diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p) message]
+
+        return $
+          if null missing && null unexpected
+            then Just expected
+            else Nothing
+      (Nothing, Just t') ->
+        return $ Just t'
+      (_, Nothing) ->
+        return Nothing
+
+    let toType map' =
+          let xs = [AST.ARecordFieldType () (AST.StellaIdent k) v | (k, Type v) <- map']
+           in Type $ AST.TypeRecord () xs
+
+        t' = fmap (toType . Map.toList) t''
+
+    return (AST.Record (p, t') bindings')
   annotateType _ x@(AST.ConsList {}) = do
     tell [notImplemented (annotation x) "ConsList"]
     return $ fmap (,Nothing) x
@@ -426,7 +521,8 @@ toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = (key, Type.fromAST t)
 
 ctxExtendByParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
 ctxExtendByParamDecls paramdecls context = do
-  let paramdecls' = Map.fromListWith (++) $ fmap toPair' paramdecls
+  let -- TODO(vityaman): use sepUniqDupBy
+      paramdecls' = Map.fromListWith (++) $ fmap toPair' paramdecls
       toPair' x@(AST.AParamDecl _ (AST.StellaIdent name) _) = (name, [x])
 
       duplicates =
