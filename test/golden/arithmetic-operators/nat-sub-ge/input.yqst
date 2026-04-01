@@ -1,0 +1,7 @@
+language core;
+
+extend with #arithmetic-operators;
+
+fn main(_ : Bool) -> Nat {
+  return succ(succ(0)) - succ(0)
+}

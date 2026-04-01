@@ -1,0 +1,7 @@
+language core;
+
+extend with #comparison-operators;
+
+fn main(n : Nat) -> Bool {
+  return succ(succ(n)) == succ(n)
+}

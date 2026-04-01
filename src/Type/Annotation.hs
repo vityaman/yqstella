@@ -2,7 +2,7 @@
 
 module Type.Annotation (annotateType, inferType) where
 
-import Annotation (annotation)
+import Annotation (Annotated, annotation)
 import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (guard, unless, when, zipWithM)
 import Control.Monad.State
@@ -142,24 +142,24 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.TypeAbstraction {}) = do
     tell [notImplemented (annotation x) "TypeAbstraction"]
     return $ fmap (,Nothing) x
-  annotateType _ x@(AST.LessThan {}) = do
-    tell [notImplemented (annotation x) "LessThan"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.LessThanOrEqual {}) = do
-    tell [notImplemented (annotation x) "LessThanOrEqual"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.GreaterThan {}) = do
-    tell [notImplemented (annotation x) "GreaterThan"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.GreaterThanOrEqual {}) = do
-    tell [notImplemented (annotation x) "AST"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Equal {}) = do
-    tell [notImplemented (annotation x) "Equal"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.NotEqual {}) = do
-    tell [notImplemented (annotation x) "NotEqual"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.LessThan p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    return (AST.LessThan (p, t') lhs' rhs')
+  annotateType t (AST.LessThanOrEqual p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+  annotateType t (AST.GreaterThan p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+  annotateType t (AST.GreaterThanOrEqual p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+  annotateType t (AST.Equal p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+  annotateType t (AST.NotEqual p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    return (AST.LessThanOrEqual (p, t') lhs' rhs')
   annotateType _ x@(AST.TypeAsc {}) = do
     tell [notImplemented (annotation x) "TypeAsc"]
     return $ fmap (,Nothing) x
@@ -209,21 +209,21 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.List {}) = do
     tell [notImplemented (annotation x) "List"]
     return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Add {}) = do
-    tell [notImplemented (annotation x) "Add"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Subtract {}) = do
-    tell [notImplemented (annotation x) "Subtract"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.Add p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    return (AST.Add (p, t') lhs' rhs')
+  annotateType t (AST.Subtract p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    return (AST.Subtract (p, t') lhs' rhs')
   annotateType _ x@(AST.LogicOr {}) = do
     tell [notImplemented (annotation x) "LogicOr"]
     return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Multiply {}) = do
-    tell [notImplemented (annotation x) "Multiply"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Divide {}) = do
-    tell [notImplemented (annotation x) "Divide"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.Multiply p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    return (AST.Multiply (p, t') lhs' rhs')
+  annotateType t (AST.Divide p lhs rhs) = do
+    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    return (AST.Divide (p, t') lhs' rhs')
   annotateType _ x@(AST.LogicAnd {}) = do
     tell [notImplemented (annotation x) "LogicAnd"]
     return $ fmap (,Nothing) x
@@ -537,6 +537,39 @@ instance TypeAnnotatable AST.Expr' where
         return Nothing
 
     return $ AST.Var (p, t') stellaident
+
+annotateTT2T ::
+  (TypeAnnotatable f, TypeAnnotatable g, Annotated f, Annotated g) =>
+  Maybe Type ->
+  f Position ->
+  g Position ->
+  TypeAnnotationEnv (Maybe Type, f (Position, Maybe Type), g (Position, Maybe Type))
+annotateTT2T t lhs rhs = do
+  lhs' <- annotateType t lhs
+  let lhs't = snd $ annotation lhs'
+
+  rhs' <- annotateType (t <|> lhs't) rhs
+  let rhs't = snd $ annotation rhs'
+
+  return (lhs't <|> rhs't, lhs', rhs')
+
+annotateTT2B ::
+  (TypeAnnotatable f, TypeAnnotatable g, Annotated f, Annotated g) =>
+  Maybe Type ->
+  f Position ->
+  g Position ->
+  TypeAnnotationEnv (Maybe Type, f (Position, Maybe Type), g (Position, Maybe Type))
+annotateTT2B t lhs rhs = do
+  let p = annotation rhs
+
+  t' <- liftType p AST.TypeBool t
+
+  lhs' <- inferType lhs
+  let lhs't = snd $ annotation lhs'
+
+  rhs' <- annotateType lhs't rhs
+
+  return (Just t', lhs', rhs')
 
 sanitizeT :: AST.Type' Position -> TypeAnnotationEnv (AST.Type' Position)
 sanitizeT (AST.TypeRecord p fields) = do
