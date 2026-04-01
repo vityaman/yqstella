@@ -66,6 +66,55 @@ instance YQLTranslatable AST.Binding' where
     return $ Q $ Y [Q $ A name, expr']
 
 instance YQLTranslatable AST.Expr' where
+  toYQL (AST.LessThan _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "<", lhs', rhs']
+  toYQL (AST.LessThanOrEqual _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "<=", lhs', rhs']
+  toYQL (AST.GreaterThan _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A ">", lhs', rhs']
+  toYQL (AST.GreaterThanOrEqual _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A ">=", lhs', rhs']
+  toYQL (AST.Equal _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "==", lhs', rhs']
+  toYQL (AST.NotEqual _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "!=", lhs', rhs']
+  toYQL (AST.Add (_, _) lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "+MayWarn", lhs', rhs']
+  toYQL (AST.Subtract (_, t) lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ case t of
+      (Just (Type (AST.TypeNat ()))) ->
+        Y
+          [ A "If",
+            Y [A "<", lhs', rhs'],
+            Y [A "Uint64", Q $ A "0"],
+            Y [A "-MayWarn", lhs', rhs']
+          ]
+      _ ->
+        Y [A "-MayWarn", lhs', rhs']
+  toYQL (AST.Multiply _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "*MayWarn", lhs', rhs']
+  toYQL (AST.Divide _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "/MayWarn", lhs', rhs']
   toYQL (AST.If _ condition thenB elseB) = do
     condition' <- toYQL condition
     thenB' <- toYQL thenB
@@ -127,6 +176,8 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension NaturalLiterals = True
+    isSupportedExtension ArithmeticOperators = True
+    isSupportedExtension ComparisonOperations = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension
