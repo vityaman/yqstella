@@ -61,7 +61,7 @@ extensionNameMap =
       (WildcardBinders, "#wildcard-binders"),
       (NaturalLiterals, "#natural-literals"),
       (ArithmeticOperators, "#arithmetic-operators"),
-      (ComparisonOperations, "#comparison-operations"),
+      (ComparisonOperations, "#comparison-operators"),
       (NullaryFunctions, "#nullary-functions"),
       (MultiparameterFunctions, "#multiparameter-functions"),
       (CurriedMultiparameterFunctions, "#curried-multiparameter-functions"),
