@@ -1,0 +1,4 @@
+test/golden/arithmetic-operators/nat-add-disabled/input.yqst:4:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #arithmetic-operators
+>   return succ(succ(0)) + succ(0)
+           ^
