@@ -133,8 +133,27 @@ instance TypeAnnotatable AST.Expr' where
         type' = thenB'Type <|> elseB'Type
 
     return $ AST.If (p, type') condition' thenB' elseB'
-  annotateType _ x@(AST.Let {}) = do
-    tell [notImplemented (annotation x) "Let"]
+  annotateType t (AST.Let p [AST.APatternBinding p' (AST.PatternVar p'' (AST.StellaIdent name)) expr] inExpr) = do
+    expr' <- inferType expr
+    let expr't = snd $ annotation expr'
+
+    context <- get
+    let context' = fmap (\x -> Context.withTyped name x context) expr't
+
+    inExpr' <- case context' of
+      (Just context'') -> withStateTAE (const context'') (annotateType t inExpr)
+      Nothing -> pure $ fmap (,Nothing) inExpr
+
+    let t' = snd $ annotation inExpr'
+        pattern' = AST.PatternVar (p'', Nothing) (AST.StellaIdent name)
+        binding' = AST.APatternBinding (p', Nothing) pattern' expr'
+
+    return $ AST.Let (p, t') [binding'] inExpr'
+  annotateType _ x@(AST.Let p [_] _) = do
+    tell [notImplemented p "LetIn StructuralPattern"]
+    return $ fmap (,Nothing) x
+  annotateType _ x@(AST.Let p _ _) = do
+    tell [notImplemented p "LetManyBindings"]
     return $ fmap (,Nothing) x
   annotateType _ x@(AST.LetRec {}) = do
     tell [notImplemented (annotation x) "LetRec"]
@@ -150,16 +169,16 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.LessThanOrEqual (p, t') lhs' rhs')
   annotateType t (AST.GreaterThan p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B t lhs rhs
-    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+    return (AST.GreaterThan (p, t') lhs' rhs')
   annotateType t (AST.GreaterThanOrEqual p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B t lhs rhs
-    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+    return (AST.GreaterThanOrEqual (p, t') lhs' rhs')
   annotateType t (AST.Equal p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B t lhs rhs
-    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+    return (AST.Equal (p, t') lhs' rhs')
   annotateType t (AST.NotEqual p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B t lhs rhs
-    return (AST.LessThanOrEqual (p, t') lhs' rhs')
+    return (AST.NotEqual (p, t') lhs' rhs')
   annotateType _ x@(AST.TypeAsc {}) = do
     tell [notImplemented (annotation x) "TypeAsc"]
     return $ fmap (,Nothing) x

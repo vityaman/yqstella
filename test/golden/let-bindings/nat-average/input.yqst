@@ -1,0 +1,18 @@
+language core;
+
+extend with
+    #arithmetic-operators,
+    #let-bindings;
+
+fn Nat::average(n : Nat) -> fn(Nat) -> Nat {
+  return fn(m : Nat) {
+    return let sum = n + m in
+           let two = succ(succ(0)) in
+           sum / two
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return let two = succ(succ(0))
+          in Nat::average(n)(two * n)
+}

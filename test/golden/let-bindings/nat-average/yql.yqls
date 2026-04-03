@@ -5,8 +5,18 @@
     (let world (ResFill! world sink (Key) rows options 'dq))
     (return (Commit! world sink))
   ))))
-  (let main (lambda '(n)
-    (== (+ (+ n (Uint64 '1)) (Uint64 '1)) (+ n (Uint64 '1)))))
+  (let Nat::average (lambda '(n)
+    (lambda '(m) (block '(
+      (let sum (+MayWarn n m))
+      (return (block '(
+  (let two (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
+  (return (/MayWarn sum two))
+)))
+    )))))
+  (let main (lambda '(n) (block '(
+    (let two (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
+    (return (Apply (Apply Nat::average n) (*MayWarn two n)))
+  ))))
   (declare __n__ (DataType 'Uint64))
   (let result (Apply main __n__))
   (let world (Apply print world (AsList result)))

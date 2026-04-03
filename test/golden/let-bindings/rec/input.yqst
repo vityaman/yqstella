@@ -1,0 +1,7 @@
+language core;
+
+extend with #let-bindings;
+
+fn main(_ : Nat) -> Nat {
+  return let x = x in x
+}

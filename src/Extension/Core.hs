@@ -9,6 +9,8 @@ import Data.Set (Set)
 data Extension
   = StructuralPatterns
   | LetBindings
+  | LetPatterns
+  | LetManyBindings
   | NestedFunctionDeclarations
   | WildcardBinders
   | NaturalLiterals
@@ -57,6 +59,8 @@ extensionNameMap =
     [ -- Syntactic Sugar and Derived Forms
       (StructuralPatterns, "#structural-patterns"),
       (LetBindings, "#let-bindings"),
+      (LetPatterns, "#let-patterns"),
+      (LetManyBindings, "#let-many-bindings"),
       (NestedFunctionDeclarations, "#nested-function-declarations"),
       (WildcardBinders, "#wildcard-binders"),
       (NaturalLiterals, "#natural-literals"),
