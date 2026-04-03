@@ -1,0 +1,4 @@
+test/golden/type-ascriptions/nat-nat-nat-disabled/input.yqst:4:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return n as Nat
+           ^
