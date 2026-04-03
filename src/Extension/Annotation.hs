@@ -283,8 +283,20 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr2' = annotateExtensions expr2
       expr3' = annotateExtensions expr3
   annotateExtensions (AST.Let p patternbindings expr) =
-    AST.Let (p, Set.singleton Extension.LetBindings) patternbindings' expr'
+    AST.Let (p, Set.fromList p') patternbindings' expr'
     where
+      p' =
+        [Extension.LetBindings]
+          ++ ([Extension.LetManyBindings | 1 < length patternbindings])
+          ++ ( [ Extension.LetPatterns
+                 | (AST.APatternBinding _ pattern' _) <- patternbindings,
+                   not $ isVar pattern'
+               ]
+             )
+
+      isVar (AST.PatternVar _ _) = True
+      isVar _ = False
+
       patternbindings' = fmap annotateExtensions patternbindings
       expr' = annotateExtensions expr
   annotateExtensions (AST.LetRec p patternbindings expr) =

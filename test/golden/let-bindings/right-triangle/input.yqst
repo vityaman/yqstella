@@ -1,0 +1,25 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings;
+
+fn square(x : Nat) -> Nat {
+  return x * x
+}
+
+fn isRightTriangle(a : Nat) -> fn(Nat) -> fn(Nat) -> Bool {
+  return let a2 = square(a) in fn(b : Nat) {
+    return let b2 = square(b) in fn (c : Nat) {
+        return let c2 = square(c) in
+               c2 == a2 + b2
+    }
+  }
+}
+
+fn main(_ : Nat) -> Bool {
+  return let one = succ(0) in
+         let two = succ(one) in
+             isRightTriangle(one)(one)(two)
+}

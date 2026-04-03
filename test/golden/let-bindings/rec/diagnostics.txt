@@ -1,0 +1,4 @@
+test/golden/let-bindings/rec/input.yqst:6:18: [ERROR_UNDEFINED_VARIABLE]
+undefined variable x
+>   return let x = x in x
+                   ^

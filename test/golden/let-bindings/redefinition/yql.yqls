@@ -5,10 +5,18 @@
     (let world (ResFill! world sink (Key) rows options 'dq))
     (return (Commit! world sink))
   ))))
-  (let main (lambda '(n)
-    (== (+ (+ n (Uint64 '1)) (Uint64 '1)) (+ n (Uint64 '1)))))
-  (declare __n__ (DataType 'Uint64))
-  (let result (Apply main __n__))
+  (let main (lambda '(x) (block '(
+    (let x (+ x (Uint64 '1)))
+    (return (block '(
+  (let x (+ x (Uint64 '1)))
+  (return (block '(
+  (let x (+ x (Uint64 '1)))
+  (return x)
+)))
+)))
+  ))))
+  (declare __x__ (DataType 'Uint64))
+  (let result (Apply main __x__))
   (let world (Apply print world (AsList result)))
   (return world)
 )

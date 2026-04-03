@@ -120,6 +120,10 @@ instance YQLTranslatable AST.Expr' where
     thenB' <- toYQL thenB
     elseB' <- toYQL elseB
     return $ Y [A "If", condition', thenB', elseB']
+  toYQL (AST.Let _ [AST.APatternBinding _ (AST.PatternVar _ (AST.StellaIdent name)) expr] inExpr) = do
+    expr' <- toYQL expr
+    inExpr' <- toYQL inExpr
+    return $ Y [A "block", Q $ Y [Y [A "let", A name, expr'], Y [A "return", inExpr']]]
   toYQL (AST.Abstraction _ paramdecls expr) = do
     paramdecls' <- mapM toYQL paramdecls
     expr' <- toYQL expr
@@ -175,6 +179,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension Records = True
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
+    isSupportedExtension LetBindings = True
     isSupportedExtension NaturalLiterals = True
     isSupportedExtension ArithmeticOperators = True
     isSupportedExtension ComparisonOperations = True
