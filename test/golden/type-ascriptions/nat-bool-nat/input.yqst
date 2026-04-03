@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-ascriptions;
+
+fn main(n : Nat) -> Nat {
+  return n as Bool
+}

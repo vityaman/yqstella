@@ -4,7 +4,7 @@ module Type.Annotation (annotateType, inferType) where
 
 import Annotation (Annotated, annotation)
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (guard, unless, when, zipWithM)
+import Control.Monad (guard, unless, void, when, zipWithM)
 import Control.Monad.State
 import Control.Monad.Writer
 import qualified Data.Bifunctor
@@ -179,9 +179,12 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.NotEqual p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B t lhs rhs
     return (AST.NotEqual (p, t') lhs' rhs')
-  annotateType _ x@(AST.TypeAsc {}) = do
-    tell [notImplemented (annotation x) "TypeAsc"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.TypeAsc p expr exprT) = do
+    exprT'' <- Type . void <$> sanitizeT exprT
+    expr' <- checkType exprT'' expr
+    t' <- liftType' p exprT'' t
+    let exprT' = fmap (,Nothing) exprT
+    return (AST.TypeAsc (p, Just t') expr' exprT')
   annotateType _ x@(AST.TypeCast {}) = do
     tell [notImplemented (annotation x) "TypeCast"]
     return $ fmap (,Nothing) x

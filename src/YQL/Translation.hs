@@ -90,6 +90,8 @@ instance YQLTranslatable AST.Expr' where
     lhs' <- toYQL lhs
     rhs' <- toYQL rhs
     return $ Y [A "!=", lhs', rhs']
+  toYQL (AST.TypeAsc _ expr _) =
+    toYQL expr
   toYQL (AST.Add (_, _) lhs rhs) = do
     lhs' <- toYQL lhs
     rhs' <- toYQL rhs
@@ -180,6 +182,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension LetBindings = True
+    isSupportedExtension TypeAscriptions = True
     isSupportedExtension NaturalLiterals = True
     isSupportedExtension ArithmeticOperators = True
     isSupportedExtension ComparisonOperations = True

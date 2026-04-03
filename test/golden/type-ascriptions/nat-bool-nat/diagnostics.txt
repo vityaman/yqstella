@@ -1,0 +1,8 @@
+test/golden/type-ascriptions/nat-bool-nat/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return n as Bool
+           ^
+test/golden/type-ascriptions/nat-bool-nat/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return n as Bool
+           ^
