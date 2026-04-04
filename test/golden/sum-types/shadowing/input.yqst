@@ -1,0 +1,21 @@
+language core;
+
+extend with
+  #tuples,
+  #let-bindings,
+  #sum-types,
+  #type-ascriptions;
+
+fn f(x : Nat) -> {Nat, Nat, Nat} {
+  return let x0 = x in (fn(x : Nat) {
+    return let x1 = x in
+           let x2 = match (inl(succ(x)) as (Nat + Nat)) {
+               inl(x) => x
+             | inr(x) => x
+           } in {x0, x1, x2}
+  })(succ(x))
+}
+
+fn main(x : Nat) -> {Nat, Nat, Nat} {
+  return f(x)
+}
