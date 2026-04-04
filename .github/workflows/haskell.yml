@@ -1,16 +1,20 @@
-name: CI
+name: Haskell
 
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'vscode/**'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'vscode/**'
 
 jobs:
-  ci:
-    name: CI
+  haskell:
+    name: Haskell
     runs-on: ubuntu-24.04
 
     steps:
