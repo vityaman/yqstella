@@ -3,6 +3,8 @@ module YQL.Translation (toYQL) where
 import Annotation (Annotated (annotation))
 import Control.Monad.Writer (runWriter)
 import Data.Foldable (find)
+import Data.Map (Map)
+import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Diagnostic.Core (Diagnostic, notImplemented)
 import Diagnostic.Position (Position, unknown)
@@ -28,7 +30,7 @@ instance YQLTranslatable AST.Program' where
     paramdecls' <- mapM declare paramdecls
     mainargs' <- mapM toMainArg paramdecls
 
-    let rows = Y [A "AsList", Y [A"AsStruct", Q $ Y [Q $ A "result", A "result"]]]
+    let rows = Y [A "AsList", Y [A "AsStruct", Q $ Y [Q $ A "result", A "result"]]]
 
     let main' =
           prelude "dq"
@@ -132,6 +134,22 @@ instance YQLTranslatable AST.Expr' where
     paramdecls' <- mapM toYQL paramdecls
     expr' <- toYQL expr
     return $ Y [A "lambda", Q (Y paramdecls'), expr']
+  toYQL (AST.Match _ expr cases) = do
+    let arg = "yqstellamatchexpr"
+        brprefix = "yqstellamatchbr"
+
+    expr' <- toYQL expr
+    cases' <- mapM toYQL cases
+
+    let brnames = [brprefix ++ show i | i <- [0 .. length cases - 1]]
+
+        args = Y [A "let", A arg, expr']
+        branches = [Y [A "let", A name, Y [A "Apply", case', A arg]] | (name, case') <- zip brnames cases']
+        switch = Y [A "return", Y [A "Unwrap", Y $ A "Coalesce" : fmap A brnames]]
+
+        body = [args] ++ branches ++ [switch]
+
+    return $ Y [A "block", Q $ Y body]
   toYQL (AST.Application _ f xs) = do
     f' <- toYQL f
     xs' <- mapM toYQL xs
@@ -190,6 +208,45 @@ instance YQLTranslatable AST.Type' where
             ]
         ]
   toYQL x = Left $ unsupported x "AST.Type'"
+
+instance YQLTranslatable AST.MatchCase' where
+  toYQL (AST.AMatchCase _ pattern' expr) = do
+    recipes' <- recipes pattern'
+
+    t' <- case snd $ annotation expr of
+      (Just (Type t')) -> toYQL $ fmap (const (unknown, Nothing)) t'
+      Nothing -> Left $ unsupported expr "expected Nothing type"
+
+    expr' <- toYQL expr
+
+    let arg = A "yqstellamatcharg"
+        cond = A "yqstellamatchcond"
+
+        maybes = [Y [A "let", A name, f arg] | (name, f) <- Map.toList recipes']
+        conds = Y [A "let", cond, and' [Y [A "Exists", A name] | (name, _) <- Map.toList recipes']]
+        unwraps = [Y [A "let", A name, Y [A "Unwrap", A name]] | (name, _) <- Map.toList recipes']
+        switch = Y [A "return", Y [A "If", cond, Y [A "Just", expr'], Y [A "Nothing", Y [A "OptionalType", t']]]]
+
+        body = maybes ++ [conds] ++ unwraps ++ [switch]
+
+        and' [] = Y [A "Bool", Q $ A "true"]
+        and' (x : xs) = Y [A "And", x, and' xs]
+
+    return $ Y [A "lambda", Q $ Y [arg], Y [A "block", Q $ Y body]]
+
+recipes :: AST.Pattern' (Position, Maybe Type) -> Either Diagnostic (Map String (Node -> Node))
+recipes (AST.PatternInl _ pattern'') = do
+  recipes'' <- recipes pattern''
+  let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inl"]) recipes''
+  return recipes'
+recipes (AST.PatternInr _ pattern'') = do
+  recipes'' <- recipes pattern''
+  let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inr"]) recipes''
+  return recipes'
+recipes (AST.PatternVar _ (AST.StellaIdent name)) =
+  Right $ Map.singleton name id
+recipes x =
+  Left $ unsupported x "AST.Pattern'"
 
 checkExtensions :: [Extension] -> Either Diagnostic ()
 checkExtensions extensions = case findUnsupported extensions of
