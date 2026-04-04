@@ -11,6 +11,6 @@
     (Nth (Nth '((+ n (Uint64 '1)) '((+ (+ n (Uint64 '1)) (Uint64 '1)) n)) '1) '0)))
   (declare __n__ (DataType 'Uint64))
   (let result (Apply main __n__))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )

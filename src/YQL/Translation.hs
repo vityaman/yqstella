@@ -28,12 +28,14 @@ instance YQLTranslatable AST.Program' where
     paramdecls' <- mapM declare paramdecls
     mainargs' <- mapM toMainArg paramdecls
 
+    let rows = Y [A "AsList", Y [A"AsStruct", Q $ Y [Q $ A "result", A "result"]]]
+
     let main' =
           prelude "dq"
             ++ topdecls'
             ++ paramdecls'
             ++ [Y [A "let", A "result", Y $ [A "Apply", A "main"] ++ mainargs']]
-            ++ [Y [A "let", A "world", Y [A "Apply", A "print", A "world", Y [A "AsList", A "result"]]]]
+            ++ [Y [A "let", A "world", Y [A "Apply", A "print", A "world", rows]]]
             ++ [Y [A "return", A "world"]]
 
     return $ Y main'
@@ -146,6 +148,14 @@ instance YQLTranslatable AST.Expr' where
   toYQL (AST.Record _ bindings) = do
     bindings' <- mapM toYQL bindings
     return $ Y $ A "AsStruct" : bindings'
+  toYQL (AST.Inl (_, Just (Type t)) expr) = do
+    t' <- toYQL $ fmap (const (unknown, Nothing)) t
+    expr' <- toYQL expr
+    return $ Y [A "Variant", expr', Q $ A "inl", t']
+  toYQL (AST.Inr (_, Just (Type t)) expr) = do
+    t' <- toYQL $ fmap (const (unknown, Nothing)) t
+    expr' <- toYQL expr
+    return $ Y [A "Variant", expr', Q $ A "inr", t']
   toYQL (AST.Succ _ expr) = do
     expr' <- toYQL expr
     return $ Y [A "+", expr', Y [A "Uint64", Q (A "1")]]
@@ -167,6 +177,18 @@ instance YQLTranslatable AST.Expr' where
 instance YQLTranslatable AST.Type' where
   toYQL (AST.TypeBool _) = Right $ Y [A "DataType", Q $ A "Bool"]
   toYQL (AST.TypeNat _) = Right $ Y [A "DataType", Q $ A "Uint64"]
+  toYQL (AST.TypeSum _ inl inr) = do
+    inl' <- toYQL inl
+    inr' <- toYQL inr
+    Right $
+      Y
+        [ A "VariantType",
+          Y
+            [ A "StructType",
+              Q $ Y [Q $ A "inl", inl'],
+              Q $ Y [Q $ A "inr", inr']
+            ]
+        ]
   toYQL x = Left $ unsupported x "AST.Type'"
 
 checkExtensions :: [Extension] -> Either Diagnostic ()
@@ -179,6 +201,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension Pairs = True
     isSupportedExtension Tuples = True
     isSupportedExtension Records = True
+    isSupportedExtension SumTypes = True
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension LetBindings = True

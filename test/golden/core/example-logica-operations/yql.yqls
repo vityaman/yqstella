@@ -20,6 +20,6 @@
     (Apply (Apply Bool::xor (Apply (Apply Bool::and n) (Apply Bool::not n))) (Apply (Apply Bool::or (Apply Bool::not n)) n))))
   (declare __n__ (DataType 'Bool))
   (let result (Apply main __n__))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )

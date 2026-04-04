@@ -9,6 +9,6 @@
     (Apply (lambda '(x) x) (== x (Uint64 '0)))))
   (declare __x__ (DataType 'Uint64))
   (let result (Apply main __x__))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )

@@ -16,6 +16,6 @@
     (Apply (Apply twice Bool::not) b)))
   (declare __b__ (DataType 'Bool))
   (let result (Apply main __b__))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )
