@@ -9,6 +9,6 @@
     (Uint64 '7)))
   (declare _____ (DataType 'Uint64))
   (let result (Apply main _____))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )

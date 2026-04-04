@@ -9,6 +9,6 @@
     n))
   (declare __n__ (DataType 'Uint64))
   (let result (Apply main __n__))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )

@@ -9,6 +9,6 @@
     (Apply (Apply (Apply (lambda '(f) (lambda '(g) (lambda '(x) (Apply g (Apply f x))))) (lambda '(x) (Bool 'false))) (lambda '(x) (Uint64 '0))) x)))
   (declare __x__ (DataType 'Uint64))
   (let result (Apply main __x__))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )

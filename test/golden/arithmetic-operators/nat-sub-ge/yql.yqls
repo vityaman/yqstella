@@ -9,6 +9,6 @@
     (If (< (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)) (+ (Uint64 '0) (Uint64 '1))) (Uint64 '0) (-MayWarn (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)) (+ (Uint64 '0) (Uint64 '1))))))
   (declare _____ (DataType 'Bool))
   (let result (Apply main _____))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )

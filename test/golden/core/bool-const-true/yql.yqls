@@ -9,6 +9,6 @@
     (Bool 'true)))
   (declare __x__ (DataType 'Bool))
   (let result (Apply main __x__))
-  (let world (Apply print world (AsList result)))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)
 )
