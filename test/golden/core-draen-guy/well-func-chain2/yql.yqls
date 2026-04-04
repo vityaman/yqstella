@@ -3,10 +3,13 @@
     (let sink (DataSink 'result))
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'dq))
-    (return (Commit! world sink))
-  ))))
+    (return (Commit! world sink))))))
   (let main (lambda '(n)
-    (Apply (Apply (Apply (lambda '(x) (lambda '(y) (lambda '(i) (+ y (Uint64 '1))))) (Bool 'false)) (Uint64 '0)) n)))
+    (Apply
+      (Apply
+        (Apply (lambda '(x) (lambda '(y) (lambda '(i) (+ y (Uint64 '1))))) (Bool 'false))
+        (Uint64 '0))
+      n)))
   (declare __n__ (DataType 'Uint64))
   (let result (Apply main __n__))
   (let world (Apply print world (AsList (AsStruct '('result result)))))
