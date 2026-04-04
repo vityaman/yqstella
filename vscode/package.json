@@ -1,0 +1,59 @@
+{
+  "name": "yqstella",
+  "displayName": "YQStella",
+  "description": "Yandex Query Stella Language Support.",
+  "version": "0.0.1",
+  "publisher": "yqstella",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "stella",
+        "aliases": [
+          "Stella"
+        ],
+        "extensions": [
+          ".yqst",
+          ".stella"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "stella",
+        "scopeName": "source.stella",
+        "path": "./syntaxes/stella.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./dist/test/runTest.js",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.2.1",
+    "eslint": "^9.39.4",
+    "globals": "^17.4.0",
+    "mocha": "^10.7.0",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.58.0"
+  }
+}

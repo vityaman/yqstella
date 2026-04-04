@@ -1,0 +1,91 @@
+{
+  "name": "Stella",
+  "scopeName": "source.stella",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#extension-name" },
+    { "include": "#memory-address" },
+    { "include": "#numeric" },
+    { "include": "#keyword-ops" },
+    { "include": "#keywords" },
+    { "include": "#operators" },
+    { "include": "#variant-punct" },
+    { "include": "#delimiters" },
+    { "include": "#identifier" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.stella",
+          "match": "//.*"
+        },
+        {
+          "name": "comment.block.stella",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "extension-name": {
+      "name": "entity.name.tag.stella",
+      "match": "#[\\w\\-]+"
+    },
+    "memory-address": {
+      "name": "constant.numeric.hex.stella",
+      "match": "<0x[0-9a-fA-F]+>"
+    },
+    "numeric": {
+      "name": "constant.numeric.integer.stella",
+      "match": "\\b\\d+\\b"
+    },
+    "keyword-ops": {
+      "patterns": [
+        {
+          "name": "keyword.operator.stella",
+          "match": "List::head|List::isempty|List::tail|Nat::pred|Nat::iszero|Nat::rec"
+        },
+        {
+          "name": "keyword.control.stella",
+          "match": "\\bpanic!\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.other.stella",
+          "match": "\\b(language|core|extend|with|fn|generic|return|type|exception|variant|inline|throws|let|letrec|in|if|then|else|match|cast|inl|inr|true|false|unit|succ|cons|new|not|fix|fold|unfold|try|catch|auto|forall|or|and|Bool|Nat|Unit|Top|Bot|as|throw)\\b"
+        },
+        {
+          "name": "keyword.other.stella",
+          "match": "µ"
+        }
+      ]
+    },
+    "operators": {
+      "name": "keyword.operator.stella",
+      "match": "->|:=|==|!=|<=|>=|=>|=|[+\\-*/&|]"
+    },
+    "variant-punct": {
+      "patterns": [
+        {
+          "name": "punctuation.stella",
+          "match": "<\\|"
+        },
+        {
+          "name": "punctuation.stella",
+          "match": "\\|>"
+        }
+      ]
+    },
+    "delimiters": {
+      "name": "punctuation.stella",
+      "match": "[{}()\\[\\];,:.<>]"
+    },
+    "identifier": {
+      "name": "variable.stella",
+      "match": "[a-zA-Z_][\\w\\-!?:]*"
+    }
+  }
+}
