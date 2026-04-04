@@ -1,0 +1,15 @@
+language core;
+
+extend with #sum-types;
+
+fn f (x : Bool) -> Nat + Bool {
+  return inl(x)
+}
+
+fn g (x : Nat) -> Nat + Bool {
+  return inr(x)
+}
+
+fn main (x : Nat) -> Nat + Bool {
+  return if Nat::iszero(x) then f(Nat::iszero(x)) else g(x)
+}

@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-ascriptions, #sum-types;
+
+fn main(n : Nat) -> Nat + Bool {
+  return (fn (b : Bool) { return inl(n) as (Nat + Bool) })(true)
+}

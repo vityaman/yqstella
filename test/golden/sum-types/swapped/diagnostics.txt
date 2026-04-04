@@ -1,0 +1,8 @@
+test/golden/sum-types/swapped/input.yqst:6:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return inl(x)
+               ^
+test/golden/sum-types/swapped/input.yqst:10:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return inr(x)
+               ^

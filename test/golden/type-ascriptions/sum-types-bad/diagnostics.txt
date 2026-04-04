@@ -1,0 +1,4 @@
+test/golden/type-ascriptions/sum-types-bad/input.yqst:6:34: [ERROR_AMBIGUOUS_SUM_TYPE]
+type inference for sum types is not supported (use type ascriptions)
+>   return (fn (b : Bool) { return inl(n) })(true)
+                                   ^

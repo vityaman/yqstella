@@ -1,0 +1,8 @@
+test/golden/sum-types/unexpected-injection/input.yqst:6:10: [ERROR_UNEXPECTED_INJECTION]
+expected Nat, but got inl(Nat)
+>   return inl(x)
+           ^
+test/golden/sum-types/unexpected-injection/input.yqst:10:10: [ERROR_UNEXPECTED_INJECTION]
+expected Nat, but got inr(Nat)
+>   return inr(x)
+           ^
