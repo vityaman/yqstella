@@ -87,15 +87,15 @@ fitsSingleLine (Y xs) = all fitsSingleLine xs
 prtApply :: Int -> [Node] -> ShowS
 prtApply i xs =
   let n = Y xs
-  in if fitsSingleLine n
-      then showChar '(' . sepSpc (map (prt i) xs) . showChar ')'
-      else case xs of
-        y : ys ->
-          showChar '('
-            . prt (i + 1) y
-            . foldr (\x r -> nl (i + 1) . prt (i + 1) x . r) id ys
-            . showChar ')'
-        [] -> showString "()"
+   in if fitsSingleLine n
+        then showChar '(' . sepSpc (map (prt i) xs) . showChar ')'
+        else case xs of
+          y : ys ->
+            showChar '('
+              . prt (i + 1) y
+              . foldr (\x r -> nl (i + 1) . prt (i + 1) x . r) id ys
+              . showChar ')'
+          [] -> showString "()"
 
 instance Print Node where
   prt _ (A s) = showString s
