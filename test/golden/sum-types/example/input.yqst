@@ -1,0 +1,14 @@
+language core;
+
+extend with #sum-types;
+
+fn test(first : Bool) -> Nat + Bool {
+  return if first then inl(succ(0)) else inr(true)
+}
+
+fn main(input : Bool) -> Nat {
+  return match test(input) {
+      inl(n) => n
+    | inr(b) => 0
+  }
+}

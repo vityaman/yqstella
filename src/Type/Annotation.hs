@@ -9,7 +9,8 @@ import Control.Monad.State
 import Control.Monad.Writer
 import qualified Data.Bifunctor
 import Data.Foldable (find)
-import Data.List (intercalate)
+import Data.List (groupBy, intercalate)
+import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
@@ -24,6 +25,7 @@ import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as AST
 import qualified Type.Core as Type
+import qualified Type.PatternMatching as PatternMatching
 
 type TypeAnnotationEnv a = WriterT Diagnostics (State Context) a
 
@@ -225,9 +227,69 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.Variant {}) = do
     tell [notImplemented (annotation x) "Variant"]
     return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Match {}) = do
-    tell [notImplemented (annotation x) "Match"]
-    return $ fmap (,Nothing) x
+  annotateType _ (AST.Match p expr []) = do
+    expr' <- inferType expr
+    let message = "expected at least one match case"
+     in tell [diagnostic Error ILLEGAL_EMPTY_MATCHING (pointRange p) message]
+    return (AST.Match (p, Nothing) expr' [])
+  annotateType t (AST.Match p expr cases) = do
+    expr' <- inferType expr
+    let expr't = snd $ annotation expr'
+
+    () <- case expr't of
+      Just t'
+        | not (PatternMatching.isExhaustive (patterns cases) t') ->
+            let message = "nonexchaustive pattern-matching"
+             in tell [diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message]
+      _ -> pure ()
+
+    cases' <- case expr't of
+      Just t' -> mapM (annotateType' t') cases
+      Nothing -> pure $ fmap (fmap (,Nothing)) cases
+
+    t' <- commonType cases'
+
+    return (AST.Match (p, t') expr' cases')
+    where
+      patterns = fmap (\(AST.AMatchCase _ x _) -> x)
+
+      commonType :: [AST.MatchCase' (Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
+      commonType cases'' = do
+        let pts = fmap annotation cases''
+            groups =
+              map
+                (\((p', t') :| rest) -> (t', p' : map fst rest))
+                (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> a == b) pts))
+
+        case groups of
+          [(Nothing, _)] ->
+            return Nothing
+          [(Nothing, _), (Just t', _)] ->
+            return $ Just t'
+          [(Just t', _)] ->
+            return $ Just t'
+          ts -> do
+            -- TODO(vityaman): improve diagnostic
+            let ts' = fmap (maybe "?" show . fst) ts
+                message = "expected same type for all match-case branches, got " ++ intercalate ", " ts'
+            tell [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
+            return Nothing
+
+      annotateType' patterntype (AST.AMatchCase p' pattern'' expr'') = do
+        let pattern' = fmap (,Nothing) pattern''
+
+        expr' <- case PatternMatching.bindings pattern'' patterntype of
+          Right bindings' -> do
+            context <- get
+            let context' = foldr (uncurry Context.withTyped) context (Map.toList bindings')
+            withStateTAE (const context') (annotateType t expr'')
+          Left e -> do
+            tell [e]
+            return $ fmap (,Nothing) expr''
+
+        let t' = snd $ annotation expr'
+
+        return (AST.AMatchCase (p', t') pattern' expr')
   annotateType _ x@(AST.List {}) = do
     tell [notImplemented (annotation x) "List"]
     return $ fmap (,Nothing) x
@@ -483,12 +545,36 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.TryCastAs {}) = do
     tell [notImplemented (annotation x) "TryCastAs"]
     return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Inl {}) = do
-    tell [notImplemented (annotation x) "Inl"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Inr {}) = do
-    tell [notImplemented (annotation x) "Inr"]
-    return $ fmap (,Nothing) x
+  annotateType Nothing (AST.Inl p expr) = do
+    expr' <- inferType expr
+    let message = "type inference for sum types is not supported (use type ascriptions)"
+     in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
+    return (AST.Inl (p, Nothing) expr')
+  annotateType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inl p expr) = do
+    expr' <- checkType (Type inl) expr
+    let t' = fmap (\(Type x) -> Type (AST.TypeSum () x inr)) $ snd $ annotation expr'
+    return (AST.Inl (p, t') expr')
+  annotateType (Just t) (AST.Inl p expr) = do
+    expr' <- inferType expr
+    let expr't = maybe "?" show $ snd $ annotation expr'
+        message = "expected " ++ show t ++ ", but got inl(" ++ expr't ++ ")"
+     in tell [diagnostic Error UNEXPECTED_INJECTION (pointRange p) message]
+    return (AST.Inl (p, Nothing) expr')
+  annotateType Nothing (AST.Inr p expr) = do
+    expr' <- inferType expr
+    let message = "type inference for sum types is not supported (use type ascriptions)"
+     in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
+    return (AST.Inr (p, Nothing) expr')
+  annotateType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inr p expr) = do
+    expr' <- checkType (Type inr) expr
+    let t' = fmap (\(Type x) -> Type (AST.TypeSum () inl x)) $ snd $ annotation expr'
+    return (AST.Inr (p, t') expr')
+  annotateType (Just t) (AST.Inr p expr) = do
+    expr' <- inferType expr
+    let expr't = maybe "?" show $ snd $ annotation expr'
+        message = "expected " ++ show t ++ ", but got inr(" ++ expr't ++ ")"
+     in tell [diagnostic Error UNEXPECTED_INJECTION (pointRange p) message]
+    return (AST.Inr (p, Nothing) expr')
   annotateType t (AST.Succ p expr) = do
     expr' <- checkType (Type.fromAST' AST.TypeNat) expr
     t' <- liftType p AST.TypeNat t

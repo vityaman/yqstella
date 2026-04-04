@@ -1,0 +1,8 @@
+test/golden/structural-patterns/example-disabled/input.yqst:9:9: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inl(b)) => if b then succ(0) else 0
+          ^
+test/golden/structural-patterns/example-disabled/input.yqst:10:9: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inr(f)) => f(succ(0))
+          ^

@@ -207,15 +207,17 @@ instance ExtensionsAnnotatable AST.Pattern' where
     where
       patterndata' = annotateExtensions patterndata
   annotateExtensions (AST.PatternInl p pattern_) =
-    AST.PatternInl (p, Set.fromList [Extension.SumTypes, Extension.StructuralPatterns]) pattern_'
+    AST.PatternInl (p, extensions) pattern_'
     where
       pattern_' = annotateExtensions pattern_
+      extensions = Set.fromList $ Extension.SumTypes : [Extension.StructuralPatterns | isComplex pattern_']
   annotateExtensions (AST.PatternInr p pattern_) =
-    AST.PatternInr (p, Set.fromList [Extension.SumTypes, Extension.StructuralPatterns]) pattern_'
+    AST.PatternInr (p, extensions) pattern_'
     where
       pattern_' = annotateExtensions pattern_
+      extensions = Set.fromList $ Extension.SumTypes : [Extension.StructuralPatterns | isComplex pattern_']
   annotateExtensions (AST.PatternTuple p patterns) =
-    AST.PatternTuple (p, Set.fromList [extension, Extension.LetBindings]) patterns'
+    AST.PatternTuple (p, Set.fromList [extension, Extension.StructuralPatterns]) patterns'
     where
       patterns' = fmap annotateExtensions patterns
 
@@ -224,7 +226,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
       isPair [_, _] = True
       isPair _ = False
   annotateExtensions (AST.PatternRecord p labelledpatterns) =
-    AST.PatternRecord (p, Set.fromList [Extension.Records, Extension.LetBindings]) labelledpatterns'
+    AST.PatternRecord (p, Set.fromList [Extension.Records, Extension.StructuralPatterns]) labelledpatterns'
     where
       labelledpatterns' = fmap annotateExtensions labelledpatterns
   annotateExtensions (AST.PatternList p patterns) =
@@ -241,7 +243,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
   annotateExtensions (AST.PatternTrue p) =
     AST.PatternTrue (p, Set.fromList [Extension.StructuralPatterns])
   annotateExtensions (AST.PatternUnit p) =
-    AST.PatternUnit (p, Set.fromList [Extension.LetBindings])
+    AST.PatternUnit (p, Set.fromList [Extension.UnitType, Extension.StructuralPatterns])
   annotateExtensions (AST.PatternInt p n) =
     AST.PatternInt (p, Set.fromList [Extension.StructuralPatterns]) n
   annotateExtensions (AST.PatternSucc p pattern_) =
@@ -249,7 +251,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
     where
       pattern_' = annotateExtensions pattern_
   annotateExtensions (AST.PatternVar p stellaident'@(AST.StellaIdent stellaident)) =
-    AST.PatternVar (p, Set.fromList $ wildcard ++ [Extension.LetBindings]) stellaident'
+    AST.PatternVar (p, Set.fromList wildcard) stellaident'
     where
       wildcard = [Extension.WildcardBinders | stellaident == "_"]
 
@@ -300,7 +302,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       patternbindings' = fmap annotateExtensions patternbindings
       expr' = annotateExtensions expr
   annotateExtensions (AST.LetRec p patternbindings expr) =
-    AST.LetRec (p, Set.empty) patternbindings' expr'
+    AST.LetRec (p, Set.fromList [Extension.LetBindings, Extension.FixpointCombinator]) patternbindings' expr'
     where
       patternbindings' = fmap annotateExtensions patternbindings
       expr' = annotateExtensions expr
@@ -541,7 +543,7 @@ instance ExtensionsAnnotatable AST.Expr' where
 
 instance ExtensionsAnnotatable AST.PatternBinding' where
   annotateExtensions (AST.APatternBinding p pattern_ expr) =
-    AST.APatternBinding (p, Set.singleton Extension.LetBindings) pattern_' expr'
+    AST.APatternBinding (p, Set.empty) pattern_' expr'
     where
       pattern_' = annotateExtensions pattern_
       expr' = annotateExtensions expr
@@ -569,3 +571,7 @@ paramdeclsExtension :: [AST.ParamDecl' a] -> [Extension.Extension]
 paramdeclsExtension [] = [Extension.NullaryFunctions]
 paramdeclsExtension [_] = []
 paramdeclsExtension _ = [Extension.MultiparameterFunctions]
+
+isComplex :: AST.Pattern' a -> Bool
+isComplex (AST.PatternVar {}) = False
+isComplex _ = True
