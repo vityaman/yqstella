@@ -8,7 +8,11 @@ class Print a where
   prt :: Int -> a -> ShowS
 
 displayYQL :: Node -> String
-displayYQL x = prt 0 x "\n"
+displayYQL x = prt 0 x ""
+
+-- | Target width for keeping parenthesized applications on one line.
+maxLineWidth :: Int
+maxLineWidth = 100
 
 indent :: Int -> ShowS
 indent n = showString (replicate (2 * n) ' ')
@@ -27,7 +31,6 @@ prettyBlockQuotedCompact headerIndent stmts =
       (\st r -> nl (headerIndent + 1) . prt (headerIndent + 1) st . r)
       id
       stmts
-    . nl headerIndent
     . showString "))"
 
 prettyBlock :: Int -> [Node] -> ShowS
@@ -50,20 +53,55 @@ isStmt _ = False
 isStmtList :: [Node] -> Bool
 isStmtList xs = length xs > 1 && all isStmt xs
 
-prtInline :: Node -> ShowS
-prtInline (A s) = showString s
-prtInline (Q x) = prt 0 (Q x)
-prtInline (Y []) = showString "()"
-prtInline (Y xs) = showChar '(' . sepSpc (map prtInline xs) . showChar ')'
+-- | Approximate width if the node were printed flat on one line.
+flatWidth :: Node -> Int
+flatWidth (A s) = length s
+flatWidth (Q x) = 1 + flatWidth x
+flatWidth (Y []) = 2
+flatWidth (Y xs) =
+  2 + sum (map flatWidth xs) + max 0 (length xs - 1)
 
-prtApply :: [Node] -> ShowS
-prtApply xs = showChar '(' . sepSpc (map prtInline xs) . showChar ')'
+-- | Layout that always uses newlines (blocks and statement lists).
+hasForcedLayout :: Node -> Bool
+hasForcedLayout (Y xs) | isStmtList xs = True
+hasForcedLayout (Y (A "block" : _)) = True
+hasForcedLayout (Y [A "lambda", _, Y [A "block", _]]) = True
+hasForcedLayout (Y [A "lambda", _, body]) = hasForcedLayout body
+hasForcedLayout (Y [A "let", _, expr]) = hasForcedLayout expr
+hasForcedLayout (Y [x]) = hasForcedLayout x
+hasForcedLayout (Y xs) = any hasForcedLayout xs
+hasForcedLayout (Q (Y xs)) | isStmtList xs = True
+hasForcedLayout (Q x) = hasForcedLayout x
+hasForcedLayout _ = False
+
+-- | True if the node can be printed on a single line within 'maxLineWidth'.
+fitsSingleLine :: Node -> Bool
+fitsSingleLine n
+  | hasForcedLayout n = False
+  | flatWidth n > maxLineWidth = False
+fitsSingleLine (A _) = True
+fitsSingleLine (Q x) = fitsSingleLine x
+fitsSingleLine (Y [x]) = fitsSingleLine x
+fitsSingleLine (Y xs) = all fitsSingleLine xs
+
+prtApply :: Int -> [Node] -> ShowS
+prtApply i xs =
+  let n = Y xs
+  in if fitsSingleLine n
+      then showChar '(' . sepSpc (map (prt i) xs) . showChar ')'
+      else case xs of
+        y : ys ->
+          showChar '('
+            . prt (i + 1) y
+            . foldr (\x r -> nl (i + 1) . prt (i + 1) x . r) id ys
+            . showChar ')'
+        [] -> showString "()"
 
 instance Print Node where
   prt _ (A s) = showString s
   prt _ (Q (A s)) = showChar '\'' . showString s
   prt _ (Q (Y [])) = showChar '\'' . showString "()"
-  prt _ (Q (Y [x])) = showChar '\'' . showChar '(' . prtInline x . showChar ')'
+  prt i (Q (Y [x])) = showChar '\'' . showChar '(' . prt i x . showChar ')'
   prt i (Q (Y xs))
     | isStmtList xs =
         showChar '\''
@@ -71,47 +109,88 @@ instance Print Node where
           . foldr (\x r -> nl (i + 1) . prt (i + 1) x . r) id xs
           . nl i
           . showChar ')'
-  prt _ (Q (Y xs)) =
-    showChar '\'' . showChar '(' . sepSpc (map prtInline xs) . showChar ')'
+  prt i (Q (Y xs)) =
+    showChar '\'' . showChar '(' . sepSpc (map (prt i) xs) . showChar ')'
   prt i (Q (Q x)) = showChar '\'' . prt i (Q x)
   prt _ (Y []) = showString "()"
   prt i (Y [x]) = showChar '(' . prt i x . showChar ')'
-  prt i (Y [A "let", name, Y [A "lambda", qps, body]]) =
+  prt i (Y [A "let", name, lam@(Y [A "lambda", _, Y [A "block", _]])]) =
     showChar '('
       . showString "let "
-      . prtInline name
+      . prt i name
       . showChar ' '
-      . prt i (Y [A "lambda", qps, body])
+      . prt i lam
       . showChar ')'
+  prt i letLam@(Y [A "let", name, Y [A "lambda", qps, body]])
+    | fitsSingleLine letLam =
+        showChar '('
+          . showString "let "
+          . prt i name
+          . showChar ' '
+          . prt i (Y [A "lambda", qps, body])
+          . showChar ')'
+    | otherwise =
+        showChar '('
+          . showString "let "
+          . prt i name
+          . showChar ' '
+          . showChar '('
+          . showString "lambda "
+          . prt i qps
+          . nl (i + 1)
+          . prt (i + 1) body
+          . showChar ')'
+          . showChar ')'
   prt i (Y [A "lambda", qps, Y [A "block", Q (Y stmts)]]) =
     showChar '('
       . showString "lambda "
-      . prtInline qps
+      . prt i qps
       . showChar ' '
       . prettyBlockQuotedCompact i stmts
       . showChar ')'
-  prt i (Y [A "lambda", qps, body]) =
-    showChar '('
-      . showString "lambda "
-      . prtInline qps
-      . nl (i + 1)
-      . prt (i + 1) body
-      . showChar ')'
+  prt i lam@(Y [A "lambda", qps, body])
+    | fitsSingleLine lam =
+        showChar '('
+          . showString "lambda "
+          . prt i qps
+          . showChar ' '
+          . prt i body
+          . showChar ')'
+    | otherwise =
+        showChar '('
+          . showString "lambda "
+          . prt i qps
+          . nl (i + 1)
+          . prt (i + 1) body
+          . showChar ')'
   prt i (Y (A "block" : args)) =
     prettyBlock i args
-  prt i (Y [A "let", name, expr]) =
+  prt i letNode@(Y [A "let", name, expr])
+    | fitsSingleLine letNode =
+        showChar '('
+          . showString "let "
+          . prt i name
+          . showChar ' '
+          . prt i expr
+          . showChar ')'
+    | otherwise =
+        showChar '('
+          . showString "let "
+          . prt i name
+          . nl (i + 1)
+          . prt (i + 1) expr
+          . showChar ')'
+  prt i (Y xs@(A "declare" : _)) = prtApply i xs
+  prt i (Y [A "return", body@(Y (A "block" : _))]) =
     showChar '('
-      . showString "let "
-      . prtInline name
-      . showChar ' '
-      . prt (i + 1) expr
+      . showString "return "
+      . prt i body
       . showChar ')'
-  prt _ (Y xs@(A "declare" : _)) = prtApply xs
-  prt _ (Y xs@(A "return" : _)) = prtApply xs
+  prt i (Y xs@(A "return" : _)) = prtApply i xs
   prt i (Y xs)
     | isStmtList xs =
         showChar '('
           . foldr (\x r -> nl (i + 1) . prt (i + 1) x . r) id xs
           . nl i
           . showChar ')'
-  prt _ (Y xs) = prtApply xs
+  prt i (Y xs) = prtApply i xs

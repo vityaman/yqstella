@@ -3,30 +3,34 @@
     (let sink (DataSink 'result))
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'dq))
-    (return (Commit! world sink))
-  ))))
+    (return (Commit! world sink))))))
   (let main (lambda '(x) (block '(
     (let yqstellamatchexpr x)
-    (let yqstellamatchbr0 (Apply (lambda '(yqstellamatcharg) (block '(
-  (let x (Guess yqstellamatcharg 'inl))
-  (let yqstellamatchcond (And (Exists x) (Bool 'true)))
-  (let x (Unwrap x))
-  (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64)))))
-))) yqstellamatchexpr))
-    (let yqstellamatchbr1 (Apply (lambda '(yqstellamatcharg) (block '(
-  (let x (Guess yqstellamatcharg 'inl))
-  (let yqstellamatchcond (And (Exists x) (Bool 'true)))
-  (let x (Unwrap x))
-  (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64)))))
-))) yqstellamatchexpr))
-    (let yqstellamatchbr2 (Apply (lambda '(yqstellamatcharg) (block '(
-  (let x (Guess yqstellamatcharg 'inr))
-  (let yqstellamatchcond (And (Exists x) (Bool 'true)))
-  (let x (Unwrap x))
-  (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64)))))
-))) yqstellamatchexpr))
-    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2)))
-  ))))
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let x (Guess yqstellamatcharg 'inl))
+          (let yqstellamatchcond (And (Exists x) (Bool 'true)))
+          (let x (Unwrap x))
+          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let x (Guess yqstellamatcharg 'inl))
+          (let yqstellamatchcond (And (Exists x) (Bool 'true)))
+          (let x (Unwrap x))
+          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr2
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let x (Guess yqstellamatcharg 'inr))
+          (let yqstellamatchcond (And (Exists x) (Bool 'true)))
+          (let x (Unwrap x))
+          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2)))))))
   (declare __x__ (VariantType (StructType '('inl (DataType 'Uint64)) '('inr (DataType 'Bool)))))
   (let result (Apply main __x__))
   (let world (Apply print world (AsList (AsStruct '('result result)))))

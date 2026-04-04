@@ -3,27 +3,22 @@
     (let sink (DataSink 'result))
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'dq))
-    (return (Commit! world sink))
-  ))))
-  (let square (lambda '(x)
-    (*MayWarn x x)))
+    (return (Commit! world sink))))))
+  (let square (lambda '(x) (*MayWarn x x)))
   (let isRightTriangle (lambda '(a) (block '(
     (let a2 (Apply square a))
-    (return (lambda '(b) (block '(
-  (let b2 (Apply square b))
-  (return (lambda '(c) (block '(
-  (let c2 (Apply square c))
-  (return (== c2 (+MayWarn a2 b2)))
-))))
-))))
-  ))))
+    (return
+      (lambda '(b) (block '(
+        (let b2 (Apply square b))
+        (return
+          (lambda '(c) (block '(
+            (let c2 (Apply square c))
+            (return (== c2 (+MayWarn a2 b2)))))))))))))))
   (let main (lambda '(_) (block '(
     (let one (+ (Uint64 '0) (Uint64 '1)))
     (return (block '(
-  (let two (+ one (Uint64 '1)))
-  (return (Apply (Apply (Apply isRightTriangle one) one) two))
-)))
-  ))))
+      (let two (+ one (Uint64 '1)))
+      (return (Apply (Apply (Apply isRightTriangle one) one) two)))))))))
   (declare _____ (DataType 'Uint64))
   (let result (Apply main _____))
   (let world (Apply print world (AsList (AsStruct '('result result)))))
