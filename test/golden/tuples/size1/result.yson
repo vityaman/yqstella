@@ -1,5 +1,36 @@
-minirun ABI version: 2.45.0
-test/golden/tuples/size1/yql.yqls:<main>: Error: Parameters evaluation
-
-    test/golden/tuples/size1/yql.yqls:<main>: Error: Missing value for parameter: __n__
-    
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "TupleType";
+                                    [
+                                        [
+                                            "DataType";
+                                            "Uint64"
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        [
+                            "1"
+                        ]
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]
