@@ -810,7 +810,7 @@ liftType p lifting = liftType' p (Type $ lifting ())
 liftType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
 liftType' p lifting (Just checked) = do
   when (lifting /= checked) $
-    tell [mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p (show checked) (show lifting)]
+    tell [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
   return lifting
 liftType' _ lifting Nothing =
   pure lifting
@@ -849,7 +849,12 @@ commonType p pts = do
       return Nothing
 
 mismatch :: Code -> Position -> Type -> Type -> Diagnostic
-mismatch code p expected actual = mismatchSS code p (show expected) (show actual)
+mismatch code p expected@(Type (AST.TypeList () _)) actual@(Type (AST.TypeList () _)) =
+  mismatchSS code p (show expected) (show actual)
+mismatch _ p expected@(Type (AST.TypeList () _)) actual@(Type _) =
+  mismatchSS NOT_A_LIST p (show expected) (show actual)
+mismatch code p expected actual =
+  mismatchSS code p (show expected) (show actual)
 
 mismatchSS :: Code -> Position -> String -> String -> Diagnostic
 mismatchSS code p expected actual =

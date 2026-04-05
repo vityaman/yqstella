@@ -1,0 +1,12 @@
+test/golden/lists/not-a-list/input.yqst:6:21: [ERROR_NOT_A_LIST]
+type mismatch: expected [Nat], got Nat
+>   return List::head(x)
+                      ^
+test/golden/lists/not-a-list/input.yqst:10:21: [ERROR_NOT_A_LIST]
+type mismatch: expected [Nat], got Nat
+>   return List::tail(x)
+                      ^
+test/golden/lists/not-a-list/input.yqst:14:24: [ERROR_NOT_A_LIST]
+expected list at cons tail, got Nat
+>   return List::isempty(x)
+                         ^
