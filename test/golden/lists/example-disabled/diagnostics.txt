@@ -1,0 +1,20 @@
+test/golden/lists/example-disabled/input.yqst:5:20: [ERROR_BAD_EXTENSION]
+disabled extension usage: #lists
+> fn nonempty(list : [Nat]) -> Bool {
+                     ^
+test/golden/lists/example-disabled/input.yqst:6:13: [ERROR_BAD_EXTENSION]
+disabled extension usage: #lists
+>   return if List::isempty(list) then true else false
+              ^
+test/golden/lists/example-disabled/input.yqst:9:28: [ERROR_BAD_EXTENSION]
+disabled extension usage: #lists
+> fn first_or_default(list : [Nat], default : Nat) -> Nat {
+                             ^
+test/golden/lists/example-disabled/input.yqst:10:33: [ERROR_BAD_EXTENSION]
+disabled extension usage: #lists
+>   return if nonempty(list) then List::head(list) else default
+                                  ^
+test/golden/lists/example-disabled/input.yqst:14:27: [ERROR_BAD_EXTENSION]
+disabled extension usage: #lists
+>   return first_or_default([], default)
+                            ^

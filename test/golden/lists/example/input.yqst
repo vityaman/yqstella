@@ -1,0 +1,17 @@
+language core;
+
+extend with
+    #lists,
+    #multiparameter-functions;
+
+fn nonempty(list : [Nat]) -> Bool {
+  return if List::isempty(list) then false else true
+}
+
+fn first_or_default(list : [Nat], default : Nat) -> Nat {
+  return if nonempty(list) then List::head(list) else default
+}
+
+fn main(default : Nat) -> Nat {
+  return first_or_default([], default)
+}

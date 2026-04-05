@@ -1,4 +1,13 @@
-module Type.Core (Type (Type), fromAST, fromAST', eqT, neqT, fn) where
+module Type.Core
+  ( Type (Type),
+    fromAST,
+    fromAST',
+    eqT,
+    neqT,
+    fn,
+    list,
+  )
+where
 
 import Control.Monad (void)
 import Syntax.PrettyPrint (displayAST)
@@ -25,3 +34,6 @@ fn :: [Type] -> Type -> Type
 fn args (Type return') = Type $ AST.TypeFun () (fmap toAST args) return'
   where
     toAST (Type x) = x
+
+list :: Type -> Type
+list (Type t) = Type $ AST.TypeList () t
