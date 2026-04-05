@@ -1,0 +1,24 @@
+minirun ABI version: 2.45.0
+test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>:14:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>:14:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>:14:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>:11:6: Error: At function: Apply
+                	    (Apply (Apply (Apply (Apply function_chooser (Bool 'false)) add_once) add_twice) n)))
+	     ^
+                    test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>:7:77: Error: At function: If
+                    	  (let function_chooser (lambda '(flag) (lambda '(first) (lambda '(second) (If flag first second)))))
+	                                                                            ^
+                        test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>:8:18: Error: Expected computable data, but got lambda
+                        	  (let add_once (lambda '(a) (+ a (Uint64 '1))))
+	                 ^
+                        test/golden/core-draen-guy/well-func-chain/yql.yqls:<main>:8:18: Error: Computable required. Atom, key, world, datasink, datasource, type, lambda are not computable
+                        	  (let add_once (lambda '(a) (+ a (Uint64 '1))))
+	                 ^

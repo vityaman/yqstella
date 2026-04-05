@@ -1,0 +1,50 @@
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "VariantType";
+                                    [
+                                        "StructType";
+                                        [
+                                            [
+                                                "inl";
+                                                [
+                                                    "DataType";
+                                                    "Uint64"
+                                                ]
+                                            ];
+                                            [
+                                                "inr";
+                                                [
+                                                    "DataType";
+                                                    "Bool"
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        [
+                            "1";
+                            %false
+                        ]
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]

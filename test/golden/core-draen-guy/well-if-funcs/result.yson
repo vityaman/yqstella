@@ -1,0 +1,24 @@
+minirun ABI version: 2.45.0
+test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>:12:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>:12:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>:12:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>:9:27: Error: At function: Apply
+                	  (let main (lambda '(n) (Apply (If (== n (Uint64 '0)) f (Apply g f)) n)))
+	                          ^
+                    test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>:9:34: Error: At function: If
+                    	  (let main (lambda '(n) (Apply (If (== n (Uint64 '0)) f (Apply g f)) n)))
+	                                 ^
+                        test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>:7:11: Error: Expected computable data, but got lambda
+                        	  (let f (lambda '(x) (+ x (Uint64 '1))))
+	          ^
+                        test/golden/core-draen-guy/well-if-funcs/yql.yqls:<main>:7:11: Error: Computable required. Atom, key, world, datasink, datasource, type, lambda are not computable
+                        	  (let f (lambda '(x) (+ x (Uint64 '1))))
+	          ^

@@ -2,7 +2,7 @@
   (let print (lambda '(world rows) (block '(
     (let sink (DataSink 'result))
     (let options '('('type) '('autoref) '('unordered)))
-    (let world (ResFill! world sink (Key) rows options 'dq))
+    (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
   (let main (lambda '(_)
     (/MayWarn (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)) (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))))

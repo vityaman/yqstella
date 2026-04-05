@@ -10,6 +10,7 @@ fn g(k : fn(Nat) -> Nat) -> fn(Nat) -> Nat {
   }
 }
 
+// FIXME(vityaman): Computable required.
 fn main(n : Nat) -> Nat {
   return
    (if Nat::iszero(n)

@@ -1,0 +1,28 @@
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "VoidType"
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        "Void"
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]
