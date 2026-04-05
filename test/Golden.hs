@@ -100,9 +100,9 @@ makeTestCase casePath = do
               let args = ["run"] ++ dockerArgs ++ ["vityamand/minirun"] ++ minirunArgs
 
               (exitCode, stdout, stderr) <-
-                if areTypesCorrect'
-                  then readProcessWithExitCode "docker" args ""
-                  else pure (ExitSuccess, "", "")
+                if null yql'
+                  then pure (ExitSuccess, "", "")
+                  else readProcessWithExitCode "docker" args ""
 
               return $ stdout ++ (if exitCode == ExitSuccess then "" else stderr)
          in goldenVsStringDiff "Minirun" diff resultPath (fmap pack execute)
