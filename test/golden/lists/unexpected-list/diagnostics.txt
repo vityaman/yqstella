@@ -1,0 +1,20 @@
+test/golden/lists/unexpected-list/input.yqst:10:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return [x]
+           ^
+test/golden/lists/unexpected-list/input.yqst:14:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return [x, x]
+           ^
+test/golden/lists/unexpected-list/input.yqst:18:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return cons(x, [])
+           ^
+test/golden/lists/unexpected-list/input.yqst:22:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return cons(x, cons(x, []))
+           ^
+test/golden/lists/unexpected-list/input.yqst:26:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return cons(x, [x])
+           ^

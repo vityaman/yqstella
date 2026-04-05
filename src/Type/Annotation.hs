@@ -278,7 +278,7 @@ instance TypeAnnotatable AST.Expr' where
     headT <- case t of -- FIXME(vityaman): copy-pasted from Cons
       (Just (Type (AST.TypeList () itemT))) ->
         return $ Just $ Type itemT
-      (Just t'') -> do
+      (Just t'') -> do -- FIXME(vityman): improve diagnostic
         let message = "expected " ++ show t'' ++ ", got list"
         tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
         return Nothing
