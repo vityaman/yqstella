@@ -16,6 +16,7 @@ fn add_twice(a : Nat) -> Nat {
     return succ(add_once(a))
 }
 
+// FIXME(vityaman): Computable required.
 fn main(n : Nat) -> Nat {
     return function_chooser(false)(add_once)(add_twice)(n)
 }
