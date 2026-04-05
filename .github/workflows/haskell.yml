@@ -48,6 +48,9 @@ jobs:
       - name: Generate SyntaxGen Module
         run: ./syntax/stella/codegen.bash
 
+      - name: Generate Yson.SyntaxGen Module
+        run: ./syntax/yson/codegen.bash
+
       - name: Generate Cabal File
         run: hpack
 
@@ -65,7 +68,7 @@ jobs:
 
       - name: Check Haskell Formatting
         run: |
-          ormolu --mode check $(find . -path './src/*.hs' -not -path './src/SyntaxGen/*')
+          ormolu --mode check $(find . -path './src/*.hs' -not -path './src/*SyntaxGen/*')
           ormolu --mode check $(find . -path './test/*.hs')
 
       - name: Install HLint
