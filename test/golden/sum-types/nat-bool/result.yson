@@ -1,5 +1,50 @@
-minirun ABI version: 2.45.0
-test/golden/sum-types/nat-bool/yql.yqls:<main>: Error: Parameters evaluation
-
-    test/golden/sum-types/nat-bool/yql.yqls:<main>: Error: Missing value for parameter: __x__
-    
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "VariantType";
+                                    [
+                                        "StructType";
+                                        [
+                                            [
+                                                "inl";
+                                                [
+                                                    "DataType";
+                                                    "Uint64"
+                                                ]
+                                            ];
+                                            [
+                                                "inr";
+                                                [
+                                                    "DataType";
+                                                    "Bool"
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        [
+                            "1";
+                            %false
+                        ]
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]

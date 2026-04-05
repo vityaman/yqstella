@@ -5,7 +5,7 @@ extend with #sum-types;
 fn main(x : Nat + Bool) -> Nat {
   return match (x) {
       inl(x) => 0
-    | inl(x) => 0
-    | inr(x) => 0
+    | inl(x) => succ(0)
+    | inr(x) => succ(succ(0))
   }
 }

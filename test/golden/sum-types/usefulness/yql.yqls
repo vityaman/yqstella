@@ -20,7 +20,11 @@
           (let x (Guess yqstellamatcharg 'inl))
           (let yqstellamatchcond (And (Exists x) (Bool 'true)))
           (let x (Unwrap x))
-          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (+ (Uint64 '0) (Uint64 '1)))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (let yqstellamatchbr2
       (Apply
@@ -28,7 +32,11 @@
           (let x (Guess yqstellamatcharg 'inr))
           (let yqstellamatchcond (And (Exists x) (Bool 'true)))
           (let x (Unwrap x))
-          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2)))))))
   (declare __x__ (VariantType (StructType '('inl (DataType 'Uint64)) '('inr (DataType 'Bool)))))
