@@ -1,3 +1,4 @@
 - ignore:
     within:
       - SyntaxGen/*
+      - Yson/SyntaxGen/*

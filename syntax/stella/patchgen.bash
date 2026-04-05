@@ -10,7 +10,7 @@ set -e
 cd "$(dirname "$0")"
 
 DIR="/tmp/SyntaxGen"
-TARGET="../src/SyntaxGen"
+TARGET="../../src/SyntaxGen"
 
 ./codegen.bash "$DIR"
 

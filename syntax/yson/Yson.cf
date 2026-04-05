@@ -1,0 +1,34 @@
+token Indentifier ((letter | '_') (letter | digit | '_' | '.' | '\\' | '-')*);
+
+ATree.              Tree            ::= Attributes Object;
+
+SomeAttributes.     Attributes      ::= "<" MapFragment ">";
+NoneAttributes.     Attributes      ::= ;
+
+ObjectScalar.       Object          ::= Scalar;
+ObjectEntity.       Object          ::= Entity;
+ObjectList.         Object          ::= List;
+ObjectMap.          Object          ::= Map;
+
+ScalarString.       Scalar          ::= YString;
+ScalarInt.          Scalar          ::= Integer;
+ScalarDouble.       Scalar          ::= Double;
+ScalarBoolean.      Scalar          ::= Boolean;
+
+StringQuoted.       YString         ::= String;
+StringIdentifier.   YString         ::= Indentifier;
+
+BooleanFalse.       Boolean         ::= "false";
+BooleanTrue.        Boolean         ::= "true";
+
+AEntity.            Entity          ::= "#";
+
+AList.              List            ::= "[" [ListItem] "]";
+AListItem.          ListItem        ::= Tree;
+separator           ListItem            ";";
+
+AMap.               Map             ::= "{" MapFragment "}";
+AMapFragment.       MapFragment     ::= [KeyValuePair];
+
+AKeyValuePair.      KeyValuePair    ::= YString "=" Tree;
+separator           KeyValuePair        ";";

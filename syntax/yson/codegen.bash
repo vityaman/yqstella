@@ -5,16 +5,17 @@ set -e
 cd "$(dirname "$0")"
 
 SRCS=(
-    AbsStella.hs
-    LexStella.hs
-    ParStella.hs
-    PrintStella.hs
+    AbsYson.hs
+    LexYson.hs
+    ParYson.hs
+    PrintYson.hs
 )
 
-DIR="SyntaxGen"
-TARGET="${1:-../src/SyntaxGen}"
+PKG="Yson.SyntaxGen"
+DIR="Yson/SyntaxGen"
+TARGET="${1:-../../src/Yson/SyntaxGen}"
 
-bnfc --haskell -m -p "$DIR" --functor Stella.cf
+bnfc --haskell -m -p "$PKG" --functor Yson.cf
 
 for file in "${SRCS[@]}"; do
     make "$DIR/$file"
@@ -28,7 +29,3 @@ done
 
 rm -rf "$DIR"
 rm Makefile
-
-if [ -z "$1" ]; then
-    patch "$TARGET/PrintStella.hs" PrintStella.hs.patch
-fi
