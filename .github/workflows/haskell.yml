@@ -46,7 +46,7 @@ jobs:
           stack install happy
 
       - name: Generate SyntaxGen Module
-        run: ./syntax/codegen.bash
+        run: ./syntax/stella/codegen.bash
 
       - name: Generate Cabal File
         run: hpack

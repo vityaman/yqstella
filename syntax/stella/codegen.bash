@@ -12,7 +12,7 @@ SRCS=(
 )
 
 DIR="SyntaxGen"
-TARGET="${1:-../src/SyntaxGen}"
+TARGET="${1:-../../src/SyntaxGen}"
 
 bnfc --haskell -m -p "$DIR" --functor Stella.cf
 
