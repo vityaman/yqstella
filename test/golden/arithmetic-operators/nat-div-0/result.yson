@@ -1,5 +1,34 @@
-minirun ABI version: 2.45.0
-test/golden/arithmetic-operators/nat-div-0/yql.yqls:<main>: Error: Parameters evaluation
-
-    test/golden/arithmetic-operators/nat-div-0/yql.yqls:<main>: Error: Missing value for parameter: _____
-    
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "OptionalType";
+                                    [
+                                        "DataType";
+                                        "Uint64"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        [
+                            "1"
+                        ]
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]
