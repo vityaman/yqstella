@@ -6,7 +6,7 @@ import Data.Char (toUpper)
 import Data.List (sort)
 import Diagnostic.Core (display)
 import qualified Lib as Stella
-import System.Directory (doesDirectoryExist, listDirectory)
+import System.Directory (doesDirectoryExist, getCurrentDirectory, listDirectory)
 import System.Exit (ExitCode (..))
 import System.FilePath (dropExtension, takeFileName, (</>))
 import System.Process (readProcessWithExitCode)
@@ -54,6 +54,10 @@ makeTestCase casePath = do
   let caseName = "Test " ++ takeFileName casePath
 
   let sourcePath = casePath </> "input.yqst"
+      programPath = casePath </> "yql.yqls"
+      paramsPath = casePath </> "parameters.yson"
+      resultPath = casePath </> "result.yson"
+
   source <- readFile sourcePath
   let input = Stella.Source sourcePath source
 
@@ -88,10 +92,26 @@ makeTestCase casePath = do
             ("yqstella does not conform to fizruk diagnostics: " ++ stdout)
             isFizrukCodePresent
 
+  let minirun =
+        let execute = do
+              cwd <- getCurrentDirectory
+              let dockerArgs = ["--platform", "linux/amd64", "-v", cwd ++ ":/w", "-w", "/w"]
+              let minirunArgs = ["--program", programPath, "--params-file", paramsPath, "--print-result"]
+              let args = ["run"] ++ dockerArgs ++ ["vityamand/minirun"] ++ minirunArgs
+
+              (exitCode, stdout, stderr) <-
+                if areTypesCorrect'
+                  then readProcessWithExitCode "docker" args ""
+                  else pure (ExitSuccess, "", "")
+
+              return $ stdout ++ (if exitCode == ExitSuccess then "" else stderr)
+         in goldenVsStringDiff "Minirun" diff resultPath (fmap pack execute)
+
   let artifacts =
         [ artifact "diagnostics.txt" diagnostics',
           artifact "yql.yqls" yql',
-          nikolai
+          nikolai,
+          minirun
         ]
 
   return $ testGroup caseName artifacts

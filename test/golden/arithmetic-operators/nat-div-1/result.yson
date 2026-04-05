@@ -1,0 +1,5 @@
+minirun ABI version: 2.45.0
+test/golden/arithmetic-operators/nat-div-1/yql.yqls:<main>: Error: Parameters evaluation
+
+    test/golden/arithmetic-operators/nat-div-1/yql.yqls:<main>: Error: Missing value for parameter: _____
+    

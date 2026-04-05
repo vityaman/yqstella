@@ -33,7 +33,7 @@ instance YQLTranslatable AST.Program' where
     let rows = Y [A "AsList", Y [A "AsStruct", Q $ Y [Q $ A "result", A "result"]]]
 
     let main' =
-          prelude "dq"
+          prelude "pure"
             ++ topdecls'
             ++ paramdecls'
             ++ [Y [A "let", A "result", Y $ [A "Apply", A "main"] ++ mainargs']]
