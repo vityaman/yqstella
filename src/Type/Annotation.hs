@@ -270,7 +270,7 @@ instance TypeAnnotatable AST.Expr' where
         return (AST.AMatchCase (p', t') pattern' expr')
   annotateType Nothing (AST.List p []) = do
     let message = "type inference for empty lists is not supported (use type ascriptions)"
-    tell [diagnostic Error AMBIGUOUS_LIST (pointRange p) message]
+    tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
     return (AST.List (p, Nothing) [])
   annotateType (Just t) (AST.List p []) = do
     return (AST.List (p, Just t) [])
@@ -278,26 +278,23 @@ instance TypeAnnotatable AST.Expr' where
     headT <- case t of -- FIXME(vityaman): copy-pasted from Cons
       (Just (Type (AST.TypeList () itemT))) ->
         return $ Just $ Type itemT
-      (Just t'') -> do -- FIXME(vityman): improve diagnostic
+      (Just t'') -> do
+        -- FIXME(vityman): improve diagnostic
         let message = "expected " ++ show t'' ++ ", got list"
         tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
         return Nothing
       Nothing ->
         return Nothing
 
-    headT' <- case headT of
-      Just t' ->
-        return $ Just t'
-      Nothing -> do
-        context <- get
-        let types = fmap (annotation . fst . run context) (x : xs)
-            run = flip ((evalState . runWriterT) . inferType)
-        commonType p types
+    x' <- annotateType headT x
+    let t' = fmap Type.list (headT <|> snd (annotation x'))
 
-    let t' = fmap Type.list headT'
-    xxs' <- mapM (annotateType headT') (x : xs)
+    xs'' <- annotateType t' (AST.List p xs)
+    let xs' = case xs'' of
+          (AST.List (_, _) xs''') -> xs'''
+          _ -> error "type annotation changed an AST"
 
-    return (AST.List (p, t') xxs')
+    return (AST.List (p, t') (x' : xs'))
   annotateType t (AST.Add p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2T t lhs rhs
     return (AST.Add (p, t') lhs' rhs')
