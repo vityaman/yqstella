@@ -1,0 +1,19 @@
+language core;
+
+extend with #lists;
+
+fn head(x : Nat) -> Nat {
+  return List::head(x)
+}
+
+fn tail(x : Nat) -> [Nat] {
+  return List::tail(x)
+}
+
+fn isempty(x : Nat) -> Bool {
+  return List::isempty(x)
+}
+
+fn main(x : Nat) -> Nat {
+  return x
+}

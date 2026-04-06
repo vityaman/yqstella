@@ -247,33 +247,11 @@ instance TypeAnnotatable AST.Expr' where
       Just t' -> mapM (annotateType' t') cases
       Nothing -> pure $ fmap (fmap (,Nothing)) cases
 
-    t' <- commonType cases'
+    t' <- commonType p (fmap annotation cases')
 
     return (AST.Match (p, t') expr' cases')
     where
       patterns = fmap (\(AST.AMatchCase _ x _) -> x)
-
-      commonType :: [AST.MatchCase' (Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
-      commonType cases'' = do
-        let pts = fmap annotation cases''
-            groups =
-              map
-                (\((p', t') :| rest) -> (t', p' : map fst rest))
-                (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> a == b) pts))
-
-        case groups of
-          [(Nothing, _)] ->
-            return Nothing
-          [(Nothing, _), (Just t', _)] ->
-            return $ Just t'
-          [(Just t', _)] ->
-            return $ Just t'
-          ts -> do
-            -- TODO(vityaman): improve diagnostic
-            let ts' = fmap (maybe "?" show . fst) ts
-                message = "expected same type for all match-case branches, got " ++ intercalate ", " ts'
-            tell [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
-            return Nothing
 
       annotateType' patterntype (AST.AMatchCase p' pattern'' expr'') = do
         let pattern' = fmap (,Nothing) pattern''
@@ -290,9 +268,33 @@ instance TypeAnnotatable AST.Expr' where
         let t' = snd $ annotation expr'
 
         return (AST.AMatchCase (p', t') pattern' expr')
-  annotateType _ x@(AST.List {}) = do
-    tell [notImplemented (annotation x) "List"]
-    return $ fmap (,Nothing) x
+  annotateType Nothing (AST.List p []) = do
+    let message = "type inference for empty lists is not supported (use type ascriptions)"
+    tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
+    return (AST.List (p, Nothing) [])
+  annotateType (Just t) (AST.List p []) = do
+    return (AST.List (p, Just t) [])
+  annotateType t (AST.List p (x : xs)) = do
+    headT <- case t of -- FIXME(vityaman): copy-pasted from Cons
+      (Just (Type (AST.TypeList () itemT))) ->
+        return $ Just $ Type itemT
+      (Just t'') -> do
+        -- FIXME(vityman): improve diagnostic
+        let message = "expected " ++ show t'' ++ ", got list"
+        tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
+        return Nothing
+      Nothing ->
+        return Nothing
+
+    x' <- annotateType headT x
+    let t' = fmap Type.list (headT <|> snd (annotation x'))
+
+    xs'' <- annotateType t' (AST.List p xs)
+    let xs' = case xs'' of
+          (AST.List (_, _) xs''') -> xs'''
+          _ -> error "type annotation changed an AST"
+
+    return (AST.List (p, t') (x' : xs'))
   annotateType t (AST.Add p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2T t lhs rhs
     return (AST.Add (p, t') lhs' rhs')
@@ -518,18 +520,54 @@ instance TypeAnnotatable AST.Expr' where
         t' = fmap (toType . Map.toList) t''
 
     return (AST.Record (p, t') bindings')
-  annotateType _ x@(AST.ConsList {}) = do
-    tell [notImplemented (annotation x) "ConsList"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Head {}) = do
-    tell [notImplemented (annotation x) "Head"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.IsEmpty {}) = do
-    tell [notImplemented (annotation x) "IsEmpty"]
-    return $ fmap (,Nothing) x
-  annotateType _ x@(AST.Tail {}) = do
-    tell [notImplemented (annotation x) "Tail"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.ConsList p head'' tail'') = do
+    headT <- case t of
+      (Just (Type (AST.TypeList () itemT))) ->
+        return $ Just $ Type itemT
+      (Just t'') -> do
+        let message = "expected " ++ show t'' ++ ", got list"
+        tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
+        return Nothing
+      Nothing ->
+        return Nothing
+
+    head' <- annotateType headT head''
+    let itemT = headT <|> snd (annotation head')
+        listT = fmap Type.list itemT
+
+    tail' <- annotateType listT tail''
+    let tailT = listT <|> snd (annotation tail')
+
+    t' <- listItemType (annotation tail'') tailT
+    return (AST.ConsList (p, t') head' tail')
+  annotateType t (AST.Head p expr) = do
+    let listT = fmap Type.list t
+    expr' <- annotateType listT expr
+
+    let listT' = listT <|> snd (annotation expr')
+    t' <- listItemType (annotation expr) listT'
+
+    return (AST.Head (p, t') expr')
+  annotateType t (AST.IsEmpty p expr) = do
+    t' <- liftType p AST.TypeBool t
+    expr' <- inferType expr
+    _ <- uncurry listItemType $ annotation expr'
+    return (AST.IsEmpty (p, Just t') expr')
+  annotateType t (AST.Tail p expr) = do
+    headT <- case t of -- FIXME(vityaman): copy-pasted from Cons
+      (Just (Type (AST.TypeList () itemT))) ->
+        return $ Just $ Type itemT
+      (Just t'') -> do
+        let message = "expected " ++ show t'' ++ ", got list"
+        tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
+        return Nothing
+      Nothing ->
+        return Nothing
+
+    let listT = fmap Type.list headT
+    expr' <- annotateType listT expr
+
+    return (AST.Tail (p, listT) expr')
   annotateType _ x@(AST.Panic {}) = do
     tell [notImplemented (annotation x) "Panic"]
     return $ fmap (,Nothing) x
@@ -769,13 +807,51 @@ liftType p lifting = liftType' p (Type $ lifting ())
 liftType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
 liftType' p lifting (Just checked) = do
   when (lifting /= checked) $
-    tell [mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p (show checked) (show lifting)]
+    tell [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
   return lifting
 liftType' _ lifting Nothing =
   pure lifting
 
+listItemType :: Position -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
+listItemType p t =
+  case t of
+    (Just (Type (AST.TypeList () t''))) ->
+      return $ Just $ Type t''
+    (Just t'') -> do
+      let message = "expected list at cons tail, got " ++ show t''
+      tell [diagnostic Error NOT_A_LIST (pointRange p) message]
+      return Nothing
+    Nothing ->
+      return Nothing
+
+commonType :: Position -> [(Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
+commonType p pts = do
+  let groups =
+        map
+          (\((p', t') :| rest) -> (t', p' : map fst rest))
+          (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> a == b) pts))
+
+  case groups of
+    [(Nothing, _)] ->
+      return Nothing
+    [(Nothing, _), (Just t', _)] ->
+      return $ Just t'
+    [(Just t', _)] ->
+      return $ Just t'
+    ts -> do
+      -- TODO(vityaman): improve diagnostic
+      let ts' = fmap (maybe "?" show . fst) ts
+          message = "expected same type for all subexpressions, got " ++ intercalate ", " ts'
+      tell [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
+      return Nothing
+
 mismatch :: Code -> Position -> Type -> Type -> Diagnostic
-mismatch code p expected actual = mismatchSS code p (show expected) (show actual)
+mismatch code p expected@(Type (AST.TypeList () _)) actual@(Type (AST.TypeList () _)) =
+  mismatchSS code p (show expected) (show actual)
+mismatch _ p expected@(Type (AST.TypeList () _)) actual@(Type _) =
+  mismatchSS NOT_A_LIST p (show expected) (show actual)
+mismatch code p expected actual =
+  mismatchSS code p (show expected) (show actual)
 
 mismatchSS :: Code -> Position -> String -> String -> Diagnostic
 mismatchSS code p expected actual =

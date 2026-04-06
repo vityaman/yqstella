@@ -1,0 +1,7 @@
+language core;
+
+extend with #lists, #let-bindings;
+
+fn main(x : Nat) -> Nat {
+  return let y = [[], []] in x
+}

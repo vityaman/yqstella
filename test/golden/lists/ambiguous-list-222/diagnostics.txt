@@ -1,0 +1,4 @@
+test/golden/lists/ambiguous-list-222/input.yqst:6:19: [ERROR_AMBIGUOUS_LIST_TYPE]
+type inference for empty lists is not supported (use type ascriptions)
+>   return let y = [[], [0]] in x
+                    ^

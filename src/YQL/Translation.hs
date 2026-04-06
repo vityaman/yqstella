@@ -150,6 +150,12 @@ instance YQLTranslatable AST.Expr' where
         body = [args] ++ branches ++ [switch]
 
     return $ Y [A "block", Q $ Y body]
+  toYQL (AST.List (_, Just (Type (AST.TypeList () t))) []) = do
+    t' <- toYQL $ fmap (const (unknown, Nothing)) t
+    return $ Y [A "ToList", Y [A "Nothing", Y [A "OptionalType", t']]]
+  toYQL (AST.List _ (x : xs)) = do
+    exprs' <- mapM toYQL (x : xs)
+    return $ Y $ A "AsList" : exprs'
   toYQL (AST.Application _ f xs) = do
     f' <- toYQL f
     xs' <- mapM toYQL xs
@@ -166,6 +172,19 @@ instance YQLTranslatable AST.Expr' where
   toYQL (AST.Record _ bindings) = do
     bindings' <- mapM toYQL bindings
     return $ Y $ A "AsStruct" : bindings'
+  toYQL (AST.ConsList _ head'' tail'') = do
+    head' <- toYQL head''
+    tail' <- toYQL tail''
+    return $ Y [A "Prepend", head', tail']
+  toYQL (AST.Head _ expr) = do
+    expr' <- toYQL expr
+    return $ Y [A "Unwrap", Y [A "ToOptional", expr']]
+  toYQL (AST.IsEmpty _ expr) = do
+    expr' <- toYQL expr
+    return $ Y [A "Not", Y [A "HasItems", expr']]
+  toYQL (AST.Tail _ expr) = do
+    expr' <- toYQL expr
+    return $ Y [A "Skip", expr', Y [A "Uint64", Q $ A "1"]]
   toYQL (AST.Inl (_, Just (Type t)) expr) = do
     t' <- toYQL $ fmap (const (unknown, Nothing)) t
     expr' <- toYQL expr
@@ -259,6 +278,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension Tuples = True
     isSupportedExtension Records = True
     isSupportedExtension SumTypes = True
+    isSupportedExtension Lists = True
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension LetBindings = True
