@@ -10,21 +10,9 @@ test/golden/sum-types/example-disabled/input.yqst:4:42: [ERROR_BAD_EXTENSION]
 disabled extension usage: #sum-types
 >   return if first then inl(succ(0)) else inr(true)
                                            ^
-test/golden/sum-types/example-disabled/input.yqst:8:10: [ERROR_BAD_EXTENSION]
-disabled extension usage: #sum-types
->   return match test(input) {
-           ^
 test/golden/sum-types/example-disabled/input.yqst:9:7: [ERROR_BAD_EXTENSION]
 disabled extension usage: #sum-types
 >       inl(n) => n
-        ^
-test/golden/sum-types/example-disabled/input.yqst:9:7: [ERROR_BAD_EXTENSION]
-disabled extension usage: #sum-types
->       inl(n) => n
-        ^
-test/golden/sum-types/example-disabled/input.yqst:10:7: [ERROR_BAD_EXTENSION]
-disabled extension usage: #sum-types
->     | inr(_) => 0
         ^
 test/golden/sum-types/example-disabled/input.yqst:10:7: [ERROR_BAD_EXTENSION]
 disabled extension usage: #sum-types
