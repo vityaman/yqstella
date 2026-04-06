@@ -121,14 +121,14 @@ exhaustiveness' _ t =
 withNoTypingAsUnit' :: AST.Pattern' a -> AST.Pattern' a
 withNoTypingAsUnit' (AST.PatternVariant p (AST.StellaIdent tag) (AST.NoPatternData p')) =
   AST.PatternVariant p (AST.StellaIdent tag) (AST.SomePatternData p' (AST.PatternUnit p'))
-withNoTypingAsUnit' (AST.PatternVariant p (AST.StellaIdent tag) (AST.SomePatternData p' pattern)) =
-  let pattern' = withNoTypingAsUnit' pattern
+withNoTypingAsUnit' (AST.PatternVariant p (AST.StellaIdent tag) (AST.SomePatternData p' pattern'')) =
+  let pattern' = withNoTypingAsUnit' pattern''
    in AST.PatternVariant p (AST.StellaIdent tag) (AST.SomePatternData p' pattern')
-withNoTypingAsUnit' (AST.PatternInl p pattern) =
-  let pattern' = withNoTypingAsUnit' pattern
+withNoTypingAsUnit' (AST.PatternInl p pattern'') =
+  let pattern' = withNoTypingAsUnit' pattern''
    in AST.PatternInl p pattern'
-withNoTypingAsUnit' (AST.PatternInr p pattern) =
-  let pattern' = withNoTypingAsUnit' pattern
+withNoTypingAsUnit' (AST.PatternInr p pattern'') =
+  let pattern' = withNoTypingAsUnit' pattern''
    in AST.PatternInr p pattern'
 withNoTypingAsUnit' (AST.PatternTuple p patterns) =
   AST.PatternTuple p (fmap withNoTypingAsUnit' patterns)
@@ -150,16 +150,16 @@ withNoTypingAsUnit' (AST.PatternUnit p) =
   AST.PatternUnit p
 withNoTypingAsUnit' (AST.PatternInt p n) =
   AST.PatternInt p n
-withNoTypingAsUnit' (AST.PatternSucc p pattern) =
-  let pattern' = withNoTypingAsUnit' pattern
+withNoTypingAsUnit' (AST.PatternSucc p pattern'') =
+  let pattern' = withNoTypingAsUnit' pattern''
    in AST.PatternSucc p pattern'
 withNoTypingAsUnit' (AST.PatternVar p stellaident) =
   AST.PatternVar p stellaident
-withNoTypingAsUnit' (AST.PatternAsc p pattern type_) =
-  let pattern' = withNoTypingAsUnit' pattern
+withNoTypingAsUnit' (AST.PatternAsc p pattern'' type_) =
+  let pattern' = withNoTypingAsUnit' pattern''
    in AST.PatternAsc p pattern' type_
-withNoTypingAsUnit' (AST.PatternCastAs p pattern stellaident) =
-  let pattern' = withNoTypingAsUnit' pattern
+withNoTypingAsUnit' (AST.PatternCastAs p pattern'' stellaident) =
+  let pattern' = withNoTypingAsUnit' pattern''
    in AST.PatternCastAs p pattern' stellaident
 
 withNoTypingAsUnit :: AST.Type' a -> AST.Type' a
