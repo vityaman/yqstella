@@ -134,6 +134,10 @@ instance YQLTranslatable AST.Expr' where
     paramdecls' <- mapM toYQL paramdecls
     expr' <- toYQL expr
     return $ Y [A "lambda", Q (Y paramdecls'), expr']
+  toYQL (AST.Variant (_, Just (Type t)) (AST.StellaIdent tag) (AST.SomeExprData _ expr)) = do
+    t' <- toYQL (fmap (const (unknown, Nothing)) t)
+    expr' <- toYQL expr
+    return $ Y [A "Variant", expr', Q $ A tag, t']
   toYQL (AST.Match _ expr cases) = do
     let arg = "yqstellamatchexpr"
         brprefix = "yqstellamatchbr"
@@ -212,8 +216,6 @@ instance YQLTranslatable AST.Expr' where
   toYQL x = Left $ unsupported x "AST.Expr'"
 
 instance YQLTranslatable AST.Type' where
-  toYQL (AST.TypeBool _) = Right $ Y [A "DataType", Q $ A "Bool"]
-  toYQL (AST.TypeNat _) = Right $ Y [A "DataType", Q $ A "Uint64"]
   toYQL (AST.TypeSum _ inl inr) = do
     inl' <- toYQL inl
     inr' <- toYQL inr
@@ -226,6 +228,18 @@ instance YQLTranslatable AST.Type' where
               Q $ Y [Q $ A "inr", inr']
             ]
         ]
+  toYQL (AST.TypeVariant _ fields) = do
+    fields' <- mapM toYQL' fields
+    Right $ Y [A "VariantType", Y $ A "StructType" : fields']
+    where
+      toYQL' (AST.AVariantFieldType _ (AST.StellaIdent name) (AST.NoTyping _)) = do
+        Right $ Y [Q $ A name, Y [A "VoidType"]]
+      toYQL' (AST.AVariantFieldType _ (AST.StellaIdent name) (AST.SomeTyping _ t)) = do
+        t' <- toYQL t
+        Right $ Q $ Y [Q $ A name, t']
+  toYQL (AST.TypeBool _) = Right $ Y [A "DataType", Q $ A "Bool"]
+  toYQL (AST.TypeNat _) = Right $ Y [A "DataType", Q $ A "Uint64"]
+  toYQL (AST.TypeUnit _) = Right $ Y [A "VoidType"]
   toYQL x = Left $ unsupported x "AST.Type'"
 
 instance YQLTranslatable AST.MatchCase' where
@@ -254,6 +268,10 @@ instance YQLTranslatable AST.MatchCase' where
     return $ Y [A "lambda", Q $ Y [arg], Y [A "block", Q $ Y body]]
 
 recipes :: AST.Pattern' (Position, Maybe Type) -> Either Diagnostic (Map String (Node -> Node))
+recipes (AST.PatternVariant _ (AST.StellaIdent tag) (AST.SomePatternData _ pattern'')) = do
+  recipes'' <- recipes pattern''
+  let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A tag]) recipes''
+  return recipes'
 recipes (AST.PatternInl _ pattern'') = do
   recipes'' <- recipes pattern''
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inl"]) recipes''
@@ -279,6 +297,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension Records = True
     isSupportedExtension SumTypes = True
     isSupportedExtension Lists = True
+    isSupportedExtension Variants = True
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension LetBindings = True

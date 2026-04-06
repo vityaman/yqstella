@@ -35,6 +35,7 @@ data Extension
   | Records
   | SumTypes
   | Variants
+  | NullaryVariantLabels
   | Enumerations
   | Lists
   | References
@@ -87,6 +88,7 @@ extensionNameMap =
       (Records, "#records"),
       (SumTypes, "#sum-types"),
       (Variants, "#variants"),
+      (NullaryVariantLabels, "#nullary-variant-labels"),
       (Enumerations, "#enumerations"),
       (Lists, "#lists"),
       (References, "#references"),

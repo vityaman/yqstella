@@ -1,0 +1,52 @@
+test/golden/variants/example-disabled/input.yqst:5:32: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+> fn attempt(get_one? : Bool) -> <| value : Nat, failure : Unit |> {
+                                 ^
+test/golden/variants/example-disabled/input.yqst:5:35: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+> fn attempt(get_one? : Bool) -> <| value : Nat, failure : Unit |> {
+                                    ^
+test/golden/variants/example-disabled/input.yqst:5:41: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+> fn attempt(get_one? : Bool) -> <| value : Nat, failure : Unit |> {
+                                          ^
+test/golden/variants/example-disabled/input.yqst:5:48: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+> fn attempt(get_one? : Bool) -> <| value : Nat, failure : Unit |> {
+                                                 ^
+test/golden/variants/example-disabled/input.yqst:5:56: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+> fn attempt(get_one? : Bool) -> <| value : Nat, failure : Unit |> {
+                                                         ^
+test/golden/variants/example-disabled/input.yqst:8:12: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>       then <| value = 0 |>
+             ^
+test/golden/variants/example-disabled/input.yqst:8:21: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>       then <| value = 0 |>
+                      ^
+test/golden/variants/example-disabled/input.yqst:9:12: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>       else <| failure = unit |>
+             ^
+test/golden/variants/example-disabled/input.yqst:9:23: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>       else <| failure = unit |>
+                        ^
+test/golden/variants/example-disabled/input.yqst:14:7: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>       <| value = n |> => succ(n)
+        ^
+test/golden/variants/example-disabled/input.yqst:14:16: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>       <| value = n |> => succ(n)
+                 ^
+test/golden/variants/example-disabled/input.yqst:15:7: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>     | <| failure = n |> => 0
+        ^
+test/golden/variants/example-disabled/input.yqst:15:18: [ERROR_BAD_EXTENSION]
+disabled extension usage: #variants
+>     | <| failure = n |> => 0
+                   ^

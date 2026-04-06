@@ -1,0 +1,4 @@
+test/golden/variants-draen-guy/ill-unexpected-variant/input.yqst:6:10: [ERROR_UNEXPECTED_VARIANT]
+expected Just Nat, but got a variant
+>   return <| a = succ(0) |>;
+           ^

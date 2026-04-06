@@ -1,0 +1,7 @@
+language core;
+
+extend with #variants;
+
+fn main(n : Nat) -> <| a : Bool, b : Nat |> {
+  return <| c = succ(0) |>;
+}
