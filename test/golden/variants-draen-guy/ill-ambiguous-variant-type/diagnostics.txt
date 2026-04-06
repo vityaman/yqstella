@@ -1,0 +1,4 @@
+test/golden/variants-draen-guy/ill-ambiguous-variant-type/input.yqst:6:17: [ERROR_AMBIGUOUS_VARIANT_TYPE]
+type inference for variant types is not supported (use type ascriptions)
+>   return match (<| a = 0 |>) {
+                  ^

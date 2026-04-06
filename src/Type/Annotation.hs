@@ -224,9 +224,50 @@ instance TypeAnnotatable AST.Expr' where
         infer'
 
     return $ AST.Abstraction (p, t') paramdecls' expr'
-  annotateType _ x@(AST.Variant {}) = do
-    tell [notImplemented (annotation x) "Variant"]
-    return $ fmap (,Nothing) x
+  annotateType t (AST.Variant p n@(AST.StellaIdent tag) expr) = do
+    exprT <- case t of
+      (Just (Type (AST.TypeVariant () entries))) -> do
+        let tag'' (AST.AVariantFieldType _ (AST.StellaIdent tag') _) = tag'
+            entry = find (\x -> tag'' x == tag) entries
+        case entry of
+          Just (AST.AVariantFieldType _ _ t') ->
+            return $ Just t'
+          Nothing -> do
+            let message = "unexpected variant label " ++ tag ++ " for " ++ show t
+            tell [diagnostic Error UNEXPECTED_VARIANT_LABEL (pointRange p) message]
+            return Nothing
+      (Just _) -> do
+        let message = "expected " ++ show t ++ ", but got a variant"
+        tell [diagnostic Error UNEXPECTED_VARIANT (pointRange p) message]
+        return Nothing
+      Nothing -> do
+        let message = "type inference for variant types is not supported (use type ascriptions)"
+        tell [diagnostic Error AMBIGUOUS_VARIANT_TYPE (pointRange p) message]
+        return Nothing
+
+    (expr', t'') <- case (expr, exprT) of
+      (AST.NoExprData _, Just (AST.NoTyping _)) -> do
+        return (fmap (,Nothing) expr, Nothing)
+      (AST.NoExprData p', Just (AST.SomeTyping _ t')) -> do
+        let message = "expected some variant label with type " ++ show t' ++ ", got nullary"
+        tell [diagnostic Error UNEXPECTED_NULLARY_VARIANT_PATTERN (pointRange p') message]
+        return (fmap (,Nothing) expr, Nothing)
+      (AST.NoExprData _, Nothing) -> do
+        return (fmap (,Nothing) expr, Nothing)
+      (AST.SomeExprData p' expr', Just (AST.NoTyping _)) -> do
+        expr'' <- inferType expr'
+        let message = "expected nullary variant label, but got " ++ show expr''
+        tell [diagnostic Error UNEXPECTED_NULLARY_VARIANT_PATTERN (pointRange p') message]
+        return (AST.SomeExprData (p', snd $ annotation expr'') expr'', Nothing)
+      (AST.SomeExprData p' expr', Just (AST.SomeTyping _ t')) -> do
+        expr'' <- checkType (Type.fromAST t') expr'
+        return (AST.SomeExprData (p', snd $ annotation expr'') expr'', snd $ annotation expr'')
+      (AST.SomeExprData p' expr', Nothing) -> do
+        expr'' <- inferType expr'
+        return (AST.SomeExprData (p', snd $ annotation expr'') expr'', Nothing)
+
+    let t' = t'' >> t
+    return (AST.Variant (p, t') n expr')
   annotateType _ (AST.Match p expr []) = do
     expr' <- inferType expr
     let message = "expected at least one match case"
@@ -725,13 +766,26 @@ sanitizeT (AST.TypeRecord p fields) = do
 
   fields' <- mapM sanitizeF fields
   let (uniq, dup) = sepUniqDupBy (\(AST.ARecordFieldType _ n _) -> n) fields'
-
       toDiagnostic (AST.ARecordFieldType p' (AST.StellaIdent name') _) =
         let message = "duplicate field: " ++ name'
          in diagnostic Error DUPLICATE_RECORD_TYPE_FIELDS (pointRange p') message
 
   tell $ fmap toDiagnostic dup
   return (AST.TypeRecord p uniq)
+sanitizeT (AST.TypeVariant p fields) = do
+  let sanitizeF (AST.AVariantFieldType p' n (AST.SomeTyping p'' t)) = do
+        t' <- sanitizeT t
+        return (AST.AVariantFieldType p' n (AST.SomeTyping p'' t'))
+      sanitizeF t = pure t
+
+  fields' <- mapM sanitizeF fields
+  let (uniq, dup) = sepUniqDupBy (\(AST.AVariantFieldType _ n _) -> n) fields'
+      toDiagnostic (AST.AVariantFieldType p' (AST.StellaIdent name') _) =
+        let message = "duplicate field: " ++ name'
+         in diagnostic Error DUPLICATE_VARIANT_TYPE_FIELDS (pointRange p') message
+
+  tell $ fmap toDiagnostic dup
+  return (AST.TypeVariant p uniq)
 sanitizeT t = pure t
 
 toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)

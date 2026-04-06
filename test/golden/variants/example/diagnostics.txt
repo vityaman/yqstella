@@ -1,0 +1,4 @@
+test/golden/variants/example/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #variants not implemented
+> language core;
+  ^

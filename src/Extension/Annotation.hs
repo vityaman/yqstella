@@ -162,7 +162,7 @@ instance ExtensionsAnnotatable AST.Type' where
 
 instance ExtensionsAnnotatable AST.MatchCase' where
   annotateExtensions (AST.AMatchCase p pattern_ expr) =
-    AST.AMatchCase (p, Set.singleton Extension.SumTypes) pattern_' expr'
+    AST.AMatchCase (p, Set.empty) pattern_' expr'
     where
       pattern_' = annotateExtensions pattern_
       expr' = annotateExtensions expr
@@ -203,9 +203,14 @@ instance ExtensionsAnnotatable AST.Pattern' where
       pattern_' = annotateExtensions pattern_
       type_' = annotateExtensions type_
   annotateExtensions (AST.PatternVariant p stellaident patterndata) =
-    AST.PatternVariant (p, Set.fromList [Extension.Variants, Extension.StructuralPatterns]) stellaident patterndata'
+    AST.PatternVariant (p, extensions) stellaident patterndata'
     where
       patterndata' = annotateExtensions patterndata
+      extensions =
+        Set.fromList $
+          Extension.Variants : case patterndata' of
+            AST.NoPatternData _ -> [Extension.NullaryVariantLabels]
+            AST.SomePatternData _ pattern' -> [Extension.StructuralPatterns | isComplex pattern']
   annotateExtensions (AST.PatternInl p pattern_) =
     AST.PatternInl (p, extensions) pattern_'
     where
@@ -356,11 +361,14 @@ instance ExtensionsAnnotatable AST.Expr' where
       paramdecls' = fmap annotateExtensions paramdecls
       expr' = annotateExtensions expr
   annotateExtensions (AST.Variant p stellaident exprdata) =
-    AST.Variant (p, Set.singleton Extension.Variants) stellaident exprdata'
+    AST.Variant (p, p'') stellaident exprdata'
     where
       exprdata' = annotateExtensions exprdata
+      p'' = case exprdata of
+        AST.NoExprData _ -> Set.fromList [Extension.Variants, Extension.NullaryVariantLabels]
+        AST.SomeExprData _ _ -> Set.fromList [Extension.Variants]
   annotateExtensions (AST.Match p expr matchcases) =
-    AST.Match (p, Set.singleton Extension.SumTypes) expr' matchcases'
+    AST.Match (p, Set.empty) expr' matchcases'
     where
       expr' = annotateExtensions expr
       matchcases' = fmap annotateExtensions matchcases
@@ -550,9 +558,12 @@ instance ExtensionsAnnotatable AST.PatternBinding' where
 
 instance ExtensionsAnnotatable AST.VariantFieldType' where
   annotateExtensions (AST.AVariantFieldType p stellaident optionaltyping) =
-    AST.AVariantFieldType (p, Set.singleton Extension.Variants) stellaident optionaltyping'
+    AST.AVariantFieldType (p, p'') stellaident optionaltyping'
     where
       optionaltyping' = annotateExtensions optionaltyping
+      p'' = case optionaltyping of
+        AST.NoTyping _ -> Set.fromList [Extension.Variants, Extension.NullaryVariantLabels]
+        AST.SomeTyping _ _ -> Set.fromList [Extension.Variants]
 
 instance ExtensionsAnnotatable AST.RecordFieldType' where
   annotateExtensions (AST.ARecordFieldType p stellaident type_) =

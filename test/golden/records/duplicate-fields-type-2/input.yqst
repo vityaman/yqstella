@@ -1,0 +1,7 @@
+language core;
+
+extend with #records;
+
+fn main(x : { a : Nat, a : Nat }) -> { a : { a : Nat } } {
+  return { a = x }
+}
