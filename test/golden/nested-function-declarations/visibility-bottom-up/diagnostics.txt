@@ -1,0 +1,4 @@
+test/golden/nested-function-declarations/visibility-bottom-up/input.yqst:14:10: [ERROR_UNDEFINED_VARIABLE]
+undefined variable g
+>   return g(0)
+           ^

@@ -1,0 +1,19 @@
+language core;
+
+extend with #nested-function-declarations;
+
+fn main(_ : Nat) -> Nat {
+  fn f(x : Nat) -> Nat {
+      return x
+  }
+
+  fn g(x : Nat) -> Nat {
+      return 0
+  }
+
+  fn f(x : Nat) -> Nat {
+      return g(x)
+  }
+
+  return f(0)
+}

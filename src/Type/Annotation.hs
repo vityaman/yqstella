@@ -76,15 +76,14 @@ instance TypeAnnotatable AST.Program' where
 
 instance TypeAnnotatable AST.Decl' where
   annotateType _ (AST.DeclFun p annotations stellaident paramdecls returntype throwtype decls expr) = do
+    unless (null annotations) $ tell [notImplemented p "DeclFun annotations"]
+
     let annotations' = fmap (fmap (,Nothing)) annotations
         paramdecls' = fmap (fmap (,Nothing)) paramdecls
         returntype' = fmap (,Nothing) returntype
         throwtype' = fmap (,Nothing) throwtype
-        decls' = fmap (fmap (,Nothing)) decls
 
-    unless (null annotations) $ tell [notImplemented p "DeclFun annotations"]
-
-    unless (null decls) $ tell [notImplemented p "NestedFunctionDeclarations"]
+    context' <- get >>= ctxExtendByDecls decls >>= ctxExtendByParamDecls paramdecls
 
     _ <- case throwtype of
       (AST.NoThrowType _) -> pure ()
@@ -94,7 +93,7 @@ instance TypeAnnotatable AST.Decl' where
           (AST.SomeReturnType _ t) -> Just $ Type.fromAST t
           (AST.NoReturnType _) -> Nothing
 
-    context' <- get >>= ctxExtendByParamDecls paramdecls
+    decls' <- withStateTAE (const context') (mapM inferType decls)
     expr' <- withStateTAE (const context') (annotateType returntype'' expr)
 
     argTypes <- mapM toPair paramdecls
