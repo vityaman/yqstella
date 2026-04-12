@@ -84,12 +84,15 @@ makeTestCase casePath = do
 
           let areFizrukTypesCorrect' = exitCode == ExitSuccess
 
+          let sideBySide = stdout ++ "\n\nVS\n\n" ++ diagnostics'
+
           assertEqual
-            ("fizruk vs yqstella status: \n" ++ stdout ++ "\n\nVS\n\n" ++ diagnostics')
+            ("fizruk vs yqstella status: \n" ++ sideBySide)
             areFizrukTypesCorrect'
             areTypesCorrect'
+
           assertBool
-            ("yqstella does not conform to fizruk diagnostics: " ++ stdout)
+            ("yqstella does not conform to fizruk diagnostics: " ++ sideBySide)
             isFizrukCodePresent
 
   let minirun =

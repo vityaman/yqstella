@@ -1,0 +1,4 @@
+test/golden/nullary-variant-labels-draen-guy/ill-unexpected_non_nullary_variant_pattern/input.yqst:10:12: [ERROR_UNEXPECTED_NON_NULLARY_VARIANT_PATTERN]
+unexpected non nullary pattern
+>       <| a = a    |> => 0
+             ^

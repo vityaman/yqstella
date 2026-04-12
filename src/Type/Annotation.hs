@@ -13,7 +13,7 @@ import Data.List (groupBy, intercalate)
 import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
+import Data.Maybe (catMaybes, fromMaybe, isJust, mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
@@ -249,14 +249,14 @@ instance TypeAnnotatable AST.Expr' where
         return (fmap (,Nothing) expr, Nothing)
       (AST.NoExprData p', Just (AST.SomeTyping _ t')) -> do
         let message = "expected some variant label with type " ++ show t' ++ ", got nullary"
-        tell [diagnostic Error UNEXPECTED_NULLARY_VARIANT_PATTERN (pointRange p') message]
+        tell [diagnostic Error MISSING_DATA_FOR_LABEL (pointRange p') message]
         return (fmap (,Nothing) expr, Nothing)
       (AST.NoExprData _, Nothing) -> do
         return (fmap (,Nothing) expr, Nothing)
       (AST.SomeExprData p' expr', Just (AST.NoTyping _)) -> do
         expr'' <- inferType expr'
         let message = "expected nullary variant label, but got " ++ show expr''
-        tell [diagnostic Error UNEXPECTED_NULLARY_VARIANT_PATTERN (pointRange p') message]
+        tell [diagnostic Error UNEXPECTED_DATA_FOR_NULLARY_LABEL (pointRange p') message]
         return (AST.SomeExprData (p', snd $ annotation expr'') expr'', Nothing)
       (AST.SomeExprData p' expr', Just (AST.SomeTyping _ t')) -> do
         expr'' <- checkType (Type.fromAST t') expr'
@@ -276,16 +276,16 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- inferType expr
     let expr't = snd $ annotation expr'
 
-    () <- case expr't of
-      Just t'
+    cases' <- case expr't of
+      Just t' -> mapM (annotateType' t') cases
+      Nothing -> pure $ fmap (fmap (,Nothing)) cases
+
+    () <- case (expr't, all (isJust . snd . annotation) cases') of
+      (Just t', True)
         | not (PatternMatching.isExhaustive (patterns cases) t') ->
             let message = "nonexchaustive pattern-matching"
              in tell [diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message]
       _ -> pure ()
-
-    cases' <- case expr't of
-      Just t' -> mapM (annotateType' t') cases
-      Nothing -> pure $ fmap (fmap (,Nothing)) cases
 
     t' <- commonType p (fmap annotation cases')
 

@@ -1,0 +1,4 @@
+test/golden/nullary-variant-labels-draen-guy/ill-unexpected_data_for_nullary_label/input.yqst:8:15: [ERROR_UNEXPECTED_DATA_FOR_NULLARY_LABEL]
+expected nullary variant label, but got ConstInt (8:17,Just Nat) 0
+>   return <| a = 0 |>;
+                ^

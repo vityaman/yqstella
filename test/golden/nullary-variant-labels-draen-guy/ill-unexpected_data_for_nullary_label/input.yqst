@@ -1,0 +1,9 @@
+language core;
+
+extend with
+  #variants,
+  #nullary-variant-labels;
+
+fn main(n : Nat) -> <| a |> {
+  return <| a = 0 |>;
+}
