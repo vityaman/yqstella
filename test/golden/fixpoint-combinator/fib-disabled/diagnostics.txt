@@ -1,0 +1,4 @@
+test/golden/fixpoint-combinator/fib-disabled/input.yqst:15:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #fixpoint-combinator
+>   return fix(fibgen)(n)
+           ^
