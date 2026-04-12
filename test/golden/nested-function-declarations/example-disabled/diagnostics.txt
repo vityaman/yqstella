@@ -1,0 +1,8 @@
+test/golden/nested-function-declarations/example-disabled/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #nested-function-declarations
+> language core;
+  ^
+test/golden/nested-function-declarations/example-disabled/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #nested-function-declarations
+> language core;
+  ^

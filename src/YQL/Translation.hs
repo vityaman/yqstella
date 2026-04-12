@@ -55,9 +55,12 @@ instance YQLTranslatable AST.Program' where
         Right $ A $ "__" ++ name' ++ "__"
 
 instance YQLTranslatable AST.Decl' where
-  toYQL (AST.DeclFun p _ (AST.StellaIdent name) paramdecls _ (AST.NoThrowType _) [] expr) = do
-    lambda' <- toYQL (AST.Abstraction p paramdecls expr)
-    return $ Y [A "let", A name, lambda']
+  toYQL (AST.DeclFun _ _ (AST.StellaIdent name) paramdecls _ (AST.NoThrowType _) decls expr) = do
+    paramdecls' <- mapM toYQL paramdecls
+    decls' <- mapM toYQL decls
+    expr' <- toYQL expr
+    let body = Y [A "block", Q $ Y $ decls' ++ [Y [A "return", expr']]]
+    return $ Y [A "let", A name, Y [A "lambda", Q (Y paramdecls'), body]]
   toYQL x = Left $ unsupported x "AST.Decl'"
 
 instance YQLTranslatable AST.ParamDecl' where
@@ -300,6 +303,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension Variants = True
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
+    isSupportedExtension NestedFunctionDeclarations = True
     isSupportedExtension LetBindings = True
     isSupportedExtension TypeAscriptions = True
     isSupportedExtension NaturalLiterals = True

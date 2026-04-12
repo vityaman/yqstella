@@ -1,0 +1,23 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let Bool::not (lambda '(b) (block '(
+    (return (If b (Bool 'false) (Bool 'true)))))))
+  (let plus4 (lambda '(n) (block '(
+    (let plus2 (lambda '(n) (block '(
+      (return (+ (+ n (Uint64 '1)) (Uint64 '1)))))))
+    (return (Apply plus2 (Apply plus2 n)))))))
+  (let twice (lambda '(f) (block '(
+    (let g (lambda '(x) (block '(
+      (return (Apply f (Apply f x)))))))
+    (return g)))))
+  (let main (lambda '(b) (block '(
+    (return (Apply (Apply twice Bool::not) b))))))
+  (declare __b__ (DataType 'Bool))
+  (let result (Apply main __b__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

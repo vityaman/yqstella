@@ -1,0 +1,8 @@
+test/golden/nested-function-declarations/duplicate/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: f
+> language core;
+  ^
+test/golden/nested-function-declarations/duplicate/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: f
+> language core;
+  ^
