@@ -59,7 +59,12 @@ instance YQLTranslatable AST.Decl' where
     paramdecls' <- mapM toYQL paramdecls
     decls' <- mapM toYQL decls
     expr' <- toYQL expr
-    let body = Y [A "block", Q $ Y $ decls' ++ [Y [A "return", expr']]]
+
+    let body =
+          if null decls'
+            then expr'
+            else Y [A "block", Q $ Y $ decls' ++ [Y [A "return", expr']]]
+
     return $ Y [A "let", A name, Y [A "lambda", Q (Y paramdecls'), body]]
   toYQL x = Left $ unsupported x "AST.Decl'"
 

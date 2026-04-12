@@ -5,8 +5,7 @@
     (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
   (let main (lambda '(x) (block '(
-    (let f (lambda '(y) (block '(
-      (return x)))))
+    (let f (lambda '(y) x))
     (return (Apply f (Uint64 '0)))))))
   (declare __x__ (DataType 'Uint64))
   (let result (Apply main __x__))
