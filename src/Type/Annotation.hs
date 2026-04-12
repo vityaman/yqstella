@@ -668,9 +668,20 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- checkType (Type.fromAST' AST.TypeNat) expr
     t' <- liftType p AST.TypeBool t
     return $ AST.IsZero (p, Just t') expr'
-  annotateType _ x@(AST.Fix {}) = do
-    tell [notImplemented (annotation x) "Fix"]
-    return $ fmap (,Nothing) x
+  annotateType Nothing (AST.Fix p expr) = do
+    expr' <- inferType expr
+    t' <- case snd $ annotation expr' of
+      Just (Type (AST.TypeFun () [arg] ret)) | arg == ret -> return $ Just (Type ret)
+      Just t -> do
+        tell [mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p "T -> T" (show t)]
+        return Nothing
+      Nothing -> return Nothing
+    return (AST.Fix (p, t') expr')
+  annotateType (Just t) (AST.Fix p expr) = do
+    let f = Type.fn [t] t
+    expr' <- checkType (Type.fn [f] f) expr
+    let t' = snd $ annotation expr'
+    return (AST.Fix (p, t') expr')
   annotateType t (AST.NatRec p n z s) = do
     n' <- checkType (Type.fromAST' AST.TypeNat) n
     z' <- annotateType t z

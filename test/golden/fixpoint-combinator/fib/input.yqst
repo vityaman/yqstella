@@ -1,0 +1,21 @@
+language core;
+
+extend with
+  #fixpoint-combinator,
+  #natural-literals,
+  #arithmetic-operators,
+  #comparison-operators;
+
+fn fibgen(fib : fn (Nat) -> Nat) -> (fn (Nat) -> Nat) {
+  return fn (n : Nat) {
+    return if n < 2 then n else fib (n - 1) + fib (n - 2)
+  }
+}
+
+fn fib(n : Nat) -> Nat {
+  return fix(fibgen)(n)
+}
+
+fn main(n : Nat) -> Nat {
+  return fib(n)
+}
