@@ -109,14 +109,14 @@ Here is a mapping from YQStella to YQL types:
 
 | **YQStella**          | **YQL**                   |
 | --------------------- | ------------------------- |
-| `Bool               ` | `Bool                   ` |
-| `Nat                ` | `Uint64                 ` |
-| `Unit               ` | `Void                   ` |
-| `{T...}             ` | `Tuple<T...>            ` |
-| `{(a : T)...}       ` | `Struct<(a: T)...>      ` |
-| `T + U              ` | `Variant<inl: T, inr: U>` |
-| `<\| (l : T0)... \|>` | `Variant<(l: T)...>     ` |
-| `<\|  l...       \|>` | `Variant<(l: Unit)...>  ` |
+| `Bool`                | `Bool`                    |
+| `Nat`                 | `Uint64`                  |
+| `Unit`                | `Void`                    |
+| `{T...}`              | `Tuple<T...>`             |
+| `{(a : T)...}`        | `Struct<(a: T)...>`       |
+| `T + U`               | `Variant<inl: T, inr: U>` |
+| `<\| (l : T0)... \|>` | `Variant<(l: T)...>`      |
+| `<\| l... \|>`        | `Variant<(l: Unit)>`      |
 
 ## Getting Started
 
