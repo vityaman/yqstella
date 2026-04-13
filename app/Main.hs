@@ -2,6 +2,7 @@ module Main (main) where
 
 import qualified CLI
 import Diagnostic.Core (display)
+import qualified Fizruk
 import Lib (Project (Project))
 import qualified Lib as Stella
 import Syntax.PrettyPrint (displayAST)
@@ -15,13 +16,16 @@ main = do
       CLI.diagnosticsPath = diagnosticsPath,
       CLI.tokensPath = tokensPath,
       CLI.parseTreePath = parseTreePath,
-      CLI.outputPath = outputPath
+      CLI.outputPath = outputPath,
+      CLI.isFizruk = isFizruk
     } <-
     CLI.parseArgs
 
   content <- readFile inputPath
 
-  let source = Stella.Source { Stella.path = inputPath, Stella.text = content }
+  let source = Stella.Source {Stella.path = inputPath, Stella.text = content}
+
+  let prepare = if isFizruk then Fizruk.prepared else id
 
   let Project
         { Stella.diagnostics = diagnostics,
@@ -29,7 +33,7 @@ main = do
           Stella.program = program,
           Stella.areTypesCorrect = areTypesCorrect,
           Stella.yql = yql
-        } = Stella.build source
+        } = prepare $ Stella.build source
 
       diagnostics' = display diagnostics
       tokens' = display tokens

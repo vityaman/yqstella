@@ -5,6 +5,7 @@ import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char (toUpper)
 import Data.List (sort)
 import Diagnostic.Core (display)
+import qualified Fizruk
 import qualified Lib as Stella
 import System.Directory (doesDirectoryExist, getCurrentDirectory, listDirectory)
 import System.Exit (ExitCode (..))
@@ -18,6 +19,7 @@ import YQL.PrettyPrint (displayYQL)
 
 data Output = Output
   { diagnostics :: String,
+    diagnostic :: String,
     areTypesCorrect :: Bool,
     yql :: String
   }
@@ -31,6 +33,7 @@ test source =
         } = Stella.build source
    in Output
         { diagnostics = display diagnostics',
+          diagnostic = display $ Fizruk.prepared' diagnostics',
           areTypesCorrect = areTypesCorrect',
           yql = maybe "" displayYQL yql'
         }
@@ -63,6 +66,7 @@ makeTestCase casePath = do
 
   let Output
         { diagnostics = diagnostics',
+          diagnostic = diagnostic',
           areTypesCorrect = areTypesCorrect',
           yql = yql'
         } = test input
@@ -76,7 +80,7 @@ makeTestCase casePath = do
           (exitCode, stdout, _) <-
             readProcessWithExitCode "docker" ["run", "-i", "fizruk/stella", "typecheck"] source
 
-          let yqStellaCodes = parseErrorCodes diagnostics'
+          let yqStellaCodes = parseErrorCodes diagnostic'
               fizrukStellaCodes = parseErrorCodes stdout
               isFizrukCodePresent =
                 any (`elem` yqStellaCodes) fizrukStellaCodes
@@ -84,7 +88,7 @@ makeTestCase casePath = do
 
           let areFizrukTypesCorrect' = exitCode == ExitSuccess
 
-          let sideBySide = stdout ++ "\n\nVS\n\n" ++ diagnostics'
+          let sideBySide = stdout ++ "\n\nVS\n\n" ++ diagnostic'
 
           assertEqual
             ("fizruk vs yqstella status: \n" ++ sideBySide)

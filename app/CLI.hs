@@ -8,6 +8,7 @@ module CLI
     tokensPath,
     parseTreePath,
     outputPath,
+    isFizruk,
     parseArgs,
   )
 where
@@ -15,6 +16,7 @@ where
 import Options.Applicative
   ( Parser,
     execParser,
+    flag,
     header,
     help,
     helper,
@@ -34,7 +36,8 @@ data Args = Args
     tokensPath :: FilePath,
     parseTreePath :: FilePath,
     typeAnnotationPath :: FilePath,
-    outputPath :: FilePath
+    outputPath :: FilePath,
+    isFizruk :: Bool
   }
   deriving (Show)
 
@@ -100,6 +103,14 @@ parseArgs =
                 <> showDefault
                 <> value "/dev/stdout"
                 <> help "Where to write YQLs output"
+            )
+
+        isFizruk <-
+          flag
+            False
+            True
+            ( long "fizruk"
+                <> help "Set for Fizruk acceptance"
             )
 
         return Args {..}
