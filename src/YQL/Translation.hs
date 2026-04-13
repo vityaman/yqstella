@@ -223,7 +223,7 @@ instance YQLTranslatable AST.Expr' where
     return $ Y [A "Void"]
   toYQL (AST.Var _ (AST.StellaIdent name)) = do
     return $ A name
-  toYQL x = Left $ unsupported x ("AST.Expr': " ++ show x)
+  toYQL x = Left $ unsupported x "AST.Expr'"
 
 instance YQLTranslatable AST.Type' where
   toYQL (AST.TypeSum _ inl inr) = do

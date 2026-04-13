@@ -1,4 +1,4 @@
 test/golden/nullary-variant-labels-draen-guy/ill-missing_data_for_label/input.yqst:1:0: [ERROR_MISSING_DATA_FOR_LABEL]
-expected some variant label with type TypeNat (), got nullary
+expected some variant label with type Nat, got nullary
 > language core;
   ^

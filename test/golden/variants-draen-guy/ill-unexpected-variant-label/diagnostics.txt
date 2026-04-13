@@ -1,4 +1,4 @@
 test/golden/variants-draen-guy/ill-unexpected-variant-label/input.yqst:6:10: [ERROR_UNEXPECTED_VARIANT_LABEL]
-unexpected variant label c for Just <| a : Bool, b : Nat |>
+unexpected variant label c for <| a : Bool, b : Nat |>
 >   return <| c = succ(0) |>;
            ^
