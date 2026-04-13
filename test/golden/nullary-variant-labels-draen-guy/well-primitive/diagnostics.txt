@@ -1,4 +1,0 @@
-test/golden/nullary-variant-labels-draen-guy/well-primitive/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
-YQL translation unsupported: Extension #nullary-variant-labels not implemented
-> language core;
-  ^

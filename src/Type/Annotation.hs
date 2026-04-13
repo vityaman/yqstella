@@ -246,7 +246,7 @@ instance TypeAnnotatable AST.Expr' where
 
     (expr', t'') <- case (expr, exprT) of
       (AST.NoExprData _, Just (AST.NoTyping _)) -> do
-        return (fmap (,Nothing) expr, Nothing)
+        return (fmap (,Nothing) expr, Just (Type.fromAST' AST.TypeUnit))
       (AST.NoExprData p', Just (AST.SomeTyping _ t')) -> do
         let message = "expected some variant label with type " ++ show t' ++ ", got nullary"
         tell [diagnostic Error MISSING_DATA_FOR_LABEL (pointRange p') message]

@@ -146,6 +146,8 @@ instance YQLTranslatable AST.Expr' where
     t' <- toYQL (fmap (const (unknown, Nothing)) t)
     expr' <- toYQL expr
     return $ Y [A "Variant", expr', Q $ A tag, t']
+  toYQL (AST.Variant p tag (AST.NoExprData p')) =
+    toYQL (AST.Variant p tag (AST.SomeExprData p' (AST.ConstUnit p')))
   toYQL (AST.Match _ expr cases) = do
     let arg = "yqstellamatchexpr"
         brprefix = "yqstellamatchbr"
@@ -221,7 +223,7 @@ instance YQLTranslatable AST.Expr' where
     return $ Y [A "Void"]
   toYQL (AST.Var _ (AST.StellaIdent name)) = do
     return $ A name
-  toYQL x = Left $ unsupported x "AST.Expr'"
+  toYQL x = Left $ unsupported x ("AST.Expr': " ++ show x)
 
 instance YQLTranslatable AST.Type' where
   toYQL (AST.TypeSum _ inl inr) = do
@@ -241,7 +243,7 @@ instance YQLTranslatable AST.Type' where
     Right $ Y [A "VariantType", Y $ A "StructType" : fields']
     where
       toYQL' (AST.AVariantFieldType _ (AST.StellaIdent name) (AST.NoTyping _)) = do
-        Right $ Y [Q $ A name, Y [A "VoidType"]]
+        Right $ Q $ Y [Q $ A name, Y [A "VoidType"]]
       toYQL' (AST.AVariantFieldType _ (AST.StellaIdent name) (AST.SomeTyping _ t)) = do
         t' <- toYQL t
         Right $ Q $ Y [Q $ A name, t']
@@ -306,6 +308,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension SumTypes = True
     isSupportedExtension Lists = True
     isSupportedExtension Variants = True
+    isSupportedExtension NullaryVariantLabels = True
     isSupportedExtension NullaryFunctions = True
     isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension NestedFunctionDeclarations = True
