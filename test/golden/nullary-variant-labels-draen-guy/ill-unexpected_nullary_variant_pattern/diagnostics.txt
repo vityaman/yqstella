@@ -1,0 +1,4 @@
+test/golden/nullary-variant-labels-draen-guy/ill-unexpected_nullary_variant_pattern/input.yqst:1:0: [ERROR_UNEXPECTED_NULLARY_VARIANT_PATTERN]
+unexpected nullary pattern, expected Nat
+> language core;
+  ^

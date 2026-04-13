@@ -57,8 +57,8 @@ bindings (AST.PatternFalse p) _ =
   Left $ notImplemented p "PatternFalse Matching"
 bindings (AST.PatternTrue p) _ =
   Left $ notImplemented p "PatternTrue Matching"
-bindings (AST.PatternUnit p) _ =
-  Left $ notImplemented p "PatternUnit Matching"
+bindings (AST.PatternUnit _) (Type (AST.TypeUnit _)) =
+  Right Map.empty
 bindings (AST.PatternInt p _) _ =
   Left $ notImplemented p "PatternInt Matching"
 bindings (AST.PatternSucc p _) _ =
@@ -113,10 +113,12 @@ exhaustiveness' (AST.PatternInl _ pattern') (AST.TypeSum _ inl inr) =
 exhaustiveness' (AST.PatternInr _ pattern') (AST.TypeSum _ inl inr) =
   let inr' = exhaustiveness' pattern' inr
    in AST.TypeSum (annotation inl +?+ annotation inr') inl inr'
+exhaustiveness' (AST.PatternUnit _) t@(AST.TypeUnit _) =
+  fmap (const $ cardinality (Type.fromAST t)) t
 exhaustiveness' (AST.PatternVar _ _) t =
   fmap (const $ cardinality (Type.fromAST t)) t
-exhaustiveness' _ t =
-  fmap (const $ Just 0) t
+exhaustiveness' p t =
+  error $ "Unexpected pattern " ++ show p ++ " for type " ++ show t
 
 withNoTypingAsUnit' :: AST.Pattern' a -> AST.Pattern' a
 withNoTypingAsUnit' (AST.PatternVariant p (AST.StellaIdent tag) (AST.NoPatternData p')) =

@@ -13,7 +13,7 @@ import Data.List (groupBy, intercalate)
 import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
+import Data.Maybe (catMaybes, fromMaybe, isJust, mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
@@ -225,18 +225,18 @@ instance TypeAnnotatable AST.Expr' where
     return $ AST.Abstraction (p, t') paramdecls' expr'
   annotateType t (AST.Variant p n@(AST.StellaIdent tag) expr) = do
     exprT <- case t of
-      (Just (Type (AST.TypeVariant () entries))) -> do
+      (Just t'@(Type (AST.TypeVariant () entries))) -> do
         let tag'' (AST.AVariantFieldType _ (AST.StellaIdent tag') _) = tag'
             entry = find (\x -> tag'' x == tag) entries
         case entry of
-          Just (AST.AVariantFieldType _ _ t') ->
-            return $ Just t'
+          Just (AST.AVariantFieldType _ _ t'') ->
+            return $ Just t''
           Nothing -> do
-            let message = "unexpected variant label " ++ tag ++ " for " ++ show t
+            let message = "unexpected variant label " ++ tag ++ " for " ++ show t'
             tell [diagnostic Error UNEXPECTED_VARIANT_LABEL (pointRange p) message]
             return Nothing
-      (Just _) -> do
-        let message = "expected " ++ show t ++ ", but got a variant"
+      (Just t') -> do
+        let message = "expected " ++ show t' ++ ", but got a variant"
         tell [diagnostic Error UNEXPECTED_VARIANT (pointRange p) message]
         return Nothing
       Nothing -> do
@@ -246,17 +246,17 @@ instance TypeAnnotatable AST.Expr' where
 
     (expr', t'') <- case (expr, exprT) of
       (AST.NoExprData _, Just (AST.NoTyping _)) -> do
-        return (fmap (,Nothing) expr, Nothing)
+        return (fmap (,Nothing) expr, Just (Type.fromAST' AST.TypeUnit))
       (AST.NoExprData p', Just (AST.SomeTyping _ t')) -> do
-        let message = "expected some variant label with type " ++ show t' ++ ", got nullary"
-        tell [diagnostic Error UNEXPECTED_NULLARY_VARIANT_PATTERN (pointRange p') message]
+        let message = "expected some variant label with type " ++ show (Type t') ++ ", got nullary"
+        tell [diagnostic Error MISSING_DATA_FOR_LABEL (pointRange p') message]
         return (fmap (,Nothing) expr, Nothing)
       (AST.NoExprData _, Nothing) -> do
         return (fmap (,Nothing) expr, Nothing)
       (AST.SomeExprData p' expr', Just (AST.NoTyping _)) -> do
         expr'' <- inferType expr'
-        let message = "expected nullary variant label, but got " ++ show expr''
-        tell [diagnostic Error UNEXPECTED_NULLARY_VARIANT_PATTERN (pointRange p') message]
+        let message = "expected nullary variant label"
+        tell [diagnostic Error UNEXPECTED_DATA_FOR_NULLARY_LABEL (pointRange p') message]
         return (AST.SomeExprData (p', snd $ annotation expr'') expr'', Nothing)
       (AST.SomeExprData p' expr', Just (AST.SomeTyping _ t')) -> do
         expr'' <- checkType (Type.fromAST t') expr'
@@ -276,16 +276,16 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- inferType expr
     let expr't = snd $ annotation expr'
 
-    () <- case expr't of
-      Just t'
+    cases' <- case expr't of
+      Just t' -> mapM (annotateType' t') cases
+      Nothing -> pure $ fmap (fmap (,Nothing)) cases
+
+    () <- case (expr't, all (isJust . snd . annotation) cases') of
+      (Just t', True)
         | not (PatternMatching.isExhaustive (patterns cases) t') ->
             let message = "nonexchaustive pattern-matching"
              in tell [diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message]
       _ -> pure ()
-
-    cases' <- case expr't of
-      Just t' -> mapM (annotateType' t') cases
-      Nothing -> pure $ fmap (fmap (,Nothing)) cases
 
     t' <- commonType p (fmap annotation cases')
 
