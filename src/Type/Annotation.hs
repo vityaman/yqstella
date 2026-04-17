@@ -39,9 +39,6 @@ inferType = annotateType Nothing
 
 instance TypeAnnotatable AST.Program' where
   annotateType _ (AST.AProgram p languagedecl extensions decls) = do
-    let languagedecl' = fmap (,Nothing) languagedecl
-        extensions' = fmap (fmap (,Nothing)) extensions
-
     context' <- get >>= withDecls decls
     decls' <- withStateTAE (const context') (mapM inferType decls)
 
@@ -57,7 +54,7 @@ instance TypeAnnotatable AST.Program' where
       _ ->
         return ()
 
-    return (AST.AProgram (p, type_) languagedecl' extensions' decls')
+    return (AST.AProgram (p, type_) (stub languagedecl) (stubL extensions) decls')
     where
       isMain (AST.DeclFun _ _ (AST.StellaIdent name) _ _ _ _ _) | name == "main" = True
       isMain _ = False
@@ -69,38 +66,43 @@ instance TypeAnnotatable AST.Decl' where
   annotateType _ (AST.DeclFun p annotations stellaident paramdecls returntype throwtype decls expr) = do
     unless (null annotations) $ tell [notImplemented p "DeclFun annotations"]
 
-    let annotations' = fmap (fmap (,Nothing)) annotations
-        paramdecls' = fmap (fmap (,Nothing)) paramdecls
-        returntype' = fmap (,Nothing) returntype
-        throwtype' = fmap (,Nothing) throwtype
-
     context' <- get >>= withDecls decls >>= withParamDecls paramdecls
 
     _ <- case throwtype of
       (AST.NoThrowType _) -> pure ()
       (AST.SomeThrowType _ _) -> tell [notImplemented p "DeclFun ThrowType"]
 
-    let returntype'' = case returntype' of
+    let returntype' = case returntype of
           (AST.SomeReturnType _ t) -> Just $ Type.fromAST t
           (AST.NoReturnType _) -> Nothing
 
     decls' <- withStateTAE (const context') (mapM inferType decls)
-    expr' <- withStateTAE (const context') (annotateType returntype'' expr)
+    expr' <- withStateTAE (const context') (annotateType returntype' expr)
 
     argTypes <- mapM toPair paramdecls
 
     let actualType = snd $ annotation expr'
         type' = fmap (Type.fn $ fmap snd argTypes) actualType
 
-    return (AST.DeclFun (p, type') annotations' stellaident paramdecls' returntype' throwtype' decls' expr')
+    return
+      ( AST.DeclFun
+          (p, type')
+          (stubL annotations)
+          stellaident
+          (stubL paramdecls)
+          (stub returntype)
+          (stub throwtype)
+          decls'
+          expr'
+      )
   annotateType _ f@(AST.DeclFunGeneric {}) = do
-    return $ fmap (,Nothing) f
+    return $ stub f
   annotateType _ f@(AST.DeclTypeAlias {}) = do
-    return $ fmap (,Nothing) f
+    return $ stub f
   annotateType _ f@(AST.DeclExceptionType {}) = do
-    return $ fmap (,Nothing) f
+    return $ stub f
   annotateType _ f@(AST.DeclExceptionVariant {}) = do
-    return $ fmap (,Nothing) f
+    return $ stub f
 
 instance TypeAnnotatable AST.LocalDecl' where
   annotateType _ (AST.ALocalDecl p decl) = do
@@ -111,10 +113,10 @@ instance TypeAnnotatable AST.LocalDecl' where
 instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.Sequence p _ _) = do
     tell [notImplemented p "Sequence"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.Assign {}) = do
     tell [notImplemented (annotation x) "Assign"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.If p condition thenB elseB) = do
     condition' <- checkType (Type.fromAST' AST.TypeBool) condition
     thenB' <- annotateType t thenB
@@ -134,7 +136,7 @@ instance TypeAnnotatable AST.Expr' where
 
     inExpr' <- case context' of
       (Just context'') -> withStateTAE (const context'') (annotateType t inExpr)
-      Nothing -> pure $ fmap (,Nothing) inExpr
+      Nothing -> pure $ stub inExpr
 
     let t' = snd $ annotation inExpr'
         pattern' = AST.PatternVar (p'', Nothing) (AST.StellaIdent name)
@@ -143,16 +145,16 @@ instance TypeAnnotatable AST.Expr' where
     return $ AST.Let (p, t') [binding'] inExpr'
   annotateType _ x@(AST.Let p [_] _) = do
     tell [notImplemented p "LetIn StructuralPattern"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.Let p _ _) = do
     tell [notImplemented p "LetManyBindings"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.LetRec {}) = do
     tell [notImplemented (annotation x) "LetRec"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.TypeAbstraction {}) = do
     tell [notImplemented (annotation x) "TypeAbstraction"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.LessThan p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.LessThan (p, t') lhs' rhs')
@@ -175,13 +177,12 @@ instance TypeAnnotatable AST.Expr' where
     exprT'' <- Type . void <$> sanitizeT exprT
     expr' <- checkType exprT'' expr
     t' <- liftType' p exprT'' t
-    let exprT' = fmap (,Nothing) exprT
+    let exprT' = stub exprT
     return (AST.TypeAsc (p, Just t') expr' exprT')
   annotateType _ x@(AST.TypeCast {}) = do
     tell [notImplemented (annotation x) "TypeCast"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.Abstraction p paramdecls expr) = do
-    let paramdecls' = fmap (fmap (,Nothing)) paramdecls
     context' <- get >>= withParamDecls paramdecls
 
     let infer' = do
@@ -192,8 +193,8 @@ instance TypeAnnotatable AST.Expr' where
 
     (t', expr') <- case t of
       Just t'@(Type (AST.TypeFun () argtypes returntype)) -> do
-        paramdecls'' <- mapM toPair paramdecls
-        let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls''
+        paramdecls' <- mapM toPair paramdecls
+        let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls'
 
         let expected = fmap Type.fromAST argtypes
 
@@ -213,7 +214,7 @@ instance TypeAnnotatable AST.Expr' where
       Nothing ->
         infer'
 
-    return $ AST.Abstraction (p, t') paramdecls' expr'
+    return $ AST.Abstraction (p, t') (stubL paramdecls) expr'
   annotateType t (AST.Variant p n@(AST.StellaIdent tag) expr) = do
     exprT <- case t of
       (Just t'@(Type (AST.TypeVariant () entries))) -> do
@@ -237,13 +238,13 @@ instance TypeAnnotatable AST.Expr' where
 
     (expr', t'') <- case (expr, exprT) of
       (AST.NoExprData _, Just (AST.NoTyping _)) -> do
-        return (fmap (,Nothing) expr, Just (Type.fromAST' AST.TypeUnit))
+        return (stub expr, Just (Type.fromAST' AST.TypeUnit))
       (AST.NoExprData p', Just (AST.SomeTyping _ t')) -> do
         let message = "expected some variant label with type " ++ show (Type t') ++ ", got nullary"
         tell [diagnostic Error MISSING_DATA_FOR_LABEL (pointRange p') message]
-        return (fmap (,Nothing) expr, Nothing)
+        return (stub expr, Nothing)
       (AST.NoExprData _, Nothing) -> do
-        return (fmap (,Nothing) expr, Nothing)
+        return (stub expr, Nothing)
       (AST.SomeExprData p' expr', Just (AST.NoTyping _)) -> do
         expr'' <- inferType expr'
         let message = "expected nullary variant label"
@@ -269,7 +270,7 @@ instance TypeAnnotatable AST.Expr' where
 
     cases' <- case expr't of
       Just t' -> mapM (annotateType' t') cases
-      Nothing -> pure $ fmap (fmap (,Nothing)) cases
+      Nothing -> pure $ stubL cases
 
     () <- case (expr't, all (isJust . typeOf) cases') of
       (Just t', True)
@@ -285,8 +286,6 @@ instance TypeAnnotatable AST.Expr' where
       patterns = fmap (\(AST.AMatchCase _ x _) -> x)
 
       annotateType' patterntype (AST.AMatchCase p' pattern'' expr'') = do
-        let pattern' = fmap (,Nothing) pattern''
-
         expr' <- case PatternMatching.bindings pattern'' patterntype of
           Right bindings' -> do
             context <- get
@@ -294,11 +293,11 @@ instance TypeAnnotatable AST.Expr' where
             withStateTAE (const context') (annotateType t expr'')
           Left e -> do
             tell [e]
-            return $ fmap (,Nothing) expr''
+            return $ stub expr''
 
         let t' = snd $ annotation expr'
 
-        return (AST.AMatchCase (p', t') pattern' expr')
+        return (AST.AMatchCase (p', t') (stub pattern'') expr')
   annotateType Nothing (AST.List p []) = do
     let message = "type inference for empty lists is not supported (use type ascriptions)"
     tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
@@ -334,7 +333,7 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.Subtract (p, t') lhs' rhs')
   annotateType _ x@(AST.LogicOr {}) = do
     tell [notImplemented (annotation x) "LogicOr"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.Multiply p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Multiply (p, t') lhs' rhs')
@@ -343,13 +342,13 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.Divide (p, t') lhs' rhs')
   annotateType _ x@(AST.LogicAnd {}) = do
     tell [notImplemented (annotation x) "LogicAnd"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.Ref {}) = do
     tell [notImplemented (annotation x) "Ref"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.Deref {}) = do
     tell [notImplemented (annotation x) "Deref"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.Application p f xs) = do
     f' <- inferType f
     let (f'Position, f'Type) = annotation f'
@@ -398,7 +397,7 @@ instance TypeAnnotatable AST.Expr' where
     return $ AST.Application (p, t <|> type') f' xs'
   annotateType _ x@(AST.TypeApplication {}) = do
     tell [notImplemented (annotation x) "TypeApplication"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.DotRecord p expr (AST.StellaIdent field)) = do
     expr' <- inferType expr
 
@@ -601,19 +600,19 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.Tail (p, listT) expr')
   annotateType _ x@(AST.Panic {}) = do
     tell [notImplemented (annotation x) "Panic"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.Throw {}) = do
     tell [notImplemented (annotation x) "Throw"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.TryCatch {}) = do
     tell [notImplemented (annotation x) "TryCatch"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.TryWith {}) = do
     tell [notImplemented (annotation x) "TryWith"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.TryCastAs {}) = do
     tell [notImplemented (annotation x) "TryCastAs"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType Nothing (AST.Inl p expr) = do
     expr' <- inferType expr
     let message = "type inference for sum types is not supported (use type ascriptions)"
@@ -650,10 +649,10 @@ instance TypeAnnotatable AST.Expr' where
     return $ AST.Succ (p, Just t') expr'
   annotateType _ x@(AST.LogicNot {}) = do
     tell [notImplemented (annotation x) "LogicNot"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.Pred {}) = do
     tell [notImplemented (annotation x) "Pred"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.IsZero p expr) = do
     expr' <- checkType (Type.fromAST' AST.TypeNat) expr
     t' <- liftType p AST.TypeBool t
@@ -688,10 +687,10 @@ instance TypeAnnotatable AST.Expr' where
     return $ AST.NatRec (p, t') n' z' s'
   annotateType _ x@(AST.Fold {}) = do
     tell [notImplemented (annotation x) "Fold"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType _ x@(AST.Unfold {}) = do
     tell [notImplemented (annotation x) "Unfold"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.ConstTrue p) = do
     t' <- liftType p AST.TypeBool t
     return $ AST.ConstTrue (p, Just t')
@@ -713,7 +712,7 @@ instance TypeAnnotatable AST.Expr' where
     return $ AST.ConstInt (p, t') n
   annotateType _ x@(AST.ConstMemory {}) = do
     tell [notImplemented (annotation x) "ConstMemory"]
-    return $ fmap (,Nothing) x
+    return $ stub x
   annotateType t (AST.Var p stellaident@(AST.StellaIdent name)) = do
     context <- get
 
@@ -725,3 +724,9 @@ instance TypeAnnotatable AST.Expr' where
         return Nothing
 
     return $ AST.Var (p, t') stellaident
+
+stub :: (Functor f) => f Position -> f (Position, Maybe Type)
+stub = fmap (,Nothing)
+
+stubL :: (Functor f) => [f Position] -> [f (Position, Maybe Type)]
+stubL = fmap (fmap (,Nothing))
