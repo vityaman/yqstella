@@ -1,4 +1,4 @@
-module Type.ExprBinary (annotateTT2T, annotateTT2B) where
+module Type.Expression (annotateTT2T, annotateTT2B) where
 
 import Annotation (Annotated, annotation)
 import Control.Applicative (Alternative ((<|>)))

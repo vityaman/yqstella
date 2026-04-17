@@ -1,5 +1,6 @@
 module Type.Expectation
-  ( sanitizeT,
+  ( TypeKind (..),
+    sanitizeT,
     liftType,
     liftType',
     listItemType,
@@ -21,6 +22,8 @@ import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import Type.Env (TypeAnnotationEnv)
+
+data TypeKind = Expected | Inferred
 
 sanitizeT :: AST.Type' Position -> TypeAnnotationEnv (AST.Type' Position)
 sanitizeT (AST.TypeRecord p fields) = do
@@ -52,6 +55,7 @@ sanitizeT (AST.TypeVariant p fields) = do
   return (AST.TypeVariant p uniq)
 sanitizeT t = pure t
 
+-- TODO: make it return Maybe Type
 liftType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
 liftType p lifting = liftType' p (Type $ lifting ())
 
@@ -63,17 +67,19 @@ liftType' p lifting (Just checked) = do
 liftType' _ lifting Nothing =
   pure lifting
 
-listItemType :: Position -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
-listItemType p t =
-  case t of
-    (Just (Type (AST.TypeList () t''))) ->
-      return $ Just $ Type t''
-    (Just t'') -> do
-      let message = "expected list at cons tail, got " ++ show t''
-      tell [diagnostic Error NOT_A_LIST (pointRange p) message]
-      return Nothing
-    Nothing ->
-      return Nothing
+listItemType :: Position -> TypeKind -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
+listItemType _ _ (Just (Type (AST.TypeList () t))) =
+  return $ Just $ Type t
+listItemType p Inferred (Just t) = do
+  let message = "expected list, got " ++ show t
+  tell [diagnostic Error NOT_A_LIST (pointRange p) message]
+  return Nothing
+listItemType p Expected (Just t) = do
+  let message = "expected " ++ show t ++ ", got list"
+  tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
+  return Nothing
+listItemType _ _ Nothing =
+  return Nothing
 
 commonType :: Position -> [(Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
 commonType p pts = do
