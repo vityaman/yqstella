@@ -12,6 +12,7 @@ import Extension.Activation (enabledExtensions)
 import Extension.Core (Extension (..), extensionName)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
+import Type.Env (typeOf)
 import YQL.AST (Node (..))
 
 class YQLTranslatable f where
@@ -256,7 +257,7 @@ instance YQLTranslatable AST.MatchCase' where
   toYQL (AST.AMatchCase _ pattern' expr) = do
     recipes' <- recipes pattern'
 
-    t' <- case snd $ annotation expr of
+    t' <- case typeOf expr of
       (Just (Type t')) -> toYQL $ fmap (const (unknown, Nothing)) t'
       Nothing -> Left $ unsupported expr "expected Nothing type"
 

@@ -2,40 +2,31 @@
 
 module Type.Annotation (annotateType, inferType) where
 
-import Annotation (Annotated, annotation)
+import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (guard, unless, void, when, zipWithM)
 import Control.Monad.State
 import Control.Monad.Writer
 import qualified Data.Bifunctor
 import Data.Foldable (find)
-import Data.List (groupBy, intercalate)
-import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
+import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (catMaybes, fromMaybe, isJust, mapMaybe)
+import Data.Maybe (fromMaybe, isJust, mapMaybe)
 import Diagnostic.Code (Code (..))
-import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Error), diagnostic, notImplemented)
+import Diagnostic.Core (Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import Misc.Duplicate (sepUniqDupBy)
 import SyntaxGen.AbsStella (Binding')
 import qualified SyntaxGen.AbsStella as AST
-import Type.Context (Context)
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
-import qualified Type.Core as AST
 import qualified Type.Core as Type
+import Type.Decl (toPair, withDecls, withParamDecls)
+import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
+import Type.Expectation (commonType, liftType, liftType', listItemType, mismatch, mismatchSS, sanitizeT)
+import Type.ExprBinary (annotateTT2B, annotateTT2T)
 import qualified Type.PatternMatching as PatternMatching
-
-type TypeAnnotationEnv a = WriterT Diagnostics (State Context) a
-
-withStateTAE :: (Context -> Context) -> TypeAnnotationEnv a -> TypeAnnotationEnv a
-withStateTAE f m = do
-  old <- get
-  modify f
-  result <- m
-  put old
-  return result
 
 class TypeAnnotatable f where
   annotateType :: Maybe Type -> f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
@@ -51,7 +42,7 @@ instance TypeAnnotatable AST.Program' where
     let languagedecl' = fmap (,Nothing) languagedecl
         extensions' = fmap (fmap (,Nothing)) extensions
 
-    context' <- get >>= ctxExtendByDecls decls
+    context' <- get >>= withDecls decls
     decls' <- withStateTAE (const context') (mapM inferType decls)
 
     let main = find isMain decls'
@@ -83,7 +74,7 @@ instance TypeAnnotatable AST.Decl' where
         returntype' = fmap (,Nothing) returntype
         throwtype' = fmap (,Nothing) throwtype
 
-    context' <- get >>= ctxExtendByDecls decls >>= ctxExtendByParamDecls paramdecls
+    context' <- get >>= withDecls decls >>= withParamDecls paramdecls
 
     _ <- case throwtype of
       (AST.NoThrowType _) -> pure ()
@@ -163,22 +154,22 @@ instance TypeAnnotatable AST.Expr' where
     tell [notImplemented (annotation x) "TypeAbstraction"]
     return $ fmap (,Nothing) x
   annotateType t (AST.LessThan p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.LessThan (p, t') lhs' rhs')
   annotateType t (AST.LessThanOrEqual p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.LessThanOrEqual (p, t') lhs' rhs')
   annotateType t (AST.GreaterThan p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.GreaterThan (p, t') lhs' rhs')
   annotateType t (AST.GreaterThanOrEqual p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.GreaterThanOrEqual (p, t') lhs' rhs')
   annotateType t (AST.Equal p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.Equal (p, t') lhs' rhs')
   annotateType t (AST.NotEqual p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2B t lhs rhs
+    (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.NotEqual (p, t') lhs' rhs')
   annotateType t (AST.TypeAsc p expr exprT) = do
     exprT'' <- Type . void <$> sanitizeT exprT
@@ -191,7 +182,7 @@ instance TypeAnnotatable AST.Expr' where
     return $ fmap (,Nothing) x
   annotateType t (AST.Abstraction p paramdecls expr) = do
     let paramdecls' = fmap (fmap (,Nothing)) paramdecls
-    context' <- get >>= ctxExtendByParamDecls paramdecls
+    context' <- get >>= withParamDecls paramdecls
 
     let infer' = do
           expr' <- withStateTAE (const context') (inferType expr)
@@ -280,7 +271,7 @@ instance TypeAnnotatable AST.Expr' where
       Just t' -> mapM (annotateType' t') cases
       Nothing -> pure $ fmap (fmap (,Nothing)) cases
 
-    () <- case (expr't, all (isJust . snd . annotation) cases') of
+    () <- case (expr't, all (isJust . typeOf) cases') of
       (Just t', True)
         | not (PatternMatching.isExhaustive (patterns cases) t') ->
             let message = "nonexchaustive pattern-matching"
@@ -336,19 +327,19 @@ instance TypeAnnotatable AST.Expr' where
 
     return (AST.List (p, t') (x' : xs'))
   annotateType t (AST.Add p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Add (p, t') lhs' rhs')
   annotateType t (AST.Subtract p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Subtract (p, t') lhs' rhs')
   annotateType _ x@(AST.LogicOr {}) = do
     tell [notImplemented (annotation x) "LogicOr"]
     return $ fmap (,Nothing) x
   annotateType t (AST.Multiply p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Multiply (p, t') lhs' rhs')
   annotateType t (AST.Divide p lhs rhs) = do
-    (t', lhs', rhs') <- annotateTT2T t lhs rhs
+    (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Divide (p, t') lhs' rhs')
   annotateType _ x@(AST.LogicAnd {}) = do
     tell [notImplemented (annotation x) "LogicAnd"]
@@ -387,7 +378,7 @@ instance TypeAnnotatable AST.Expr' where
         xs' <- mapM inferType xs
 
         let unknown = Type.fromAST' AST.TypeAuto
-            expectedArgTypes = fmap (fromMaybe unknown . snd . annotation) xs'
+            expectedArgTypes = fmap (fromMaybe unknown . typeOf) xs'
             expected = Type.fn expectedArgTypes unknown
 
         let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
@@ -477,7 +468,7 @@ instance TypeAnnotatable AST.Expr' where
               _ -> UNEXPECTED_TUPLE
 
         let unknown = AST.TypeAuto ()
-            actualTypes = fmap (maybe unknown untype . snd . annotation) exprs'
+            actualTypes = fmap (maybe unknown untype . typeOf) exprs'
             actual = Type.fromAST $ AST.TypeTuple () actualTypes
 
         let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
@@ -488,7 +479,7 @@ instance TypeAnnotatable AST.Expr' where
         exprs' <- mapM inferType exprs
         return (exprs', False)
 
-    let t' = Type . AST.TypeTuple () <$> traverse (fmap untype . snd . annotation) exprs'
+    let t' = Type . AST.TypeTuple () <$> traverse (fmap untype . typeOf) exprs'
 
     return (AST.Tuple (p, if isReliable then t' else Nothing) exprs')
   annotateType t (AST.Record p bindings) = do
@@ -734,190 +725,3 @@ instance TypeAnnotatable AST.Expr' where
         return Nothing
 
     return $ AST.Var (p, t') stellaident
-
-annotateTT2T ::
-  (TypeAnnotatable f, TypeAnnotatable g, Annotated f, Annotated g) =>
-  Maybe Type ->
-  f Position ->
-  g Position ->
-  TypeAnnotationEnv (Maybe Type, f (Position, Maybe Type), g (Position, Maybe Type))
-annotateTT2T t lhs rhs = do
-  lhs' <- annotateType t lhs
-  let lhs't = snd $ annotation lhs'
-
-  rhs' <- annotateType (t <|> lhs't) rhs
-  let rhs't = snd $ annotation rhs'
-
-  return (lhs't <|> rhs't, lhs', rhs')
-
-annotateTT2B ::
-  (TypeAnnotatable f, TypeAnnotatable g, Annotated f, Annotated g) =>
-  Maybe Type ->
-  f Position ->
-  g Position ->
-  TypeAnnotationEnv (Maybe Type, f (Position, Maybe Type), g (Position, Maybe Type))
-annotateTT2B t lhs rhs = do
-  let p = annotation rhs
-
-  t' <- liftType p AST.TypeBool t
-
-  lhs' <- inferType lhs
-  let lhs't = snd $ annotation lhs'
-
-  rhs' <- annotateType lhs't rhs
-
-  return (Just t', lhs', rhs')
-
-sanitizeT :: AST.Type' Position -> TypeAnnotationEnv (AST.Type' Position)
-sanitizeT (AST.TypeRecord p fields) = do
-  let sanitizeF (AST.ARecordFieldType p' n t) = do
-        t' <- sanitizeT t
-        return (AST.ARecordFieldType p' n t')
-
-  fields' <- mapM sanitizeF fields
-  let (uniq, dup) = sepUniqDupBy (\(AST.ARecordFieldType _ n _) -> n) fields'
-      toDiagnostic (AST.ARecordFieldType p' (AST.StellaIdent name') _) =
-        let message = "duplicate field: " ++ name'
-         in diagnostic Error DUPLICATE_RECORD_TYPE_FIELDS (pointRange p') message
-
-  tell $ fmap toDiagnostic dup
-  return (AST.TypeRecord p uniq)
-sanitizeT (AST.TypeVariant p fields) = do
-  let sanitizeF (AST.AVariantFieldType p' n (AST.SomeTyping p'' t)) = do
-        t' <- sanitizeT t
-        return (AST.AVariantFieldType p' n (AST.SomeTyping p'' t'))
-      sanitizeF t = pure t
-
-  fields' <- mapM sanitizeF fields
-  let (uniq, dup) = sepUniqDupBy (\(AST.AVariantFieldType _ n _) -> n) fields'
-      toDiagnostic (AST.AVariantFieldType p' (AST.StellaIdent name') _) =
-        let message = "duplicate field: " ++ name'
-         in diagnostic Error DUPLICATE_VARIANT_TYPE_FIELDS (pointRange p') message
-
-  tell $ fmap toDiagnostic dup
-  return (AST.TypeVariant p uniq)
-sanitizeT t = pure t
-
-toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
-toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = do
-  t' <- sanitizeT t
-  return (key, Type.fromAST t')
-
-ctxExtendByParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
-ctxExtendByParamDecls paramdecls context = do
-  let (uniq, dup) = sepUniqDupBy (\(AST.AParamDecl _ (AST.StellaIdent n) _) -> n) paramdecls
-
-      toDiagnostic (AST.AParamDecl p (AST.StellaIdent name) _) =
-        let message = "duplicate parameter: " ++ name
-         in diagnostic Error DUPLICATE_FUNCTION_PARAMETER (pointRange p) message
-
-  paramdecls' <- mapM toPair uniq
-  mapM_ toPair dup
-
-  tell $ fmap toDiagnostic dup
-  return $ foldr (uncurry Context.withTyped) context paramdecls'
-
-ctxExtendByDecls :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
-ctxExtendByDecls decls context = do
-  decls' <- mapM visit decls
-
-  let kpvs = catMaybes decls'
-
-      duplicates =
-        [ (name, position)
-          | (name, pvs) <- Map.toList $ Map.fromListWith (++) kpvs,
-            1 < length pvs,
-            (position, _) <- pvs
-        ]
-
-      toDiagnostic (name, p) =
-        let message = "duplicate declaration: " ++ name
-         in diagnostic Error DUPLICATE_FUNCTION_DECLARATION (pointRange p) message
-
-      kvs = fmap unpack kpvs
-      unpack (k, [(_, t)]) = (k, t)
-      unpack _ = undefined
-
-  tell $ fmap toDiagnostic duplicates
-  return $ foldr (uncurry Context.withTyped) context kvs
-  where
-    visit :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
-    visit (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
-      args'' <- mapM toPair paramdecls
-      let args' = fmap snd args''
-
-      returntype' <- Type.fromAST <$> sanitizeT returntype
-
-      return $ Just (name, [(p, Type.fn args' returntype')])
-    visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
-      tell [notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"]
-      return Nothing
-    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
-      tell [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
-      return Nothing
-    visit (AST.DeclTypeAlias p (AST.StellaIdent name) _) = do
-      tell [notImplemented p $ "name resolution for DeclTypeAlias " ++ name]
-      return Nothing
-    visit (AST.DeclExceptionType p type_) = do
-      tell [notImplemented p $ "name resolution for DeclExceptionType " ++ show (AST.fromAST type_)]
-      return Nothing
-    visit (AST.DeclExceptionVariant p (AST.StellaIdent name) _) = do
-      tell [notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name]
-      return Nothing
-
-liftType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
-liftType p lifting = liftType' p (Type $ lifting ())
-
-liftType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
-liftType' p lifting (Just checked) = do
-  when (lifting /= checked) $
-    tell [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
-  return lifting
-liftType' _ lifting Nothing =
-  pure lifting
-
-listItemType :: Position -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
-listItemType p t =
-  case t of
-    (Just (Type (AST.TypeList () t''))) ->
-      return $ Just $ Type t''
-    (Just t'') -> do
-      let message = "expected list at cons tail, got " ++ show t''
-      tell [diagnostic Error NOT_A_LIST (pointRange p) message]
-      return Nothing
-    Nothing ->
-      return Nothing
-
-commonType :: Position -> [(Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
-commonType p pts = do
-  let groups =
-        map
-          (\((p', t') :| rest) -> (t', p' : map fst rest))
-          (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> a == b) pts))
-
-  case groups of
-    [(Nothing, _)] ->
-      return Nothing
-    [(Nothing, _), (Just t', _)] ->
-      return $ Just t'
-    [(Just t', _)] ->
-      return $ Just t'
-    ts -> do
-      -- TODO(vityaman): improve diagnostic
-      let ts' = fmap (maybe "?" show . fst) ts
-          message = "expected same type for all subexpressions, got " ++ intercalate ", " ts'
-      tell [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
-      return Nothing
-
-mismatch :: Code -> Position -> Type -> Type -> Diagnostic
-mismatch code p expected@(Type (AST.TypeList () _)) actual@(Type (AST.TypeList () _)) =
-  mismatchSS code p (show expected) (show actual)
-mismatch _ p expected@(Type (AST.TypeList () _)) actual@(Type _) =
-  mismatchSS NOT_A_LIST p (show expected) (show actual)
-mismatch code p expected actual =
-  mismatchSS code p (show expected) (show actual)
-
-mismatchSS :: Code -> Position -> String -> String -> Diagnostic
-mismatchSS code p expected actual =
-  let message = "type mismatch: expected " ++ expected ++ ", got " ++ actual
-   in diagnostic Error code (pointRange p) message
