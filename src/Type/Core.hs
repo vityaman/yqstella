@@ -2,10 +2,12 @@ module Type.Core
   ( Type (Type),
     fromAST,
     fromAST',
+    toAST,
     eqT,
     neqT,
     fn,
     list,
+    fromReturn,
   )
 where
 
@@ -24,6 +26,9 @@ fromAST t = Type $ void t
 fromAST' :: (() -> AST.Type' ()) -> Type
 fromAST' t = fromAST $ t ()
 
+toAST :: Type -> AST.Type' ()
+toAST (Type x) = x
+
 eqT :: Type -> (() -> AST.Type' ()) -> Bool
 eqT (Type lhs) rhs = lhs == rhs ()
 
@@ -31,9 +36,11 @@ neqT :: Type -> (() -> AST.Type' ()) -> Bool
 neqT lhs rhs = not $ eqT lhs rhs
 
 fn :: [Type] -> Type -> Type
-fn args (Type return') = Type $ AST.TypeFun () (fmap toAST args) return'
-  where
-    toAST (Type x) = x
+fn args (Type returntype) = Type $ AST.TypeFun () (fmap toAST args) returntype
 
 list :: Type -> Type
 list (Type t) = Type $ AST.TypeList () t
+
+fromReturn :: AST.ReturnType' a -> Maybe Type
+fromReturn (AST.NoReturnType _) = Nothing
+fromReturn (AST.SomeReturnType _ t) = Just $ fromAST t

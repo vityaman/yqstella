@@ -1,16 +1,24 @@
-module Type.PatternMatching (bindings, isExhaustive) where
+{-# LANGUAGE TupleSections #-}
+
+module Type.Match (expectExhaustive, annotateCaseType) where
 
 import Annotation (Annotated (annotation))
+import Control.Monad (unless)
+import Control.Monad.State
+import Control.Monad.Writer (tell)
 import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Diagnostic.Code (Code (UNEXPECTED_NON_NULLARY_VARIANT_PATTERN, UNEXPECTED_NULLARY_VARIANT_PATTERN, UNEXPECTED_PATTERN_FOR_TYPE, UNEXPECTED_VARIANT_LABEL))
+import Data.Maybe (isJust)
+import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Cardinality (Cardinality, cardinality, (+?+))
+import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
 
 type Exhaustiveness = Cardinality
 
@@ -69,6 +77,33 @@ bindings p t =
   let position = pointRange $ annotation p
       message = "unexpected pattern for type " ++ show t
    in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE position message
+
+expectExhaustive :: Position -> [AST.MatchCase' (Position, Maybe Type)] -> Maybe Type -> TypeAnnotationEnv ()
+expectExhaustive p cases (Just t)
+  | all (isJust . typeOf) cases = do
+      let patterns = fmap (fmap fst . (\(AST.AMatchCase _ x _) -> x)) cases
+          message = "nonexchaustive pattern-matching"
+          diagnostic' = diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message
+      unless (isExhaustive patterns t) $ tell [diagnostic']
+expectExhaustive _ _ _ = pure ()
+
+annotateCaseType ::
+  Maybe Type ->
+  AST.MatchCase' Position ->
+  Type ->
+  TypeAnnotator AST.Expr' ->
+  TypeAnnotationEnv (AST.MatchCase' (Position, Maybe Type))
+annotateCaseType t (AST.AMatchCase p pattern' expr) patterntype annotateType = do
+  expr' <- case bindings pattern' patterntype of
+    Right bindings' -> do
+      context <- get
+      let context' = foldr (uncurry Context.withTyped) context (Map.toList bindings')
+      withStateTAE (const context') (annotateType t expr)
+    Left e -> do
+      tell [e]
+      return $ fmap (,Nothing) expr
+  let t' = typeOf expr'
+  return (AST.AMatchCase (p, t') (fmap (,Nothing) pattern') expr')
 
 isExhaustive :: [AST.Pattern' Position] -> Type -> Bool
 isExhaustive ps (Type t) =

@@ -1,3 +1,7 @@
+test/golden/lists/unexpected-list/input.yqst:6:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return []
+           ^
 test/golden/lists/unexpected-list/input.yqst:10:10: [ERROR_UNEXPECTED_LIST]
 expected Nat, got list
 >   return [x]
