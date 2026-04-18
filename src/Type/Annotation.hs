@@ -4,17 +4,15 @@ module Type.Annotation (annotateType, inferType) where
 
 import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (guard, unless, void)
+import Control.Monad (unless, void)
 import Control.Monad.State
 import Control.Monad.Writer
-import qualified Data.Bifunctor
 import Data.Foldable (find)
-import Data.Maybe (mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
-import Type.Application (annotateApplicationType)
+import Type.Application (annotateAbstractionType, annotateApplicationType)
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
@@ -180,39 +178,8 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.TypeCast {}) = do
     tell [notImplemented (annotation x) "TypeCast"]
     return $ stub x
-  annotateType t (AST.Abstraction p paramdecls expr) = do
-    let infer' expr'' = do
-          context' <- get >>= withParamDecls paramdecls
-          expr' <- withStateTAE (const context') (inferType expr'')
-          argtypes <- Type.fn . fmap snd <$> mapM toPair paramdecls
-          return (fmap argtypes (typeOf expr'), expr')
-
-    (t', expr') <- case t of
-      Just t'@(Type (AST.TypeFun () argtypes returntype)) -> do
-        paramdecls' <- mapM toPair paramdecls
-
-        let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls'
-            expected = fmap Type argtypes
-
-        let toDiagnostic ((p', (name, actual')), expected') = do
-              guard $ actual' /= expected'
-              let m = "(" ++ name ++ " : " ++ show actual' ++ ")"
-              return $ mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p' (show expected') m
-
-        tell $ mapMaybe toDiagnostic (zip actual expected)
-
-        context' <- get >>= withParamDecls paramdecls
-        expr' <- withStateTAE (const context') (checkType (Type returntype) expr)
-
-        return (Just t', expr')
-      Just t'' -> do
-        (t', expr') <- infer' expr
-        tell [mismatchSS UNEXPECTED_LAMBDA p (show t'') (maybe "lambda" show t')]
-        return (t', expr')
-      Nothing ->
-        infer' expr
-
-    return $ AST.Abstraction (p, t') (stubL paramdecls) expr'
+  annotateType t (AST.Abstraction p paramdecls expr) =
+    annotateAbstractionType t p paramdecls expr annotateType
   annotateType t (AST.Variant p (AST.StellaIdent tag) expr) = do
     exprTyping <- variantFieldTyping p tag t
     exprType <- variantExprTyping exprTyping expr
