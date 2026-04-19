@@ -14,13 +14,10 @@ import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
-import Type.Cardinality (Cardinality, cardinality, (+?+))
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
-
-type Exhaustiveness = Cardinality
 
 bindings :: AST.Pattern' Position -> Type -> Either Diagnostic (Map String Type)
 bindings (AST.PatternCastAs p _ _) _ =
@@ -78,15 +75,6 @@ bindings p t =
       message = "unexpected pattern for type " ++ show t
    in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE position message
 
-expectExhaustive :: Position -> [AST.MatchCase' (Position, Maybe Type)] -> Maybe Type -> TypeAnnotationEnv ()
-expectExhaustive p cases (Just t)
-  | all (isJust . typeOf) cases = do
-      let patterns = fmap (fmap fst . (\(AST.AMatchCase _ x _) -> x)) cases
-          message = "nonexchaustive pattern-matching"
-          diagnostic' = diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message
-      unless (isExhaustive patterns t) $ tell [diagnostic']
-expectExhaustive _ _ _ = pure ()
-
 annotateCaseType ::
   Maybe Type ->
   AST.MatchCase' Position ->
@@ -105,55 +93,17 @@ annotateCaseType t (AST.AMatchCase p pattern' expr) patterntype annotateType = d
   let t' = typeOf expr'
   return (AST.AMatchCase (p, t') (fmap (,Nothing) pattern') expr')
 
+expectExhaustive :: Position -> [AST.MatchCase' (Position, Maybe Type)] -> Maybe Type -> TypeAnnotationEnv ()
+expectExhaustive p cases (Just t)
+  | all (isJust . typeOf) cases = do
+      let patterns = fmap (fmap fst . (\(AST.AMatchCase _ x _) -> x)) cases
+          message = "nonexchaustive pattern-matching"
+          diagnostic' = diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message
+      unless (isExhaustive patterns t) $ tell [diagnostic']
+expectExhaustive _ _ _ = pure ()
+
 isExhaustive :: [AST.Pattern' Position] -> Type -> Bool
-isExhaustive ps (Type t) =
-  let ps' = fmap withNoTypingAsUnit' ps
-      t' = withNoTypingAsUnit t
-   in isExhaustive' $ foldr exhaustiveness' (fmap (const $ Just 0) t') ps'
-
--- TODO(vityaman): #structural-patterns
-isExhaustive' :: AST.Type' Exhaustiveness -> Bool
-isExhaustive' (AST.TypeVariant _ fields) =
-  all (isExhaustive' . toType) fields
-  where
-    toType (AST.AVariantFieldType _ _ (AST.SomeTyping _ t')) = t'
-    toType (AST.AVariantFieldType _ _ (AST.NoTyping _)) =
-      error "NoTyping must be desugared to the unit type"
-isExhaustive' (AST.TypeSum _ inl inr) =
-  isExhaustive' inl && isExhaustive' inr
-isExhaustive' t =
-  annotation t == cardinality (Type.fromAST t)
-
-exhaustiveness' :: AST.Pattern' Position -> AST.Type' Exhaustiveness -> AST.Type' Exhaustiveness
-exhaustiveness' (AST.PatternVariant _ (AST.StellaIdent tag) data') (AST.TypeVariant _ fields) =
-  let tag'' (AST.AVariantFieldType _ (AST.StellaIdent tag') _) = tag'
-      typing'' (AST.AVariantFieldType _ _ typing) = typing
-      entry = (typing'' <$> find (\x -> tag'' x == tag) fields)
-   in case (entry, data') of
-        (Just (AST.SomeTyping _ t'), AST.SomePatternData _ pattern') ->
-          let entry' = exhaustiveness' pattern' t'
-              updateField (AST.AVariantFieldType p ident (AST.SomeTyping ann t))
-                | (ident == AST.StellaIdent tag) = AST.AVariantFieldType p ident (AST.SomeTyping ann entry')
-                | otherwise = AST.AVariantFieldType p ident (AST.SomeTyping ann t)
-              updateField field = field
-
-              fields' = fmap updateField fields
-              annotations = map (annotation . typing'') fields'
-              annotation' = foldr (+?+) (Just 0) annotations
-           in AST.TypeVariant annotation' fields'
-        (_, _) -> error "NoTyping or NoPatternData must be desugared to the unit type"
-exhaustiveness' (AST.PatternInl _ pattern') (AST.TypeSum _ inl inr) =
-  let inl' = exhaustiveness' pattern' inl
-   in AST.TypeSum (annotation inl' +?+ annotation inr) inl' inr
-exhaustiveness' (AST.PatternInr _ pattern') (AST.TypeSum _ inl inr) =
-  let inr' = exhaustiveness' pattern' inr
-   in AST.TypeSum (annotation inl +?+ annotation inr') inl inr'
-exhaustiveness' (AST.PatternUnit _) t@(AST.TypeUnit _) =
-  fmap (const $ cardinality (Type.fromAST t)) t
-exhaustiveness' (AST.PatternVar _ _) t =
-  fmap (const $ cardinality (Type.fromAST t)) t
-exhaustiveness' p t =
-  error $ "Unexpected pattern " ++ show p ++ " for type " ++ show t
+isExhaustive = undefined
 
 withNoTypingAsUnit' :: AST.Pattern' a -> AST.Pattern' a
 withNoTypingAsUnit' (AST.PatternVariant p (AST.StellaIdent tag) (AST.NoPatternData p')) =
