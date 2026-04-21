@@ -7,3 +7,4 @@ yqstella.cabal
 
 # Stack Build Directory
 .stack-work/
+./dist*
