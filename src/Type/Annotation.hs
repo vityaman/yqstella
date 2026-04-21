@@ -18,7 +18,7 @@ import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toPair, withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
-import Type.Expectation (TypeKind (Expected, Inferred), commonType, liftType, liftType', listItemType, mismatchSS, sanitizeT)
+import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', listItemType, mismatchSS, sanitizeT)
 import Type.Expression (annotateTT2B, annotateTT2T)
 import Type.Match (annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)

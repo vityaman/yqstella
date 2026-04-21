@@ -22,6 +22,7 @@ import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
 import Type.Expectation (commonType)
 import Type.UsefulClause
+import Debug.Trace
 
 checkType :: Type -> AST.Pattern' Position -> Either Diagnostic (AST.Pattern' (Position, Type))
 checkType _ (AST.PatternCastAs p _ _) =
@@ -153,9 +154,8 @@ annotateCaseType ::
 annotateCaseType t (AST.AMatchCase p pattern' expr) patterntype annotateType = do
   (pattern'', expr') <- case checkType patterntype pattern' of
     Right pattern'' -> do
-      let bindings' = bindings pattern''
       context <- get
-      let context' = foldr (uncurry Context.withTyped) context (Map.toList bindings')
+      let context' = foldr (uncurry Context.withTyped) context (Map.toList $ bindings pattern'')
       expr' <- withStateTAE (const context') (annotateType t expr)
       return (fmap (Data.Bifunctor.second Just) pattern'', expr')
     Left e -> do

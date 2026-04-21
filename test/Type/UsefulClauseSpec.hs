@@ -7,11 +7,24 @@ import Test.Tasty.HUnit (assertEqual, testCase)
 import Type.UsefulClause (C, P (C, W), PT ((:::)), i)
 
 ctors :: String -> Map C [String]
-ctors "Bool" = Map.fromList [("True", []), ("False", [])]
-ctors "Maybe Bool" = Map.fromList [("Some", ["Bool"]), ("None", [])]
-ctors "Variant<a: Unit, b: Bool>" = Map.fromList [("a", ["Unit"]), ("b", ["Bool"])]
-ctors "Unit" = Map.fromList [("unit", [])]
-ctors t = error $ "unknown type " ++ show t
+ctors "Bool" =
+  Map.fromList [("True", []), ("False", [])]
+ctors "Maybe Bool" =
+  Map.fromList [("Some", ["Bool"]), ("None", [])]
+ctors "Variant<a: Unit, b: Bool>" =
+  Map.fromList [("a", ["Unit"]), ("b", ["Bool"])]
+ctors "Unit" =
+  Map.fromList [("unit", [])]
+ctors "Nat + (Bool + (Nat -> Nat))" =
+  Map.fromList [("inl", ["Nat"]), ("inr", ["Bool + (Nat -> Nat)"])]
+ctors "Bool + (Nat -> Nat)" =
+  Map.fromList [("inl", ["Bool"]), ("inr", ["Nat -> Nat"])]
+ctors "Nat" =
+  Map.fromList [("0", []), ("succ", ["Nat"])]
+ctors "Nat -> Nat" =
+  Map.empty
+ctors t =
+  error $ "unknown type " ++ show t
 
 testExample1 :: TestTree
 testExample1 =
@@ -74,7 +87,7 @@ testExample5 =
 
 testExample6 :: TestTree
 testExample6 =
-  testCase "Repro: exhaustive <| a, b : Bool |> (nullary a + b)" $
+  testCase "Example6 - Exhaustive <| a, b : Bool |> (nullary a + b)" $
     assertEqual "" Nothing actual
   where
     matrix =
@@ -82,6 +95,18 @@ testExample6 =
         [C "b" [W ::: "Bool"] ::: "Variant<a: Unit, b: Bool>"]
       ]
     actual = i ctors ["Variant<a: Unit, b: Bool>"] matrix
+
+testExample7 :: TestTree
+testExample7 =
+  testCase "Example7 - Nested sums: Nat + (Bool + (Nat -> Nat)) exhaustive" $
+    assertEqual "" Nothing actual
+  where
+    matrix =
+      [ [C "inl" [W ::: "Nat"] ::: "Nat + (Bool + (Nat -> Nat))"],
+        [C "inr" [C "inl" [W ::: "Bool"] ::: "Bool + (Nat -> Nat)"] ::: "Nat + (Bool + (Nat -> Nat))"],
+        [C "inr" [C "inr" [W ::: "Nat -> Nat"] ::: "Bool + (Nat -> Nat)"] ::: "Nat + (Bool + (Nat -> Nat))"]
+      ]
+    actual = i ctors ["Nat + (Bool + (Nat -> Nat))"] matrix
 
 main :: IO TestTree
 main =
@@ -93,5 +118,6 @@ main =
         testExample3,
         testExample4,
         testExample5,
-        testExample6
+        testExample6,
+        testExample7
       ]

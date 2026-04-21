@@ -41,7 +41,7 @@ i :: (t -> Map C [t]) -> [t] -> M t -> Maybe [PT t]
 i _ [] [] = Just []
 i _ [] _ = Nothing
 i ctors (t' : ts) m =
-  if null csd
+  if null csd && not (null cs)
     then asum (fmap (uncurry i') (Map.toList cs'))
     else i''
   where
