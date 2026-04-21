@@ -6,6 +6,7 @@ import Annotation (Annotated (annotation))
 import Control.Monad (when)
 import Control.Monad.State
 import Control.Monad.Writer (tell)
+import qualified Data.Bifunctor
 import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -13,6 +14,7 @@ import Data.Maybe (fromMaybe, isJust)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
+import Syntax.PrettyPrint (displayAST)
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
@@ -20,8 +22,6 @@ import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
 import Type.Expectation (commonType)
 import Type.UsefulClause
-import qualified Data.Bifunctor
-import Syntax.PrettyPrint (displayAST)
 
 checkType :: Type -> AST.Pattern' Position -> Either Diagnostic (AST.Pattern' (Position, Type))
 checkType _ (AST.PatternCastAs p _ _) =
@@ -166,8 +166,8 @@ annotateCaseType t (AST.AMatchCase p pattern' expr) patterntype annotateType = d
 
 usefulClause :: [AST.Pattern' Type] -> Type -> Maybe (AST.Pattern' Type)
 usefulClause patterns (Type t) =
-  let matrix = fmap (encode . normalizeP) patterns
-      clauses = i ctors [Type (normalizeT t)] [matrix]
+  let matrix = fmap ((: []) . encode . normalizeP) patterns
+      clauses = i ctors [Type (normalizeT t)] matrix
    in case clauses of
         Just [clause] -> Just (decode clause)
         Nothing -> Nothing
@@ -211,7 +211,7 @@ ctors (Type (AST.TypeVariant _ variantfieldtypes)) =
           variantfieldtypes
     ]
 ctors (Type (AST.TypeUnit _)) =
-  Map.fromList [("unit", [Type.fromAST' AST.TypeUnit])]
+  Map.fromList [("unit", [])]
 ctors (Type (AST.TypeBool _)) =
   Map.fromList [("true", []), ("false", [])]
 ctors (Type (AST.TypeNat _)) =

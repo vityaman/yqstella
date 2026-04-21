@@ -9,6 +9,8 @@ import Type.UsefulClause (C, P (C, W), PT ((:::)), i)
 ctors :: String -> Map C [String]
 ctors "Bool" = Map.fromList [("True", []), ("False", [])]
 ctors "Maybe Bool" = Map.fromList [("Some", ["Bool"]), ("None", [])]
+ctors "Variant<a: Unit, b: Bool>" = Map.fromList [("a", ["Unit"]), ("b", ["Bool"])]
+ctors "Unit" = Map.fromList [("unit", [])]
 ctors t = error $ "unknown type " ++ show t
 
 testExample1 :: TestTree
@@ -70,6 +72,17 @@ testExample5 =
     actual = i ctors ["Bool", "Bool"] matrix
     expected = Nothing
 
+testExample6 :: TestTree
+testExample6 =
+  testCase "Repro: exhaustive <| a, b : Bool |> (nullary a + b)" $
+    assertEqual "" Nothing actual
+  where
+    matrix =
+      [ [C "a" [C "unit" [] ::: "Unit"] ::: "Variant<a: Unit, b: Bool>"],
+        [C "b" [W ::: "Bool"] ::: "Variant<a: Unit, b: Bool>"]
+      ]
+    actual = i ctors ["Variant<a: Unit, b: Bool>"] matrix
+
 main :: IO TestTree
 main =
   return $
@@ -79,5 +92,6 @@ main =
         testExample2,
         testExample3,
         testExample4,
-        testExample5
+        testExample5,
+        testExample6
       ]
