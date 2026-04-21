@@ -190,7 +190,7 @@ annotateMatchType t p expr cases annotateType = do
         patterns' = fmap (fmap (fromMaybe (error "expected type in match case"))) patterns
     case usefulClause patterns' (fromMaybe (error "expected type in match expression") expr't) of
       Just clause ->
-        let message = "nonexchaustive pattern-matching, useful clause: " ++ displayAST clause
+        let message = "non-exchaustive pattern-matching, useful clause: " ++ displayAST clause
          in tell [diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message]
       Nothing -> pure ()
 

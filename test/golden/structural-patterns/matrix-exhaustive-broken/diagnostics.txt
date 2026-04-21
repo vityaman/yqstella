@@ -1,0 +1,24 @@
+test/golden/structural-patterns/matrix-exhaustive-broken/input.yqst:14:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: false
+>   return match (if Nat::iszero(n) then false else true) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken/input.yqst:20:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: succ (_)
+>   return match (n) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken/input.yqst:62:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: inr (_)
+>   return match (inl(n) as (Nat + Bool)) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken/input.yqst:68:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: inl (_)
+>   return match (inr(n) as (Bool + Nat)) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken/input.yqst:80:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| b = _ |>
+>   return match (<| a = n |> as <| a : Nat, b : Bool |>) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken/input.yqst:86:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| b = _ |>
+>   return match (<| a = n |> as <| a : Nat, b : Bool, c : Unit |>) {
+           ^
