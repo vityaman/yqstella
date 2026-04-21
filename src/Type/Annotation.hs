@@ -20,7 +20,7 @@ import Type.Decl (toPair, withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
 import Type.Expectation (TypeKind (Expected, Inferred), commonType, liftType, liftType', listItemType, mismatchSS, sanitizeT)
 import Type.Expression (annotateTT2B, annotateTT2T)
-import Type.Match (annotateCaseType, expectExhaustive)
+import Type.Match (annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
@@ -186,22 +186,8 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- annotateType exprType expr
     let t' = exprType >> t
     return (AST.Variant (p, t') (AST.StellaIdent tag) expr')
-  annotateType _ (AST.Match p expr []) = do
-    expr' <- inferType expr
-    let message = "expected at least one match case"
-     in tell [diagnostic Error ILLEGAL_EMPTY_MATCHING (pointRange p) message]
-    return (AST.Match (p, Nothing) expr' [])
-  annotateType t (AST.Match p expr cases) = do
-    expr' <- inferType expr
-    let expr't = typeOf expr'
-
-    cases' <- case expr't of
-      Just expr't' -> mapM (\x -> annotateCaseType t x expr't' annotateType) cases
-      Nothing -> pure $ stubL cases
-
-    () <- expectExhaustive p cases' expr't
-    t' <- commonType p (fmap annotation cases')
-    return (AST.Match (p, t') expr' cases')
+  annotateType t (AST.Match p expr cases) =
+    annotateMatchType t p expr cases annotateType
   annotateType Nothing (AST.List p []) = do
     let message = "type inference for empty lists is not supported (use type ascriptions)"
     tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]

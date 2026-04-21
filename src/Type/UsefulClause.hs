@@ -1,4 +1,5 @@
-module Type.UsefulClause (C, P (W, C), PT ((:::)), i) where
+{- http://moscova.inria.fr/~maranget/papers/warn/warn.pdf -}
+module Type.UsefulClause (C, P (W, C), PT ((:::)), M, i) where
 
 import Control.Applicative (asum)
 import Data.Map (Map)
@@ -12,7 +13,7 @@ data P t
   | C C [PT t]
   deriving (Show, Eq, Ord)
 
-data PT t = P t ::: t
+data PT t = (P t) ::: t
   deriving (Show, Eq, Ord)
 
 type M t = [[PT t]]
