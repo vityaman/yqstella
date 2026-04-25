@@ -34,12 +34,6 @@ hpack && stack test --ta "-p <substring> --accept --size-cutoff 100000"
 hpack && stack test --ta "-p structural-patterns --size-cutoff 100000 --accept"
 ```
 
-How to run style checkers (see `.github/workflows/haskell.yml` for the source of truth):
-
-```bash
-stack exec ormolu -- --mode check $(find . -path './src/*.hs' -not -path './src/*SyntaxGen/*')
-stack exec ormolu -- --mode check $(find . -path './test/*.hs')
-stack exec hlint -- .
-```
-
-To auto-format with Ormolu, use `--mode inplace` instead of `--mode check` for the same file lists.
+How to run style checkers: see `.github/workflows/haskell.yml`.
+To auto-format with Ormolu, use `--mode inplace` instead of
+`--mode check` for the same file lists.
