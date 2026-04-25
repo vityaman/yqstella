@@ -5,9 +5,6 @@ extend with
   #lists,
   #natural-literals;
 
-// Fizruk: well-typed. yqstella: ERROR_UNEXPECTED_LIST on nested cons
-// (see also list-forest: literals used instead in llm/).
-
 fn g(n : Nat) -> [Nat] {
   return cons(0, cons(1, cons(n, [])))
 }
