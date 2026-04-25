@@ -1,0 +1,43 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #unit-type,
+  #tuples,
+  #records,
+  #sum-types,
+  #variants,
+  #type-ascriptions,
+  #structural-patterns;
+
+fn level1Record1(n : Nat) -> Nat {
+  return match ({ r = { a = n } }) {
+      { r = { a = succ(m) } } => succ(0)
+  }
+}
+
+fn level2Record1(n : Nat) -> Nat {
+  return match ({ s = { r = { a = n } } }) {
+      { s = { r = { a = succ(m) } } } => succ(0)
+  }
+}
+
+fn level1Record2(n : Nat) -> Nat {
+  return match ({ u = { a = n, b = n } }) {
+      { u = { a = succ(m), b = b1 } } => succ(0)
+  }
+}
+
+fn level2Record2(n : Nat) -> Nat {
+  return match ({ v = { u = { a = n, b = n } } }) {
+      { v = { u = { a = succ(m), b = b1 } } } => succ(0)
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+      level1Record1(n)
+    + level2Record1(n)
+    + level1Record2(n)
+    + level2Record2(n)
+}

@@ -1,0 +1,30 @@
+test/golden/structural-patterns/matrix-exhaustive-broken-variant/input.yqst:14:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| b = _ |>
+>   return match (<| a = n |> as <| a : Nat, b : Bool |>) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-variant/input.yqst:20:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| b = _ |>
+>   return match (<| a = n |> as <| a : Nat, b : Bool, c : Unit |>) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-variant/input.yqst:27:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| b = _ |>
+>   return match (<| a = {n, n} |> as <| a : {Nat, Nat}, b : Bool |>) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-variant/input.yqst:33:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| b = _ |>
+>   return match (<| a = { u = { a = n } } |> as <| a : { u : { a : Nat } }, b : Bool |>) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-variant/input.yqst:39:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| c = _ |>
+>   return match (<| a = {n, n} |> as <| a : {Nat, Nat}, b : Bool, c : Unit |>) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-variant/input.yqst:46:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| a = {
+  ? = {
+    ? = succ (_)
+  }
+}
+
+|>
+>   return match (<| a = { v = { u = n } } |> as <| a : { v : { u : Nat } }, b : Bool, c : Unit |>) {
+           ^

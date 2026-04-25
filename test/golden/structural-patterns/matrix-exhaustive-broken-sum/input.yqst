@@ -1,0 +1,29 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #unit-type,
+  #tuples,
+  #records,
+  #sum-types,
+  #variants,
+  #type-ascriptions,
+  #structural-patterns;
+
+fn level0SumInl(n : Nat) -> Nat {
+  return match (inl(n) as (Nat + Bool)) {
+      inl(n) => 0
+  }
+}
+
+fn level0SumInr(n : Nat) -> Nat {
+  return match (inr(n) as (Bool + Nat)) {
+      inr(n) => succ(0)
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+      level0SumInl(n)
+    + level0SumInr(n)
+}
