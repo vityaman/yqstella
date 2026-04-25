@@ -1,0 +1,8 @@
+test/golden/core/lexics-illegal-token/input.yqst:4:11: [ERROR_LEXICS]
+illegal token
+>   return 0$
+            ^
+test/golden/core/lexics-illegal-token/input.yqst:1:0: [ERROR_SYNTAX]
+syntax error at end of file
+> language core;
+  ^

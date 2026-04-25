@@ -17,6 +17,13 @@ How to test:
 hpack && stack test
 ```
 
+How to run:
+
+```bash
+hpack && stack run -- --help
+hpack && stack run < test/golden/core/example-intro/input.yqst
+```
+
 How to test with a filter:
 
 ```bash
