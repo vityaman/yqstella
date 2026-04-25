@@ -1,0 +1,8 @@
+test/golden/structural-patterns/matrix-exhaustive-broken-sum/input.yqst:14:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: inr (_)
+>   return match (inl(n) as (Nat + Bool)) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-sum/input.yqst:20:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: inl (_)
+>   return match (inr(n) as (Bool + Nat)) {
+           ^

@@ -1,0 +1,53 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #unit-type,
+  #tuples,
+  #records,
+  #sum-types,
+  #variants,
+  #type-ascriptions,
+  #structural-patterns;
+
+fn level0Bool(n : Nat) -> Nat {
+  return match (if Nat::iszero(n) then false else true) {
+      true  => succ(0)
+  }
+}
+
+fn level1Bool(n : Nat) -> Nat {
+  return match ({
+      if Nat::iszero(n) then false else true,
+      if Nat::iszero(succ(n)) then false else true
+  }) {
+      { false, false } => 0
+    | { false, true }  => succ(0)
+    | { true, true }   => succ(succ(succ(0)))
+  }
+}
+
+fn level2Bool(n : Nat) -> Nat {
+  return match ({
+    if Nat::iszero(n) then false else true,
+    {
+      if Nat::iszero(succ(n)) then false else true,
+      if Nat::iszero(succ(succ(n))) then false else true
+    }
+  }) {
+      { false, { false, false } } => 0
+    | { false, { false, true } }  => succ(0)
+    | { false, { true, true } }   => succ(succ(succ(0)))
+    | { true, { false, false } }  => succ(succ(succ(succ(0))))
+    | { true, { false, true } }   => succ(succ(succ(succ(succ(0)))))
+    | { true, { true, false } }   => succ(succ(succ(succ(succ(succ(0))))))
+    | { true, { true, true } }    => succ(succ(succ(succ(succ(succ(succ(0)))))))
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+      level0Bool(n)
+    + level1Bool(n)
+    + level2Bool(n)
+}

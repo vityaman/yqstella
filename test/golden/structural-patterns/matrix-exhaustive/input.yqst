@@ -1,0 +1,335 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #unit-type,
+  #tuples,
+  #records,
+  #sum-types,
+  #variants,
+  #type-ascriptions,
+  #structural-patterns;
+
+fn level0Bool(n : Nat) -> Nat {
+  return match (if Nat::iszero(n) then false else true) {
+      false => 0
+    | true  => succ(0)
+  }
+}
+
+fn level0Nat(n : Nat) -> Nat {
+  return match (n) {
+      0  => 0
+    | succ(n) => succ(0)
+  }
+}
+
+fn level0Unit(n : Nat) -> Nat {
+  return match (unit) {
+      unit => 0
+  }
+}
+
+fn level0Tuple0(n : Nat) -> Nat {
+  return match ({}) {
+      {} => 0
+  }
+}
+
+fn level0Tuple1(n : Nat) -> Nat {
+  return match ({n}) {
+      {a} => 0
+  }
+}
+
+fn level0Tuple2(n : Nat) -> Nat {
+  return match ({n, n}) {
+      {a, b} => 0
+  }
+}
+
+fn level0Record1(n : Nat) -> Nat {
+  return match ({a = n}) {
+      {a = n} => 0
+  }
+}
+
+fn level0Record2(n : Nat) -> Nat {
+  return match ({a = n, b = n}) {
+      {a = n, b = m} => 0
+  }
+}
+
+fn level0SumInl(n : Nat) -> Nat {
+  return match (inl(n) as (Nat + Bool)) {
+      inl(n) => 0
+    | inr(n) => succ(0)
+  }
+}
+
+fn level0SumInr(n : Nat) -> Nat {
+  return match (inr(n) as (Bool + Nat)) {
+      inl(n) => 0
+    | inr(n) => succ(0)
+  }
+}
+
+fn level0Variant1(n : Nat) -> Nat {
+  return match (<| a = n |> as <| a : Nat |>) {
+      <| a = n |> => 0
+  }
+}
+
+fn level0Variant2(n : Nat) -> Nat {
+  return match (<| a = n |> as <| a : Nat, b : Bool |>) {
+      <| a = n |> => 0
+    | <| b = n |> => succ(0)
+  }
+}
+
+fn level0Variant3(n : Nat) -> Nat {
+  return match (<| a = n |> as <| a : Nat, b : Bool, c : Unit |>) {
+      <| a = n |> => 0
+    | <| b = n |> => succ(0)
+    | <| c = n |> => succ(succ(0))
+  }
+}
+
+fn level1Bool(n : Nat) -> Nat {
+  return match ({
+      if Nat::iszero(n) then false else true,
+      if Nat::iszero(succ(n)) then false else true
+  }) {
+      { false, false } => 0
+    | { false, true }  => succ(0)
+    | { true, false }  => succ(succ(0))
+    | { true, true }   => succ(succ(succ(0)))
+  }
+}
+
+fn level2Bool(n : Nat) -> Nat {
+  return match ({
+    if Nat::iszero(n) then false else true,
+    {
+      if Nat::iszero(succ(n)) then false else true,
+      if Nat::iszero(succ(succ(n))) then false else true
+    }
+  }) {
+      { false, { false, false } } => 0
+    | { false, { false, true } }  => succ(0)
+    | { false, { true, false } }  => succ(succ(0))
+    | { false, { true, true } }   => succ(succ(succ(0)))
+    | { true, { false, false } }  => succ(succ(succ(succ(0))))
+    | { true, { false, true } }   => succ(succ(succ(succ(succ(0)))))
+    | { true, { true, false } }   => succ(succ(succ(succ(succ(succ(0))))))
+    | { true, { true, true } }    => succ(succ(succ(succ(succ(succ(succ(0)))))))
+  }
+}
+
+fn level1Nat(n : Nat) -> Nat {
+  return match ({ n, succ(0) }) {
+      { 0, k } => 0
+    | { succ(m), k2 } => succ(0)
+  }
+}
+
+fn level2Nat(n : Nat) -> Nat {
+  return match ({ a = { b = n } }) {
+      { a = { b = 0 } } => 0
+    | { a = { b = succ(m) } } => succ(0)
+  }
+}
+
+fn level1Unit(n : Nat) -> Nat {
+  return match ({ unit, unit }) {
+      { unit, unit } => 0
+  }
+}
+
+fn level2Unit(n : Nat) -> Nat {
+  return match ({ { unit, unit }, unit }) {
+      { { unit, unit }, unit } => 0
+  }
+}
+
+fn level1Tuple0(n : Nat) -> Nat {
+  return match ({ {}, n }) {
+      { {}, 0 } => 0
+    | { {}, succ(m) } => succ(0)
+  }
+}
+
+fn level2Tuple0(n : Nat) -> Nat {
+  return match ({ {}, { {}, n } }) {
+      { {}, { {}, 0 } } => 0
+    | { {}, { {}, succ(m) } } => succ(0)
+  }
+}
+
+fn level1Tuple1(n : Nat) -> Nat {
+  return match ({ {n} }) {
+      { {0} } => 0
+    | { {succ(m)} } => succ(0)
+  }
+}
+
+fn level2Tuple1(n : Nat) -> Nat {
+  return match ({ { {n} } }) {
+      { { {0} } } => 0
+    | { { {succ(m)} } } => succ(0)
+  }
+}
+
+fn level1Tuple2(n : Nat) -> Nat {
+  return match ({ {n, n}, {n, n} }) {
+      { {a, b}, {c, d} } => 0
+  }
+}
+
+fn level2Tuple2(n : Nat) -> Nat {
+  return match ({ { {n, n}, {n, n} } }) {
+      { { {a, b}, {c, d} } } => 0
+  }
+}
+
+fn level1Record1(n : Nat) -> Nat {
+  return match ({ r = { a = n } }) {
+      { r = { a = 0 } } => 0
+    | { r = { a = succ(m) } } => succ(0)
+  }
+}
+
+fn level2Record1(n : Nat) -> Nat {
+  return match ({ s = { r = { a = n } } }) {
+      { s = { r = { a = 0 } } } => 0
+    | { s = { r = { a = succ(m) } } } => succ(0)
+  }
+}
+
+fn level1Record2(n : Nat) -> Nat {
+  return match ({ u = { a = n, b = n } }) {
+      { u = { a = 0, b = b0 } } => 0
+    | { u = { a = succ(m), b = b1 } } => succ(0)
+  }
+}
+
+fn level2Record2(n : Nat) -> Nat {
+  return match ({ v = { u = { a = n, b = n } } }) {
+      { v = { u = { a = 0, b = b0 } } } => 0
+    | { v = { u = { a = succ(m), b = b1 } } } => succ(0)
+  }
+}
+
+fn level1SumInl(n : Nat) -> Nat {
+  return match (inl({n, n}) as ({Nat, Nat} + Bool)) {
+      inl({a, b}) => 0
+    | inr(x) => succ(0)
+  }
+}
+
+fn level2SumInl(n : Nat) -> Nat {
+  return match (inl({ a = n, b = n }) as (({ a : Nat, b : Nat }) + Bool)) {
+      inl({ a = x, b = y }) => 0
+    | inr(x) => succ(0)
+  }
+}
+
+fn level1SumInr(n : Nat) -> Nat {
+  return match (inr({n, n}) as (Bool + {Nat, Nat})) {
+      inl(x) => 0
+    | inr({a, b}) => succ(0)
+  }
+}
+
+fn level2SumInr(n : Nat) -> Nat {
+  return match (inr({ a = n, b = n }) as (Bool + { a : Nat, b : Nat })) {
+      inl(x) => 0
+    | inr({ a = x, b = y }) => succ(0)
+  }
+}
+
+fn level1Variant1(n : Nat) -> Nat {
+  return match (<| a = {n, n} |> as <| a : {Nat, Nat} |>) {
+      <| a = {x, y} |> => 0
+  }
+}
+
+fn level2Variant1(n : Nat) -> Nat {
+  return match (<| a = { p = n } |> as <| a : { p : Nat } |>) {
+      <| a = { p = m } |> => 0
+  }
+}
+
+fn level1Variant2(n : Nat) -> Nat {
+  return match (<| a = {n, n} |> as <| a : {Nat, Nat}, b : Bool |>) {
+      <| a = {x, y} |> => 0
+    | <| b = z |> => succ(0)
+  }
+}
+
+fn level2Variant2(n : Nat) -> Nat {
+  return match (<| a = { u = { a = n } } |> as <| a : { u : { a : Nat } }, b : Bool |>) {
+      <| a = { u = { a = m } } |> => 0
+    | <| b = z |> => succ(0)
+  }
+}
+
+fn level1Variant3(n : Nat) -> Nat {
+  return match (<| a = {n, n} |> as <| a : {Nat, Nat}, b : Bool, c : Unit |>) {
+      <| a = {x, y} |> => 0
+    | <| b = z |> => succ(0)
+    | <| c = u |> => succ(succ(0))
+  }
+}
+
+fn level2Variant3(n : Nat) -> Nat {
+  return match (<| a = { v = { u = n } } |> as <| a : { v : { u : Nat } }, b : Bool, c : Unit |>) {
+      <| a = { v = { u = 0 } } |> => 0
+    | <| a = { v = { u = succ(m) } } |> => succ(0)
+    | <| b = z |> => succ(succ(0))
+    | <| c = u |> => succ(succ(succ(0)))
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+      level0Bool(n)
+    + level0Nat(n)
+    + level0Unit(n)
+    + level0Tuple0(n)
+    + level0Tuple1(n)
+    + level0Tuple2(n)
+    + level0Record1(n)
+    + level0Record2(n)
+    + level0SumInl(n)
+    + level0SumInr(n)
+    + level0Variant1(n)
+    + level0Variant2(n)
+    + level0Variant3(n)
+    + level1Bool(n)
+    + level2Bool(n)
+    + level1Nat(n)
+    + level2Nat(n)
+    + level1Unit(n)
+    + level2Unit(n)
+    + level1Tuple0(n)
+    + level2Tuple0(n)
+    + level1Tuple1(n)
+    + level2Tuple1(n)
+    + level1Tuple2(n)
+    + level2Tuple2(n)
+    + level1Record1(n)
+    + level2Record1(n)
+    + level1Record2(n)
+    + level2Record2(n)
+    + level1SumInl(n)
+    + level2SumInl(n)
+    + level1SumInr(n)
+    + level2SumInr(n)
+    + level1Variant1(n)
+    + level2Variant1(n)
+    + level1Variant2(n)
+    + level2Variant2(n)
+    + level1Variant3(n)
+    + level2Variant3(n)
+}

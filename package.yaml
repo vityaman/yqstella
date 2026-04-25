@@ -64,6 +64,7 @@ tests:
     - tasty
     - tasty-golden
     - tasty-hunit
+    - containers
     - bytestring
     - directory
     - filepath

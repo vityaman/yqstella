@@ -1,0 +1,36 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #unit-type,
+  #tuples,
+  #records,
+  #sum-types,
+  #variants,
+  #type-ascriptions,
+  #structural-patterns;
+
+fn level0Nat(n : Nat) -> Nat {
+  return match (n) {
+      0  => 0
+  }
+}
+
+fn level1Nat(n : Nat) -> Nat {
+  return match ({ n, succ(0) }) {
+      { succ(m), k2 } => succ(0)
+  }
+}
+
+fn level2Nat(n : Nat) -> Nat {
+  return match ({ a = { b = n } }) {
+      { a = { b = succ(m) } } => succ(0)
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+      level0Nat(n)
+    + level1Nat(n)
+    + level2Nat(n)
+}

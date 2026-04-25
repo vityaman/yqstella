@@ -1,0 +1,44 @@
+test/golden/structural-patterns/matrix-exhaustive-broken-record/input.yqst:14:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: {
+  ? = {
+    ? = 0
+  }
+}
+
+
+>   return match ({ r = { a = n } }) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-record/input.yqst:20:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: {
+  ? = {
+    ? = {
+      ? = 0
+    }
+  }
+}
+
+
+>   return match ({ s = { r = { a = n } } }) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-record/input.yqst:26:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: {
+  ? = {
+    ? = 0, ? = _
+  }
+}
+
+
+>   return match ({ u = { a = n, b = n } }) {
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-record/input.yqst:32:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: {
+  ? = {
+    ? = {
+      ? = 0, ? = _
+    }
+  }
+}
+
+
+>   return match ({ v = { u = { a = n, b = n } } }) {
+           ^

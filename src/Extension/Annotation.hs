@@ -252,7 +252,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
   annotateExtensions (AST.PatternInt p n) =
     AST.PatternInt (p, Set.fromList [Extension.StructuralPatterns]) n
   annotateExtensions (AST.PatternSucc p pattern_) =
-    AST.PatternSucc (p, Set.fromList [Extension.NaturalLiterals, Extension.StructuralPatterns]) pattern_'
+    AST.PatternSucc (p, Set.fromList [Extension.StructuralPatterns]) pattern_'
     where
       pattern_' = annotateExtensions pattern_
   annotateExtensions (AST.PatternVar p stellaident'@(AST.StellaIdent stellaident)) =

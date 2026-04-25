@@ -1,0 +1,61 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #unit-type,
+  #tuples,
+  #records,
+  #sum-types,
+  #variants,
+  #type-ascriptions,
+  #structural-patterns;
+
+fn level0Variant2(n : Nat) -> Nat {
+  return match (<| a = n |> as <| a : Nat, b : Bool |>) {
+      <| a = n |> => 0
+  }
+}
+
+fn level0Variant3(n : Nat) -> Nat {
+  return match (<| a = n |> as <| a : Nat, b : Bool, c : Unit |>) {
+      <| a = n |> => 0
+    | <| c = n |> => succ(succ(0))
+  }
+}
+
+fn level1Variant2(n : Nat) -> Nat {
+  return match (<| a = {n, n} |> as <| a : {Nat, Nat}, b : Bool |>) {
+      <| a = {x, y} |> => 0
+  }
+}
+
+fn level2Variant2(n : Nat) -> Nat {
+  return match (<| a = { u = { a = n } } |> as <| a : { u : { a : Nat } }, b : Bool |>) {
+      <| a = { u = { a = m } } |> => 0
+  }
+}
+
+fn level1Variant3(n : Nat) -> Nat {
+  return match (<| a = {n, n} |> as <| a : {Nat, Nat}, b : Bool, c : Unit |>) {
+      <| a = {x, y} |> => 0
+    | <| b = z |> => succ(0)
+  }
+}
+
+fn level2Variant3(n : Nat) -> Nat {
+  return match (<| a = { v = { u = n } } |> as <| a : { v : { u : Nat } }, b : Bool, c : Unit |>) {
+      <| a = { v = { u = 0 } } |> => 0
+    | <| b = z |> => succ(succ(0))
+    | <| c = u |> => succ(succ(succ(0)))
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+      level0Variant2(n)
+    + level0Variant3(n)
+    + level1Variant2(n)
+    + level2Variant2(n)
+    + level1Variant3(n)
+    + level2Variant3(n)
+}

@@ -74,7 +74,7 @@ annotateTupleType t p exprs annotateType = do
       return (exprs', False)
     Nothing -> do
       exprs' <- mapM (annotateType Nothing) exprs
-      return (exprs', False)
+      return (exprs', True)
 
   let t' = Type . AST.TypeTuple () <$> traverse (fmap Type.toAST . typeOf) exprs'
 
