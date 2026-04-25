@@ -1,0 +1,4 @@
+test/golden/llm/sum-record-tag/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #nullary-functions
+> language core;
+  ^

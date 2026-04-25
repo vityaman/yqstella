@@ -1,0 +1,68 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #sum-types,
+  #type-ascriptions,
+  #unit-type,
+  #nullary-functions;
+
+// ((Nat + Unit) + Unit) + Nat: four shapes; nested match for score.
+
+fn ok(n : Nat) -> ((Nat + Unit) + Unit) + Nat {
+  return
+    inl(
+      inl(inl(n) as (Nat + Unit)) as ((Nat + Unit) + Unit)
+    ) as (((Nat + Unit) + Unit) + Nat)
+}
+
+fn soft_miss() -> ((Nat + Unit) + Unit) + Nat {
+  return
+    inl(
+      inl(inr(unit) as (Nat + Unit)) as ((Nat + Unit) + Unit)
+    ) as (((Nat + Unit) + Unit) + Nat)
+}
+
+fn hard_miss() -> ((Nat + Unit) + Unit) + Nat {
+  return inl(inr(unit) as ((Nat + Unit) + Unit)) as (((Nat + Unit) + Unit) + Nat)
+}
+
+fn raw(m : Nat) -> ((Nat + Unit) + Unit) + Nat {
+  return inr(m) as (((Nat + Unit) + Unit) + Nat)
+}
+
+fn pick(n : Nat) -> ((Nat + Unit) + Unit) + Nat {
+  return
+    let k = n - (n / 4) * 4 in
+    if k < 1 then
+      ok(n + 1)
+    else
+      (if k < 2 then
+         soft_miss()
+       else
+         (if k < 3 then hard_miss() else raw(n + 2))
+      )
+}
+
+fn score_result(r : ((Nat + Unit) + Unit) + Nat) -> Nat {
+  return match (r) {
+      inl(inner) =>
+        match (inner) {
+            inl(tag) =>
+              match (tag) {
+                  inl(v) => v * 3
+                | inr(u) => 1
+              }
+          | inr(u) => 5
+        }
+    | inr(m) => m + 10
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return score_result(pick(n))
+}

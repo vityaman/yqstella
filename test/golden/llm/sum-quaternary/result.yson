@@ -1,0 +1,42 @@
+minirun ABI version: 2.45.0
+test/golden/llm/sum-quaternary/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/llm/sum-quaternary/yql.yqls:<main>:109:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/llm/sum-quaternary/yql.yqls:<main>:109:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/llm/sum-quaternary/yql.yqls:<main>:109:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/llm/sum-quaternary/yql.yqls:<main>:105:14: Error: At function: Unwrap
+                	    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+	             ^
+                    test/golden/llm/sum-quaternary/yql.yqls:<main>:105:22: Error: At function: Coalesce
+                    	    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+	                     ^
+                        test/golden/llm/sum-quaternary/yql.yqls:<main>:88:14: Error: At function: If
+                        	            (If
+	             ^
+                            test/golden/llm/sum-quaternary/yql.yqls:<main>:85:35: Error: At function: And
+                            	          (let yqstellamatchcond (And (Exists x) (Bool 'true)))
+	                                  ^
+                                test/golden/llm/sum-quaternary/yql.yqls:<main>:85:40: Error: At function: Exists
+                                	          (let yqstellamatchcond (And (Exists x) (Bool 'true)))
+	                                       ^
+                                    test/golden/llm/sum-quaternary/yql.yqls:<main>:84:19: Error: At function: Guess
+                                    	          (let x (Guess yqstellamatcharg 'inl))
+	                  ^
+                                        test/golden/llm/sum-quaternary/yql.yqls:<main>:15:8: Error: At function: If
+                                        	      (If
+	       ^
+                                            test/golden/llm/sum-quaternary/yql.yqls:<main>:16:10: Error: At function: <
+                                            	        (< k (Uint64 '1))
+	         ^
+                                                test/golden/llm/sum-quaternary/yql.yqls:<main>:8:6: Error: At function: If
+                                                	    (If
+	     ^
+                                                    test/golden/llm/sum-quaternary/yql.yqls:<main>:9:8: Error: Expected data type, but got: Optional<Bool>
+                                                    	      (< n (*MayWarn (/MayWarn n (Uint64 '4)) (Uint64 '4)))
+	       ^

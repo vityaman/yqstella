@@ -1,0 +1,94 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #records,
+  #structural-patterns,
+  #tuples,
+  #type-ascriptions,
+  #unit-type,
+  #variants;
+
+// Scene objects: point (record), axis box (record of pair-tuples), tagged payload (record + inner variant).
+
+fn mk_point(n : Nat) -> <| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |> {
+  return
+    (<| p = { x = n, y = n + succ(0) } |>) as (<| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |>)
+}
+
+fn mk_box(n : Nat) -> <| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |> {
+  return
+    (<| b = { lo = { 0, n }, hi = { n + 1, n + succ(0) } } |>) as (<| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |>)
+}
+
+fn mk_tagged(n : Nat) -> <| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |> {
+  return
+    if n < 2 then
+      (<| t = { w = n, h = (<| u = unit |>) as (<| u : Unit, m : Nat |>) } |>) as (<| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |>)
+    else
+      (<| t = { w = n, h = (<| m = n + 1 |>) as (<| u : Unit, m : Nat |>) } |>) as (<| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |>)
+}
+
+fn mk_scene(n : Nat) -> <| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |> {
+  return
+    if n < 1 then
+      mk_point(n + 2)
+    else
+      (if n < 2 then mk_box(n + 1) else mk_tagged(n))
+}
+
+fn score_hint(h : <| u : Unit, m : Nat |>) -> Nat {
+  return match (h) {
+      <| u = uu |> => 0
+    | <| m = mv |> => mv + 1
+  }
+}
+
+fn score_box(box : { lo : { Nat, Nat }, hi : { Nat, Nat } }) -> Nat {
+  return match (box) {
+      { lo = { lax, lay }, hi = { hx, hy } } =>
+        (if lax < hx then hx - lax else lax - hx)
+        + (if lay < hy then hy - lay else lay - hy)
+  }
+}
+
+fn score_point(r : { x : Nat, y : Nat }) -> Nat {
+  return match (r) {
+      { x = xa, y = yb } => xa * 3 + yb * 2
+  }
+}
+
+fn eval_scene(
+  o : <| p : { x : Nat, y : Nat }, b : { lo : { Nat, Nat }, hi : { Nat, Nat } }, t : { w : Nat, h : <| u : Unit, m : Nat |> } |>
+) -> Nat {
+  return match (o) {
+      <| p = r |> =>
+        let s0 = score_point(r) in
+        match ({ r.x, r.y }) {
+            { 0, 0 } => s0 + 1
+          | { succ(a), 0 } => s0 + a
+          | { 0, succ(b) } => s0 + b
+          | { succ(a2), succ(b2) } => s0 + a2 + b2
+        }
+    | <| b = box |> =>
+        let s1 = score_box(box) in
+        match (box) {
+            { lo = { 0, 0 }, hi = { hx, hy } } => s1 + hx + hy
+          | { lo = { lx, ly }, hi = { hx2, hy2 } } => s1 + lx + ly + hx2 + hy2
+        }
+    | <| t = z |> =>
+        let sh = score_hint(z.h) in
+        match (z.h) {
+            <| u = uu |> => z.w + sh
+          | <| m = mv |> => z.w * mv + sh
+        }
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return eval_scene(mk_scene(n)) + 0
+}

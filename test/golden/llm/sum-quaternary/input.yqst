@@ -1,0 +1,51 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #sum-types,
+  #type-ascriptions;
+
+// (Nat + Nat) + (Nat + Nat): classify n mod 4, then nested match for checksum.
+
+fn mod4(n : Nat) -> Nat {
+  return n - (n / 4) * 4
+}
+
+fn quat_of(n : Nat) -> (Nat + Nat) + (Nat + Nat) {
+  return
+    let k = mod4(n) in
+    if k < 1 then
+      inl(inl(n) as (Nat + Nat)) as ((Nat + Nat) + (Nat + Nat))
+    else
+      (if k < 2 then
+         inl(inr(n + 1) as (Nat + Nat)) as ((Nat + Nat) + (Nat + Nat))
+       else
+         (if k < 3 then
+            inr(inl(n + 2) as (Nat + Nat)) as ((Nat + Nat) + (Nat + Nat))
+          else
+            inr(inr(n + 3) as (Nat + Nat)) as ((Nat + Nat) + (Nat + Nat))
+         )
+      )
+}
+
+fn score_inner(x : Nat + Nat) -> Nat {
+  return match (x) {
+      inl(a) => a * 2
+    | inr(b) => b + 1
+  }
+}
+
+fn score_quat(q : (Nat + Nat) + (Nat + Nat)) -> Nat {
+  return match (q) {
+      inl(x) => 10 + score_inner(x)
+    | inr(y) => 100 + score_inner(y)
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return score_quat(quat_of(n))
+}

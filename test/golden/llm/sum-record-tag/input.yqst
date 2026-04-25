@@ -1,0 +1,48 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #records,
+  #sum-types,
+  #type-ascriptions,
+  #unit-type;
+
+// Record carries a Nat + Unit tag; several helpers match on the field.
+
+fn tag_some(k : Nat) -> Nat + Unit {
+  return inl(k) as (Nat + Unit)
+}
+
+fn tag_none() -> Nat + Unit {
+  return inr(unit) as (Nat + Unit)
+}
+
+fn tag_val(t : Nat + Unit) -> Nat {
+  return match (t) {
+      inl(n) => n
+    | inr(u) => 0
+  }
+}
+
+fn tag_bump(t : Nat + Unit) -> Nat + Unit {
+  return match (t) {
+      inl(n) => tag_some(n + 1)
+    | inr(u) => tag_some(1)
+  }
+}
+
+fn cell_score(c : { tag : Nat + Unit, w : Nat }) -> Nat {
+  return tag_val(c.tag) * c.w
+}
+
+fn main(n : Nat) -> Nat {
+  return
+    let c0 = { tag = tag_some(n), w = 2 } in
+    let c1 = { tag = tag_bump(tag_none()), w = 3 } in
+    let c2 = { tag = tag_bump(tag_some(n + 1)), w = 1 } in
+    cell_score(c0) + cell_score(c1) + cell_score(c2)
+}

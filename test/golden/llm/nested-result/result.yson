@@ -1,0 +1,42 @@
+minirun ABI version: 2.45.0
+test/golden/llm/nested-result/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/llm/nested-result/yql.yqls:<main>:153:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/llm/nested-result/yql.yqls:<main>:153:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/llm/nested-result/yql.yqls:<main>:153:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/llm/nested-result/yql.yqls:<main>:149:14: Error: At function: Unwrap
+                	    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+	             ^
+                    test/golden/llm/nested-result/yql.yqls:<main>:149:22: Error: At function: Coalesce
+                    	    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+	                     ^
+                        test/golden/llm/nested-result/yql.yqls:<main>:92:14: Error: At function: If
+                        	            (If
+	             ^
+                            test/golden/llm/nested-result/yql.yqls:<main>:89:35: Error: At function: And
+                            	          (let yqstellamatchcond (And (Exists inner) (Bool 'true)))
+	                                  ^
+                                test/golden/llm/nested-result/yql.yqls:<main>:89:40: Error: At function: Exists
+                                	          (let yqstellamatchcond (And (Exists inner) (Bool 'true)))
+	                                       ^
+                                    test/golden/llm/nested-result/yql.yqls:<main>:88:23: Error: At function: Guess
+                                    	          (let inner (Guess yqstellamatcharg 'inl))
+	                      ^
+                                        test/golden/llm/nested-result/yql.yqls:<main>:76:8: Error: At function: If
+                                        	      (If
+	       ^
+                                            test/golden/llm/nested-result/yql.yqls:<main>:77:10: Error: At function: <
+                                            	        (< k (Uint64 '1))
+	         ^
+                                                test/golden/llm/nested-result/yql.yqls:<main>:71:8: Error: At function: If
+                                                	      (If
+	       ^
+                                                    test/golden/llm/nested-result/yql.yqls:<main>:72:10: Error: Expected data type, but got: Optional<Bool>
+                                                    	        (< n (*MayWarn (/MayWarn n (Uint64 '4)) (Uint64 '4)))
+	         ^

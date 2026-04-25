@@ -1,0 +1,4 @@
+test/golden/structural-patterns/pattern-coverage-wf/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #structural-patterns not implemented
+> language core;
+  ^
