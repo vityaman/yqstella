@@ -1,0 +1,55 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let length_le3 (lambda '(xs)
+    (If
+      (Not (HasItems xs))
+      (Uint64 '0)
+      (block '(
+        (let t (Skip xs (Uint64 '1)))
+        (return
+          (If
+            (Not (HasItems t))
+            (Uint64 '1)
+            (block '(
+              (let t2 (Skip t (Uint64 '1)))
+              (return (If (Not (HasItems t2)) (Uint64 '2) (Uint64 '3))))))))))))
+  (let first_two_or_zero (lambda '(xs)
+    (If
+      (Not (HasItems xs))
+      (Uint64 '0)
+      (block '(
+        (let h (Unwrap (ToOptional xs)))
+        (return
+          (If
+            (Not (HasItems (Skip xs (Uint64 '1))))
+            h
+            (+MayWarn (Unwrap (ToOptional (Skip xs (Uint64 '1)))) (Uint64 '0)))))))))
+  (let list_pair_tail (lambda '(xs)
+    (AsStruct
+      '('a xs)
+      '('b (If (Not (HasItems xs)) (ToList (Nothing (OptionalType (DataType 'Uint64)))) (Skip xs (Uint64 '1)))))))
+  (let build_chain (lambda '(n)
+    (If
+      (< n (Uint64 '1))
+      (ToList (Nothing (OptionalType (DataType 'Uint64))))
+      (If (< n (Uint64 '2)) (AsList (Uint64 '0)) (AsList (Uint64 '0) (Uint64 '1) n)))))
+  (let main (lambda '(n) (block '(
+    (let ch (Apply build_chain n))
+    (return (block '(
+      (let p (Apply list_pair_tail ch))
+      (return (block '(
+        (let len1 (Apply length_le3 (Member p 'a)))
+        (return (block '(
+          (let len2 (Apply length_le3 (Member p 'b)))
+          (return (block '(
+            (let s (Apply first_two_or_zero ch))
+            (return (+MayWarn (+MayWarn s (*MayWarn len1 (Uint64 '1))) len2))))))))))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)
