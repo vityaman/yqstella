@@ -2,3 +2,21 @@ test/golden/structural-patterns/matrix-exhaustive-broken-bool/input.yqst:14:10: 
 non-exchaustive pattern-matching, useful clause: false
 >   return match (if Nat::iszero(n) then false else true) {
            ^
+test/golden/structural-patterns/matrix-exhaustive-broken-bool/input.yqst:20:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: {
+  true, false
+}
+
+
+>   return match ({
+           ^
+test/golden/structural-patterns/matrix-exhaustive-broken-bool/input.yqst:31:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: {
+  false, {
+    true, false
+  }
+}
+
+
+>   return match ({
+           ^

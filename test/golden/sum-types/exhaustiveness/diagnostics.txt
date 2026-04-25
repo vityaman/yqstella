@@ -1,4 +1,4 @@
 test/golden/sum-types/exhaustiveness/input.yqst:6:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
-nonexchaustive pattern-matching
+non-exchaustive pattern-matching, useful clause: inr (_)
 >   return match (x) {
            ^

@@ -10,6 +10,12 @@ extend with
   #type-ascriptions,
   #structural-patterns;
 
+fn example(_ : Nat) -> Nat {
+  return match ({0, false}) {
+      { 0, w2 } => 0
+  }
+}
+
 fn level1Tuple0(n : Nat) -> Nat {
   return match ({ {}, n }) {
       { {}, succ(m) } => succ(0)
@@ -36,7 +42,8 @@ fn level2Tuple1(n : Nat) -> Nat {
 
 fn main(n : Nat) -> Nat {
   return
-      level1Tuple0(n)
+      example(n)
+    + level1Tuple0(n)
     + level2Tuple0(n)
     + level1Tuple1(n)
     + level2Tuple1(n)
