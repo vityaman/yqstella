@@ -3,6 +3,8 @@ name: stack
 description: How to build and test the project.
 ---
 
+# Stack Skill
+
 How to build:
 
 ```bash
