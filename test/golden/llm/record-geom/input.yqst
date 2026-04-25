@@ -1,0 +1,92 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #records;
+
+// Point, axis-aligned box, and geometric tests (use nested if, not C-style and).
+
+fn point(x : Nat, y : Nat) -> { x : Nat, y : Nat } {
+  return { x = x, y = y }
+}
+
+fn manhattan(p : { x : Nat, y : Nat }, q : { x : Nat, y : Nat }) -> Nat {
+  return
+    (if p.x < q.x then (q.x - p.x) else (p.x - q.x))
+    + (if p.y < q.y then (q.y - p.y) else (p.y - q.y))
+}
+
+fn aabb(
+  p : { x : Nat, y : Nat },
+  lo : { x : Nat, y : Nat },
+  hi : { x : Nat, y : Nat }
+) -> Bool {
+  return
+    if p.x < lo.x then
+      false
+    else
+      (if p.x > hi.x then
+         false
+       else
+         (if p.y < lo.y then
+            false
+          else
+            (if p.y > hi.y then false else true)))
+}
+
+fn aabb_from_corner(
+  origin : { x : Nat, y : Nat },
+  w : Nat,
+  h : Nat
+) -> { lo : { x : Nat, y : Nat }, hi : { x : Nat, y : Nat } } {
+  return {
+    lo = origin,
+    hi = { x = origin.x + w, y = origin.y + h }
+  }
+}
+
+fn dist_to_origin(p : { x : Nat, y : Nat }) -> Nat {
+  return p.x + p.y
+}
+
+fn lerp_toward(
+  p : { x : Nat, y : Nat },
+  t : { x : Nat, y : Nat },
+  pick_x : Bool
+) -> { x : Nat, y : Nat } {
+  return
+    if pick_x then
+      { x = p.x + t.x, y = p.y }
+    else
+      { x = p.x, y = p.y + t.y }
+}
+
+fn tuple_sum2(
+  p : { x : Nat, y : Nat },
+  q : { x : Nat, y : Nat }
+) -> Nat {
+  return p.x + p.y + q.x + q.y
+}
+
+fn main(n : Nat) -> Nat {
+  return
+    let box = aabb_from_corner(point(0, 0), 2, 2) in
+    let c = lerp_toward(point(1, 1), point(2, 2), true) in
+    let m = manhattan(point(n, 0), point(0, 0)) in
+    let inside = aabb(
+      point(n, 1),
+      box.lo,
+      box.hi
+    ) in
+    let d0 = dist_to_origin(c) in
+    let tsum = tuple_sum2(c, point(2, 2)) in
+    let s =
+      (if inside then d0 * 1 else m) + tsum
+    in
+    s
+      + (if box.lo.x < box.hi.x then 1 else 0)
+}

@@ -1,0 +1,68 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let point (lambda '(x y) (AsStruct '('x x) '('y y))))
+  (let manhattan (lambda '(p q)
+    (+MayWarn
+      (If
+        (< (Member p 'x) (Member q 'x))
+        (If (< (Member q 'x) (Member p 'x)) (Uint64 '0) (-MayWarn (Member q 'x) (Member p 'x)))
+        (If (< (Member p 'x) (Member q 'x)) (Uint64 '0) (-MayWarn (Member p 'x) (Member q 'x))))
+      (If
+        (< (Member p 'y) (Member q 'y))
+        (If (< (Member q 'y) (Member p 'y)) (Uint64 '0) (-MayWarn (Member q 'y) (Member p 'y)))
+        (If (< (Member p 'y) (Member q 'y)) (Uint64 '0) (-MayWarn (Member p 'y) (Member q 'y)))))))
+  (let aabb (lambda '(p lo hi)
+    (If
+      (< (Member p 'x) (Member lo 'x))
+      (Bool 'false)
+      (If
+        (> (Member p 'x) (Member hi 'x))
+        (Bool 'false)
+        (If
+          (< (Member p 'y) (Member lo 'y))
+          (Bool 'false)
+          (If (> (Member p 'y) (Member hi 'y)) (Bool 'false) (Bool 'true)))))))
+  (let aabb_from_corner (lambda '(origin w h)
+    (AsStruct
+      '('lo origin)
+      '('hi (AsStruct '('x (+MayWarn (Member origin 'x) w)) '('y (+MayWarn (Member origin 'y) h)))))))
+  (let dist_to_origin (lambda '(p) (+MayWarn (Member p 'x) (Member p 'y))))
+  (let lerp_toward (lambda '(p t pick_x)
+    (If
+      pick_x
+      (AsStruct '('x (+MayWarn (Member p 'x) (Member t 'x))) '('y (Member p 'y)))
+      (AsStruct '('x (Member p 'x)) '('y (+MayWarn (Member p 'y) (Member t 'y)))))))
+  (let tuple_sum2 (lambda '(p q)
+    (+MayWarn (+MayWarn (+MayWarn (Member p 'x) (Member p 'y)) (Member q 'x)) (Member q 'y))))
+  (let main (lambda '(n) (block '(
+    (let box (Apply aabb_from_corner (Apply point (Uint64 '0) (Uint64 '0)) (Uint64 '2) (Uint64 '2)))
+    (return (block '(
+      (let c
+        (Apply
+          lerp_toward
+          (Apply point (Uint64 '1) (Uint64 '1))
+          (Apply point (Uint64 '2) (Uint64 '2))
+          (Bool 'true)))
+      (return (block '(
+        (let m (Apply manhattan (Apply point n (Uint64 '0)) (Apply point (Uint64 '0) (Uint64 '0))))
+        (return (block '(
+          (let inside (Apply aabb (Apply point n (Uint64 '1)) (Member box 'lo) (Member box 'hi)))
+          (return (block '(
+            (let d0 (Apply dist_to_origin c))
+            (return (block '(
+              (let tsum (Apply tuple_sum2 c (Apply point (Uint64 '2) (Uint64 '2))))
+              (return (block '(
+                (let s (+MayWarn (If inside (*MayWarn d0 (Uint64 '1)) m) tsum))
+                (return
+                  (+MayWarn
+                    s
+                    (If (< (Member (Member box 'lo) 'x) (Member (Member box 'hi) 'x)) (Uint64 '1) (Uint64 '0))))))))))))))))))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

@@ -1,0 +1,366 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let s0 (lambda '()
+    (Variant
+      (Variant (Void) 'inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+      'inl
+      (VariantType
+        (StructType
+          '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+          '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))
+  (let s1 (lambda '()
+    (Variant
+      (Variant (Void) 'inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+      'inl
+      (VariantType
+        (StructType
+          '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+          '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))
+  (let s2 (lambda '()
+    (Variant
+      (Variant (Void) 'inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+      'inr
+      (VariantType
+        (StructType
+          '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+          '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))
+  (let s3 (lambda '()
+    (Variant
+      (Variant (Void) 'inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+      'inr
+      (VariantType
+        (StructType
+          '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+          '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))
+  (let is_s0 (lambda '(s) (block '(
+    (let yqstellamatchexpr s)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ul (Guess yqstellamatcharg 'inl))
+          (let yqstellamatchcond (And (Exists ul) (Bool 'true)))
+          (let ul (Unwrap ul))
+          (return
+            (If
+              yqstellamatchcond
+              (Just
+                (block '(
+                  (let yqstellamatchexpr ul)
+                  (let yqstellamatchbr0
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inl))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return (If yqstellamatchcond (Just (Bool 'true)) (Nothing (OptionalType (DataType 'Bool))))))))
+                      yqstellamatchexpr))
+                  (let yqstellamatchbr1
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inr))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return (If yqstellamatchcond (Just (Bool 'false)) (Nothing (OptionalType (DataType 'Bool))))))))
+                      yqstellamatchexpr))
+                  (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))
+              (Nothing (OptionalType (DataType 'Bool))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ur (Guess yqstellamatcharg 'inr))
+          (let yqstellamatchcond (And (Exists ur) (Bool 'true)))
+          (let ur (Unwrap ur))
+          (return (If yqstellamatchcond (Just (Bool 'false)) (Nothing (OptionalType (DataType 'Bool))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let is_s3 (lambda '(s) (block '(
+    (let yqstellamatchexpr s)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ul (Guess yqstellamatcharg 'inl))
+          (let yqstellamatchcond (And (Exists ul) (Bool 'true)))
+          (let ul (Unwrap ul))
+          (return (If yqstellamatchcond (Just (Bool 'false)) (Nothing (OptionalType (DataType 'Bool))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ur (Guess yqstellamatcharg 'inr))
+          (let yqstellamatchcond (And (Exists ur) (Bool 'true)))
+          (let ur (Unwrap ur))
+          (return
+            (If
+              yqstellamatchcond
+              (Just
+                (block '(
+                  (let yqstellamatchexpr ur)
+                  (let yqstellamatchbr0
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inl))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return (If yqstellamatchcond (Just (Bool 'false)) (Nothing (OptionalType (DataType 'Bool))))))))
+                      yqstellamatchexpr))
+                  (let yqstellamatchbr1
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inr))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return (If yqstellamatchcond (Just (Bool 'true)) (Nothing (OptionalType (DataType 'Bool))))))))
+                      yqstellamatchexpr))
+                  (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))
+              (Nothing (OptionalType (DataType 'Bool))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let next_on_true (lambda '(s) (block '(
+    (let yqstellamatchexpr s)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ul (Guess yqstellamatcharg 'inl))
+          (let yqstellamatchcond (And (Exists ul) (Bool 'true)))
+          (let ul (Unwrap ul))
+          (return
+            (If
+              yqstellamatchcond
+              (Just
+                (block '(
+                  (let yqstellamatchexpr ul)
+                  (let yqstellamatchbr0
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inl))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s1))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (let yqstellamatchbr1
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inr))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s2))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))
+              (Nothing
+                (OptionalType
+                  (VariantType
+                    (StructType
+                      '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                      '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ur (Guess yqstellamatcharg 'inr))
+          (let yqstellamatchcond (And (Exists ur) (Bool 'true)))
+          (let ur (Unwrap ur))
+          (return
+            (If
+              yqstellamatchcond
+              (Just
+                (block '(
+                  (let yqstellamatchexpr ur)
+                  (let yqstellamatchbr0
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inl))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s3))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (let yqstellamatchbr1
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inr))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s0))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))
+              (Nothing
+                (OptionalType
+                  (VariantType
+                    (StructType
+                      '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                      '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let next_on_false (lambda '(s) (block '(
+    (let yqstellamatchexpr s)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ul (Guess yqstellamatcharg 'inl))
+          (let yqstellamatchcond (And (Exists ul) (Bool 'true)))
+          (let ul (Unwrap ul))
+          (return
+            (If
+              yqstellamatchcond
+              (Just
+                (block '(
+                  (let yqstellamatchexpr ul)
+                  (let yqstellamatchbr0
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inl))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s0))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (let yqstellamatchbr1
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inr))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s0))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))
+              (Nothing
+                (OptionalType
+                  (VariantType
+                    (StructType
+                      '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                      '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let ur (Guess yqstellamatcharg 'inr))
+          (let yqstellamatchcond (And (Exists ur) (Bool 'true)))
+          (let ur (Unwrap ur))
+          (return
+            (If
+              yqstellamatchcond
+              (Just
+                (block '(
+                  (let yqstellamatchexpr ur)
+                  (let yqstellamatchbr0
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inl))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s0))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (let yqstellamatchbr1
+                    (Apply
+                      (lambda '(yqstellamatcharg) (block '(
+                        (let t (Guess yqstellamatcharg 'inr))
+                        (let yqstellamatchcond (And (Exists t) (Bool 'true)))
+                        (let t (Unwrap t))
+                        (return
+                          (If
+                            yqstellamatchcond
+                            (Just (Apply s1))
+                            (Nothing
+                              (OptionalType
+                                (VariantType
+                                  (StructType
+                                    '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                                    '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+                      yqstellamatchexpr))
+                  (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))
+              (Nothing
+                (OptionalType
+                  (VariantType
+                    (StructType
+                      '('inl (VariantType (StructType '('inl (VoidType)) '('inr (VoidType)))))
+                      '('inr (VariantType (StructType '('inl (VoidType)) '('inr (VoidType))))))))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let step (lambda '(s e) (If e (Apply next_on_true s) (Apply next_on_false s))))
+  (let run_three (lambda '(s0st e0 e1 e2) (block '(
+    (let t1 (Apply step s0st e0))
+    (return (block '(
+      (let t2 (Apply step t1 e1))
+      (return (Apply step t2 e2)))))))))
+  (let as_reward (lambda '(s)
+    (If (Apply is_s0 s) (Uint64 '1) (If (Apply is_s3 s) (Uint64 '3) (Uint64 '2)))))
+  (let main (lambda '(n) (block '(
+    (let e0 (< n (Uint64 '1)))
+    (return (block '(
+      (let e1 (== n (Uint64 '1)))
+      (return (block '(
+        (let e2 (> n (Uint64 '2)))
+        (return (block '(
+          (let t (Apply run_three (Apply s0) e0 e1 e2))
+          (return (Apply as_reward t)))))))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

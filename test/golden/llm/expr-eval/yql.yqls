@@ -1,0 +1,61 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let mod2 (lambda '(n)
+    (If
+      (< n (*MayWarn (/MayWarn n (Uint64 '2)) (Uint64 '2)))
+      (Uint64 '0)
+      (-MayWarn n (*MayWarn (/MayWarn n (Uint64 '2)) (Uint64 '2))))))
+  (let elit (lambda '(a)
+    (AsStruct '('tag (Uint64 '0)) '('a a) '('b (Uint64 '0)) '('c (Bool 'false)))))
+  (let eadd (lambda '(a b) (AsStruct '('tag (Uint64 '1)) '('a a) '('b b) '('c (Bool 'false)))))
+  (let echs (lambda '(c t e) (AsStruct '('tag (Uint64 '2)) '('a t) '('b e) '('c c))))
+  (let eval (lambda '(e)
+    (If
+      (== (Member e 'tag) (Uint64 '0))
+      (Member e 'a)
+      (If
+        (== (Member e 'tag) (Uint64 '1))
+        (+MayWarn (Member e 'a) (Member e 'b))
+        (If (Member e 'c) (Member e 'a) (Member e 'b))))))
+  (let is_choice (lambda '(e) (== (Member e 'tag) (Uint64 '2))))
+  (let weight (lambda '(e)
+    (If
+      (== (Member e 'tag) (Uint64 '0))
+      (Uint64 '1)
+      (If
+        (== (Member e 'tag) (Uint64 '1))
+        (+MayWarn (+MayWarn (Uint64 '2) (Member e 'a)) (Member e 'b))
+        (If (Member e 'c) (*MayWarn (Member e 'a) (Uint64 '1)) (Member e 'b))))))
+  (let combine (lambda '(a b) (If (< a b) (Apply eadd a b) (Apply echs (== a b) a b))))
+  (let main (lambda '(n) (block '(
+    (let t1 n)
+    (return (block '(
+      (let t2 (Apply mod2 n))
+      (return (block '(
+        (let t3 (+MayWarn n (Uint64 '1)))
+        (return (block '(
+          (let p (Apply combine t1 t2))
+          (return (block '(
+            (let q (Apply combine t3 (Apply mod2 (+MayWarn n (Uint64 '1)))))
+            (return (block '(
+              (let s1 (Apply eval p))
+              (return (block '(
+                (let s2 (Apply eval q))
+                (return (block '(
+                  (let w1 (Apply weight (Apply elit n)))
+                  (return (block '(
+                    (let w2 (Apply weight p))
+                    (return
+                      (If
+                        (Apply is_choice q)
+                        (+MayWarn (*MayWarn s1 (Uint64 '1)) s2)
+                        (+MayWarn (+MayWarn (+MayWarn s1 s2) w1) w2)))))))))))))))))))))))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

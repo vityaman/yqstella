@@ -1,0 +1,97 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #records;
+
+// Tag-encoded expressions: 0 = literal a; 1 = add a b; 2 = if c then a else b.
+
+fn mod2(n : Nat) -> Nat {
+  return n - (n / 2) * 2
+}
+
+fn elit(
+  a : Nat
+) -> { tag : Nat, a : Nat, b : Nat, c : Bool } {
+  return { tag = 0, a = a, b = 0, c = false }
+}
+
+fn eadd(
+  a : Nat,
+  b : Nat
+) -> { tag : Nat, a : Nat, b : Nat, c : Bool } {
+  return { tag = 1, a = a, b = b, c = false }
+}
+
+fn echs(
+  c : Bool,
+  t : Nat,
+  e : Nat
+) -> { tag : Nat, a : Nat, b : Nat, c : Bool } {
+  return { tag = 2, a = t, b = e, c = c }
+}
+
+fn eval(
+  e : { tag : Nat, a : Nat, b : Nat, c : Bool }
+) -> Nat {
+  return
+    if e.tag == 0 then
+      e.a
+    else
+      (if e.tag == 1 then
+         e.a + e.b
+       else
+         (if e.c then e.a else e.b)
+      )
+}
+
+fn is_choice(
+  e : { tag : Nat, a : Nat, b : Nat, c : Bool }
+) -> Bool {
+  return e.tag == 2
+}
+
+fn weight(
+  e : { tag : Nat, a : Nat, b : Nat, c : Bool }
+) -> Nat {
+  return
+    if e.tag == 0 then
+      1
+    else
+      (if e.tag == 1 then
+         2 + e.a + e.b
+       else
+         (if e.c then e.a * 1 else e.b)
+      )
+}
+
+fn combine(
+  a : Nat,
+  b : Nat
+) -> { tag : Nat, a : Nat, b : Nat, c : Bool } {
+  return
+    if a < b
+      then eadd(a, b)
+      else echs(a == b, a, b)
+}
+
+fn main(n : Nat) -> Nat {
+  return let t1 = n in
+         let t2 = mod2(n) in
+         let t3 = n + 1 in
+         let p = combine(t1, t2) in
+         let q = combine(t3, mod2(n + 1)) in
+         let s1 = eval(p) in
+         let s2 = eval(q) in
+         let w1 = weight(elit(n)) in
+         let w2 = weight(p) in
+         (if is_choice(q) then
+            s1 * 1 + s2
+          else
+            s1 + s2 + w1 + w2
+         )
+}
