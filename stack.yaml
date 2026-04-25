@@ -3,3 +3,5 @@ snapshot:
 
 packages:
 - .
+
+notify-if-nix-on-path: false
