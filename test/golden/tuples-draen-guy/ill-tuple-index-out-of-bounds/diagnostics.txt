@@ -1,8 +1,4 @@
 test/golden/tuples-draen-guy/ill-tuple-index-out-of-bounds/input.yqst:5:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
-type mismatch: expected tuple with size at least 4, got {
-  Nat, Bool, Nat
-}
-
-
+type mismatch: expected tuple with size at least 4, got {Nat, Bool, Nat}
 >   return n.4
            ^

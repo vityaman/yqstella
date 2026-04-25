@@ -1,4 +1,4 @@
 test/golden/core-draen-guy/ill-unexpected-lambda/input.yqst:4:10: [ERROR_UNEXPECTED_LAMBDA]
-type mismatch: expected Nat, got fn (Bool) -> Nat
+type mismatch: expected Nat, got fn(Bool) -> Nat
 >   return fn(a : Bool) {
            ^
