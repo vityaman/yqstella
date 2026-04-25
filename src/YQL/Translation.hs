@@ -129,7 +129,7 @@ instance YQLTranslatable AST.Expr' where
   toYQL (AST.Divide _ lhs rhs) = do
     lhs' <- toYQL lhs
     rhs' <- toYQL rhs
-    return $ Y [A "/MayWarn", lhs', rhs']
+    return $ Y[A "Unwrap", Y [A "/MayWarn", lhs', rhs']]
   toYQL (AST.If _ condition thenB elseB) = do
     condition' <- toYQL condition
     thenB' <- toYQL thenB

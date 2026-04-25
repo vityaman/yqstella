@@ -6,9 +6,9 @@
     (return (Commit! world sink))))))
   (let mod2 (lambda '(n)
     (If
-      (< n (*MayWarn (/MayWarn n (Uint64 '2)) (Uint64 '2)))
+      (< n (*MayWarn (Unwrap (/MayWarn n (Uint64 '2))) (Uint64 '2)))
       (Uint64 '0)
-      (-MayWarn n (*MayWarn (/MayWarn n (Uint64 '2)) (Uint64 '2))))))
+      (-MayWarn n (*MayWarn (Unwrap (/MayWarn n (Uint64 '2))) (Uint64 '2))))))
   (let elit (lambda '(a)
     (Variant
       a

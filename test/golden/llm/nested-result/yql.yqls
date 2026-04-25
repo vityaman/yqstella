@@ -69,9 +69,9 @@
   (let pick (lambda '(n) (block '(
     (let k
       (If
-        (< n (*MayWarn (/MayWarn n (Uint64 '4)) (Uint64 '4)))
+        (< n (*MayWarn (Unwrap (/MayWarn n (Uint64 '4))) (Uint64 '4)))
         (Uint64 '0)
-        (-MayWarn n (*MayWarn (/MayWarn n (Uint64 '4)) (Uint64 '4)))))
+        (-MayWarn n (*MayWarn (Unwrap (/MayWarn n (Uint64 '4))) (Uint64 '4)))))
     (return
       (If
         (< k (Uint64 '1))
