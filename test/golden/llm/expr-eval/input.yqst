@@ -1,0 +1,97 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #records,
+  #type-ascriptions,
+  #unit-type,
+  #variants;
+
+// Three-label expression: literal, pair sum, or boolean-guarded choice
+//   <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
+
+fn mod2(n : Nat) -> Nat {
+  return n - (n / 2) * 2
+}
+
+fn elit(
+  a : Nat
+) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+  return <| lit = a |>
+}
+
+fn eadd(
+  a : Nat,
+  b : Nat
+) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+  return <| add = { x = a, y = b } |>
+}
+
+fn echs(
+  c : Bool,
+  t : Nat,
+  e : Nat
+) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+  return <| chs = { c = c, t = t, e = e } |>
+}
+
+fn eval(
+  e : <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
+) -> Nat {
+  return match (e) {
+      <| lit = v |> => v
+    | <| add = p |> => p.x + p.y
+    | <| chs = r |> => if r.c then r.t else r.e
+  }
+}
+
+fn is_choice(
+  e : <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
+) -> Bool {
+  return match (e) {
+      <| lit = v |> => false
+    | <| add = p |> => false
+    | <| chs = r |> => true
+  }
+}
+
+fn weight(
+  e : <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
+) -> Nat {
+  return match (e) {
+      <| lit = v |> => 1
+    | <| add = p |> => 2 + p.x + p.y
+    | <| chs = r |> => if r.c then r.t * 1 else r.e
+  }
+}
+
+fn combine(
+  a : Nat,
+  b : Nat
+) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+  return
+    if a < b
+      then eadd(a, b)
+      else echs(a == b, a, b)
+}
+
+fn main(n : Nat) -> Nat {
+  return let t1 = n in
+         let t2 = mod2(n) in
+         let t3 = n + 1 in
+         let p = combine(t1, t2) in
+         let q = combine(t3, mod2(n + 1)) in
+         let s1 = eval(p) in
+         let s2 = eval(q) in
+         let w1 = weight(elit(n)) in
+         let w2 = weight(p) in
+         (if is_choice(q) then
+            s1 * 1 + s2
+          else
+            s1 + s2 + w1 + w2
+         )
+}

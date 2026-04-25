@@ -273,7 +273,8 @@ instance TypeAnnotatable AST.Expr' where
     headT <- listItemType p Expected t
     let listT = fmap Type.list headT
     expr' <- annotateType listT expr
-    return (AST.Tail (p, listT) expr')
+    let listT' = listT <|> snd (annotation expr')
+    return (AST.Tail (p, listT') expr')
   annotateType _ x@(AST.Panic {}) = do
     tell [notImplemented (annotation x) "Panic"]
     return $ stub x

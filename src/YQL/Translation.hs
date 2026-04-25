@@ -129,7 +129,7 @@ instance YQLTranslatable AST.Expr' where
   toYQL (AST.Divide _ lhs rhs) = do
     lhs' <- toYQL lhs
     rhs' <- toYQL rhs
-    return $ Y [A "/MayWarn", lhs', rhs']
+    return $ Y [A "Unwrap", Y [A "/MayWarn", lhs', rhs']]
   toYQL (AST.If _ condition thenB elseB) = do
     condition' <- toYQL condition
     thenB' <- toYQL thenB
@@ -239,6 +239,16 @@ instance YQLTranslatable AST.Type' where
               Q $ Y [Q $ A "inr", inr']
             ]
         ]
+  toYQL (AST.TypeTuple _ ts) = do
+    ts' <- mapM toYQL ts
+    Right $ Y [A "TupleType", Y ts']
+  toYQL (AST.TypeRecord _ fields) = do
+    fields' <- mapM toYQL' fields
+    Right $ Y $ A "StructType" : fields'
+    where
+      toYQL' (AST.ARecordFieldType _ (AST.StellaIdent name) t) = do
+        t' <- toYQL t
+        Right $ Q $ Y [Q $ A name, t']
   toYQL (AST.TypeVariant _ fields) = do
     fields' <- mapM toYQL' fields
     Right $ Y [A "VariantType", Y $ A "StructType" : fields']
@@ -248,6 +258,9 @@ instance YQLTranslatable AST.Type' where
       toYQL' (AST.AVariantFieldType _ (AST.StellaIdent name) (AST.SomeTyping _ t)) = do
         t' <- toYQL t
         Right $ Q $ Y [Q $ A name, t']
+  toYQL (AST.TypeList _ t) = do
+    t' <- toYQL t
+    Right $ Y [A "ListType", t']
   toYQL (AST.TypeBool _) = Right $ Y [A "DataType", Q $ A "Bool"]
   toYQL (AST.TypeNat _) = Right $ Y [A "DataType", Q $ A "Uint64"]
   toYQL (AST.TypeUnit _) = Right $ Y [A "VoidType"]

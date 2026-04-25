@@ -4,15 +4,11 @@
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
-  (let Nat::average (lambda '(n)
-    (lambda '(m) (block '(
-      (let sum (+MayWarn n m))
-      (return (block '(
-        (let two (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
-        (return (Unwrap (/MayWarn sum two)))))))))))
-  (let main (lambda '(n) (block '(
-    (let two (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
-    (return (Apply (Apply Nat::average n) (*MayWarn two n)))))))
+  (let g (lambda '(n)
+    (Prepend
+      (Uint64 '0)
+      (Prepend (Uint64 '1) (Prepend n (ToList (Nothing (OptionalType (DataType 'Uint64)))))))))
+  (let main (lambda '(n) (Unwrap (ToOptional (Apply g n)))))
   (declare __n__ (DataType 'Uint64))
   (let result (Apply main __n__))
   (let world (Apply print world (AsList (AsStruct '('result result)))))

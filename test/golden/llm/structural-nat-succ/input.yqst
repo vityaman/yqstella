@@ -1,0 +1,31 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #sum-types,
+  #tuples,
+  #type-ascriptions,
+  #structural-patterns;
+
+// Structural match on Nat (Peano) plus one tuple-of-nat pattern. YQL unsupported for #structural-patterns.
+
+fn add_acc(a : Nat, b : Nat) -> Nat {
+  return match (a) {
+      0 => b
+    | succ(a0) => succ(add_acc(a0, b))
+  }
+}
+
+fn pair_tag(n : Nat) -> Nat {
+  return match ({ n, succ(0) }) {
+      { 0, k } => 1
+    | { succ(m), k2 } => succ(succ(0))
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return add_acc(pair_tag(n), n)
+}

@@ -1,0 +1,81 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #nullary-functions,
+  #natural-literals,
+  #records,
+  #sum-types,
+  #type-ascriptions,
+  #unit-type;
+
+// Optional as Nat + Unit:.inl = some, inr = none.
+
+fn opt_none() -> Nat + Unit {
+  return inr(unit) as (Nat + Unit)
+}
+
+fn opt_some(n : Nat) -> Nat + Unit {
+  return inl(n) as (Nat + Unit)
+}
+
+fn opt_bind(x : Nat + Unit, f : fn (Nat) -> (Nat + Unit)) -> Nat + Unit {
+  return match (x) {
+      inl(n) => f(n)
+    | inr(t) => opt_none()
+  }
+}
+
+fn opt_add_one(x : Nat + Unit) -> Nat + Unit {
+  return match (x) {
+      inl(n) => opt_some(n + 1)
+    | inr(t) => opt_none()
+  }
+}
+
+fn opt_double(x : Nat + Unit) -> Nat + Unit {
+  return match (x) {
+      inl(n) => opt_some(n + n)
+    | inr(t) => opt_none()
+  }
+}
+
+fn opt_map_nat(x : Nat + Unit) -> Nat + Unit {
+  return opt_bind(
+    x,
+    fn (k : Nat) { return opt_some(k + 1) }
+  )
+}
+
+fn unwrap_or(x : Nat + Unit, d : Nat) -> Nat {
+  return match (x) {
+      inl(n) => n
+    | inr(t) => d
+  }
+}
+
+fn pair_opt(a : Nat + Unit, b : Nat + Unit) -> { fst : Nat, snd : Nat } {
+  return {
+    fst = unwrap_or(a, 0),
+    snd = unwrap_or(b, 1)
+  }
+}
+
+fn run_pipeline(seed : Nat) -> Nat {
+  return let a = opt_some(seed) in
+         let b = opt_map_nat(a) in
+         let c = opt_double(b) in
+         let d = opt_bind(
+           c,
+           fn (k : Nat) { return if k < seed then opt_some(2) else opt_none() }
+         ) in
+         let p = pair_opt(c, d) in
+         p.fst + p.snd
+}
+
+fn main(n : Nat) -> Nat {
+  return run_pipeline(n)
+}

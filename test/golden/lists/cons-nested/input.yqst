@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #lists,
+  #natural-literals;
+
+fn g(n : Nat) -> [Nat] {
+  return cons(0, cons(1, cons(n, [])))
+}
+
+fn main(n : Nat) -> Nat {
+  return List::head(g(n))
+}

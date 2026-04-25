@@ -1,0 +1,144 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #records,
+  #structural-patterns,
+  #sum-types,
+  #tuples,
+  #type-ascriptions,
+  #unit-type,
+  #variants;
+
+// Well-typed structural pattern coverage. Maps to Stella.cf: Patternfalse/true, PatternUnit,
+// PatternInt(0), PatternSucc, PatternTuple, PatternRecord, PatternInl/PatternInr, PatternVariant,
+// parentheses via _. Pattern, PatternVar. Expression scrutinees: if-then-else, inl/as.
+//
+// Not covered here: PatternList, PatternCons (Type/Match: not implemented); PatternCastAs,
+// PatternAsc in patterns (Type/Match: not implemented). Use ascriptions on the scrutinee instead.
+
+fn m_bool(x : Bool) -> Nat {
+  return match (x) {
+      false => 0
+    | true => 1
+  }
+}
+
+fn m_unit(u : Unit) -> Nat {
+  return match (u) {
+      unit => 0
+  }
+}
+
+fn m_nat_peano(n : Nat) -> Nat {
+  return match (n) {
+      0 => 0
+    | succ(k) => k
+  }
+}
+
+fn m_tup0(t : {}) -> Nat {
+  return match (t) {
+      {} => 0
+  }
+}
+
+fn m_tup1(t : { Nat }) -> Nat {
+  return match (t) {
+      {0} => 0
+    | {succ(m)} => m
+  }
+}
+
+fn m_tup2_var(t : { Nat, Nat }) -> Nat {
+  return match (t) {
+      {a, b} => a + b
+  }
+}
+
+fn m_tup2_matrix(t : { Nat, Nat }) -> Nat {
+  return match (t) {
+      {0, 0} => 0
+    | {succ(ka), 0} => 1
+    | {0, succ(kb)} => 2
+    | {succ(aa), succ(bb)} => aa + bb
+  }
+}
+
+fn m_rec1(r : { a : Nat }) -> Nat {
+  return match (r) {
+      {a = 0} => 0
+    | {a = succ(x)} => x
+  }
+}
+
+fn m_rec2_exh(r : { u : Nat, v : Nat }) -> Nat {
+  return match (r) {
+      {u = 0, v = 0} => 0
+    | {u = succ(ua), v = 0} => 1
+    | {u = 0, v = succ(vb)} => 2
+    | {u = succ(ux), v = succ(vy)} => 3
+  }
+}
+
+fn m_sum(x : Nat + Unit) -> Nat {
+  return match (x) {
+      inl(n) => n
+    | inr(t) => 0
+  }
+}
+
+fn m_inl_inr(p : (Nat + Nat) + Bool) -> Nat {
+  return match (p) {
+      inl(inl(a)) => a
+    | inl(inr(b)) => b
+    | inr(f) => if f then 1 else 0
+  }
+}
+
+fn m_variant1(w : <| t : Nat |>) -> Nat {
+  return match (w) {
+      <| t = m |> => m
+  }
+}
+
+fn m_variant2(w : <| a : Nat, b : Bool |>) -> Nat {
+  return match (w) {
+      <| a = n |> => n
+    | <| b = fl |> => if fl then succ(0) else 0
+  }
+}
+
+fn m_nat_paren(n : Nat) -> Nat {
+  return match (n) {
+      (0) => 0
+    | (succ( (j) )) => j
+  }
+}
+
+// Match on a non-variable scrutinee (tuple from conditional), patterns still exhaustive.
+fn m_tuple_expr(x : Nat) -> Nat {
+  return match (if x < 1 then {0, 0} else {succ(0), succ(0)}) {
+      {a, b} => a + b
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+    m_bool(n < 1) + m_unit(unit) + m_nat_peano(n) + m_tup0({})
+    + m_tup1({n}) + m_tup2_var({n, n}) + m_tup2_matrix({0, 0})
+    + m_tup2_matrix({n, 0})
+    + m_tup2_matrix({0, n})
+    + m_tup2_matrix({succ(0), succ(0)})
+    + m_rec1({a = n}) + m_rec2_exh({u = n, v = n})
+    + m_sum(inl(n) as (Nat + Unit)) + m_inl_inr(
+      inr(n < 1) as ((Nat + Nat) + Bool)
+    )
+    + m_variant1((<| t = n |>) as <| t : Nat |>) + m_variant2(
+      (<| a = n |>) as <| a : Nat, b : Bool |>
+    ) + m_nat_paren(n) + m_tuple_expr(n)
+}

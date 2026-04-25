@@ -1,0 +1,73 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #nullary-functions,
+  #sum-types,
+  #type-ascriptions;
+
+// Nat + Nat as false/true (0/1). Combinators use only match. high_bit uses only n < 2.
+// (Do not use n - (n/2)*2 for parity in this test: YQL+minirun mis-type that with score_bb.)
+
+fn ff() -> Nat + Nat {
+  return inl(0) as (Nat + Nat)
+}
+
+fn tt() -> Nat + Nat {
+  return inr(succ(0)) as (Nat + Nat)
+}
+
+fn not_bb(b : Nat + Nat) -> Nat + Nat {
+  return match (b) {
+      inl(t) => tt()
+    | inr(t) => ff()
+  }
+}
+
+fn and_bb(a : Nat + Nat, b : Nat + Nat) -> Nat + Nat {
+  return match (a) {
+      inl(t) => ff()
+    | inr(t) => b
+  }
+}
+
+fn xor_bb(a : Nat + Nat, b : Nat + Nat) -> Nat + Nat {
+  return match (a) {
+      inl(t) => b
+    | inr(t) => not_bb(b)
+  }
+}
+
+fn score_bb(b : Nat + Nat) -> Nat {
+  return match (b) {
+      inl(n) => n
+    | inr(m) => m
+  }
+}
+
+fn high_bit(n : Nat) -> Nat + Nat {
+  return
+    if n < 2 then
+      ff()
+    else
+      tt()
+}
+
+fn main(n : Nat) -> Nat {
+  return
+    let p = high_bit(n) in
+    let q = not_bb(p) in
+    let a = and_bb(p, q) in
+    let x = xor_bb(p, q) in
+    let t0 = score_bb(p) in
+    let t1 = score_bb(q) in
+    let t2 = score_bb(a) in
+    let t3 = score_bb(x) in
+    let u0 = t0 + t1 in
+    let u1 = t2 + t3 in
+    u0 + u1
+}

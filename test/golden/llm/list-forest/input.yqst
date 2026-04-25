@@ -1,0 +1,67 @@
+language core;
+
+extend with
+  #arithmetic-operators,
+  #comparison-operators,
+  #lists,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #records;
+
+// Build short lists, walk with head / tail / isempty, and aggregate.
+
+fn length_le3(xs : [Nat]) -> Nat {
+  return if List::isempty(xs) then
+    0
+  else
+    (let t = List::tail(xs) in
+     if List::isempty(t) then
+       1
+     else
+       (let t2 = List::tail(t) in
+        if List::isempty(t2) then
+          2
+        else
+          3
+       )
+    )
+}
+
+fn first_two_or_zero(xs : [Nat]) -> Nat {
+  return if List::isempty(xs) then
+    0
+  else
+    (let h = List::head(xs) in
+     if List::isempty(List::tail(xs)) then
+       h
+     else
+       (List::head(List::tail(xs)) + 0)
+    )
+}
+
+fn list_pair_tail(xs : [Nat]) -> { a : [Nat], b : [Nat] } {
+  return
+    { a = xs, b = if List::isempty(xs) then [] else List::tail(xs) }
+}
+
+fn build_chain(n : Nat) -> [Nat] {
+  return
+    if n < 1 then
+      []
+    else
+      (if n < 2 then
+         [0]
+       else
+         [0, 1, n]
+      )
+}
+
+fn main(n : Nat) -> Nat {
+  return let ch = build_chain(n) in
+         let p = list_pair_tail(ch) in
+         let len1 = length_le3(p.a) in
+         let len2 = length_le3(p.b) in
+         let s = first_two_or_zero(ch) in
+         s + len1 * 1 + len2
+}
