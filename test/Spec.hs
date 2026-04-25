@@ -1,7 +1,7 @@
 import qualified Golden
 import Test.Tasty (defaultMain, testGroup)
-import qualified YsonSpec
 import qualified Type.UsefulClauseSpec
+import qualified YsonSpec
 
 main :: IO ()
 main = do
