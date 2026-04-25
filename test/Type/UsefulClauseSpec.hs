@@ -121,7 +121,7 @@ testExample8 =
       [ [C "tuple" [C "0" [] ::: "Nat", W ::: "Bool"] ::: "Tuple<Nat, Bool>"]
       ]
     actual = i ctors ["Tuple<Nat, Bool>"] matrix
-    expected = Just [C "tuple" [C "succ" [W ::: "Nat"] ::: "Nat",W ::: "Bool"] ::: "Tuple<Nat, Bool>"]
+    expected = Just [C "tuple" [C "succ" [W ::: "Nat"] ::: "Nat", W ::: "Bool"] ::: "Tuple<Nat, Bool>"]
 
 main :: IO TestTree
 main =
