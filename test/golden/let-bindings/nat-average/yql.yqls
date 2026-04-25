@@ -9,7 +9,7 @@
       (let sum (+MayWarn n m))
       (return (block '(
         (let two (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
-        (return (/MayWarn sum two))))))))))
+        (return (Unwrap (/MayWarn sum two)))))))))))
   (let main (lambda '(n) (block '(
     (let two (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
     (return (Apply (Apply Nat::average n) (*MayWarn two n)))))))

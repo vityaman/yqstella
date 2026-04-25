@@ -5,7 +5,7 @@
     (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
   (let main (lambda '(_)
-    (/MayWarn (+ (Uint64 '0) (Uint64 '1)) (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))))
+    (Unwrap (/MayWarn (+ (Uint64 '0) (Uint64 '1)) (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1))))))
   (declare _____ (DataType 'Bool))
   (let result (Apply main _____))
   (let world (Apply print world (AsList (AsStruct '('result result)))))
