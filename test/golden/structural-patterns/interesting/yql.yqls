@@ -4,9 +4,9 @@
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
-  (let InputSum (Void))
-  (let OutputSum (Void))
-  (let TestSum (lambda '(n) (block '(
+  (let InputTupleSum (Void))
+  (let OutputTupleSum (Void))
+  (let TestTupleSum (lambda '(n) (block '(
     (let yqstellamatchexpr n)
     (let yqstellamatchbr0
       (Apply
@@ -21,8 +21,8 @@
     (return (Unwrap (Coalesce yqstellamatchbr0)))))))
   (let Input (Void))
   (let Output (Void))
-  (let main (lambda '(input) (AsStruct '('sum (Apply TestSum (Member input 'sum))))))
-  (declare __input__ (StructType '('sum (TupleType (DataType 'Uint64) (DataType 'Uint64)))))
+  (let main (lambda '(input) (AsStruct '('TupleSum (Apply TestTupleSum (Member input 'TupleSum))))))
+  (declare __input__ (StructType '('TupleSum (TupleType (DataType 'Uint64) (DataType 'Uint64)))))
   (let result (Apply main __input__))
   (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)

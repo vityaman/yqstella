@@ -9,23 +9,22 @@ extend with
   #records
 ;
 
-type InputSum = { Nat, Nat }
-type OutputSum = Nat
-
-fn TestSum(n : InputSum) -> Nat {
+type  InputTupleSum = { Nat, Nat }
+type OutputTupleSum = Nat
+fn TestTupleSum(n : InputTupleSum) -> OutputTupleSum {
   return match (n) { { n, m } => n + m }
 }
 
 type Input = {
-  sum : InputSum
+  TupleSum : InputTupleSum
 }
 
 type Output = {
-  sum : OutputSum
+  TupleSum : OutputTupleSum
 }
 
 fn main(input : Input) -> Output {
   return {
-    sum = TestSum(input.sum)
+    TupleSum = TestTupleSum(input.TupleSum)
   }
 }
