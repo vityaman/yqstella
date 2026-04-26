@@ -246,6 +246,10 @@ instance YQLTranslatable AST.Expr' where
   toYQL x = Left $ unsupported x "AST.Expr'"
 
 instance YQLTranslatable AST.Type' where
+  toYQL (AST.TypeFun _ argts returnts) = do
+    argts' <- mapM toYQL argts
+    returnt' <- toYQL returnts
+    Right $ Y [A "CallableType", Q $ Y [], Q $ Y [returnt'], Q $ Y argts']
   toYQL (AST.TypeSum _ inl inr) = do
     inl' <- toYQL inl
     inr' <- toYQL inr
@@ -315,6 +319,9 @@ recipes (AST.PatternVariant _ (AST.StellaIdent tag) (AST.SomePatternData _ patte
   recipes'' <- recipes pattern''
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A tag]) recipes''
   return recipes'
+recipes (AST.PatternVariant p (AST.StellaIdent tag) (AST.NoPatternData p')) = do
+  let pattern'' = AST.PatternUnit p'
+  recipes (AST.PatternVariant p (AST.StellaIdent tag) (AST.SomePatternData p' pattern''))
 recipes (AST.PatternInl _ pattern'') = do
   recipes'' <- recipes pattern''
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inl"]) recipes''
