@@ -27,7 +27,7 @@
                                             ]
                                         ];
                                         [
-                                            "ORecordSum";
+                                            "ORecord";
                                             [
                                                 "DataType";
                                                 "Uint64"
@@ -41,7 +41,14 @@
                                             ]
                                         ];
                                         [
-                                            "OTupleSum";
+                                            "OSum";
+                                            [
+                                                "DataType";
+                                                "Uint64"
+                                            ]
+                                        ];
+                                        [
+                                            "OTuple";
                                             [
                                                 "DataType";
                                                 "Uint64"
@@ -51,6 +58,13 @@
                                             "OUnit";
                                             [
                                                 "VoidType"
+                                            ]
+                                        ];
+                                        [
+                                            "OVariant";
+                                            [
+                                                "DataType";
+                                                "Uint64"
                                             ]
                                         ]
                                     ]
@@ -62,12 +76,14 @@
                 "Data" = [
                     [
                         [
-                            "0";
+                            "1";
+                            "1";
+                            "5";
+                            "4";
                             "2";
-                            "3";
-                            "3";
-                            "9";
-                            "Void"
+                            "11";
+                            "Void";
+                            "1"
                         ]
                     ]
                 ]

@@ -7,18 +7,38 @@ extend with
   #type-aliases,
   #unit-type,
   #tuples,
-  #records
+  #records,
+  #sum-types,
+  #variants
 ;
 
-type  InputTupleSum = { Nat, Nat }
-type OutputTupleSum = Nat
-fn     TestTupleSum(n : InputTupleSum) -> OutputTupleSum {
+type   InputVariant = <| a : Nat, b : Bool |>
+type  OutputVariant = Nat
+fn     TestVariant(n : InputVariant) -> OutputVariant {
+  return match (n) {
+      <| a = a |> => 1
+    | <| b = b |> => 2
+  }
+}
+
+type  InputSum = Nat + Bool
+type OutputSum = Nat
+fn     TestSum(n : InputSum) -> OutputSum {
+  return match (n) {
+      inl(n) => 1
+    | inr(b) => 2
+  }
+}
+
+type  InputTuple = { Nat, Nat }
+type OutputTuple = Nat
+fn     TestTuple(n : InputTuple) -> OutputTuple {
   return match (n) { { n, m } => n + m }
 }
 
-type  InputRecordSum = { a : Nat, b :Nat }
-type OutputRecordSum = Nat
-fn     TestRecordSum(n : InputRecordSum) -> OutputRecordSum {
+type  InputRecord = { a : Nat, b :Nat }
+type OutputRecord = Nat
+fn     TestRecord(n : InputRecord) -> OutputRecord {
   return match (n) { { a = a, b = b } => a + b }
 }
 
@@ -61,30 +81,36 @@ fn     TestInt(n : InputInt) -> OutputInt {
 }
 
 type Input = {
-  ITupleSum   : InputTupleSum,
-  IRecordSum  : InputRecordSum,
-  IBool       : InputBool,
-  IUnit       : InputUnit,
-  ISucc       : InputSucc,
-  IInt        : InputInt
+  IVariant : InputVariant,
+  ISum     : InputSum,
+  ITuple   : InputTuple,
+  IRecord  : InputRecord,
+  IBool    : InputBool,
+  IUnit    : InputUnit,
+  ISucc    : InputSucc,
+  IInt     : InputInt
 }
 
 type Output = {
-  OTupleSum   : OutputTupleSum,
-  ORecordSum  : OutputRecordSum,
-  OBool       : OutputBool,
-  OUnit       : OutputUnit,
-  OSucc       : OutputSucc,
-  OInt        : OutputInt
+  OVariant : OutputVariant,
+  OSum     : OutputSum,
+  OTuple   : OutputTuple,
+  ORecord  : OutputRecord,
+  OBool    : OutputBool,
+  OUnit    : OutputUnit,
+  OSucc    : OutputSucc,
+  OInt     : OutputInt
 }
 
 fn main(input : Input) -> Output {
   return {
-    OTupleSum   = TestTupleSum(input.ITupleSum),
-    ORecordSum  = TestRecordSum(input.IRecordSum),
-    OBool       = TestBool(input.IBool),
-    OUnit       = TestUnit(input.IUnit),
-    OSucc       = TestSucc(input.ISucc),
-    OInt        = TestInt(input.IInt)
+    OVariant = TestVariant(input.IVariant),
+    OSum     = TestSum(input.ISum),
+    OTuple   = TestTuple(input.ITuple),
+    ORecord  = TestRecord(input.IRecord),
+    OBool    = TestBool(input.IBool),
+    OUnit    = TestUnit(input.IUnit),
+    OSucc    = TestSucc(input.ISucc),
+    OInt     = TestInt(input.IInt)
   }
 }
