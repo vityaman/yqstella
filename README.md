@@ -35,67 +35,48 @@ There are following questions under this project:
    good source locations, compiler as a library and so on, that
    production languages have?
 
-## Features
+## Extensions
 
-- [x] `core`
-
----
-
-- [x] `#unit-type`
-
-- [ ] `#char-type`
-
-- [ ] `#string-type`
-
----
-
-- [x] `#pairs`
-
-- [x] `#tuples`
-
-- [x] `#records`
-
-- [x] `#sum-types`
-
-- [x] `#lists`
-
-- [x] `#variants`
-
-- [x] `#nullary-variant-labels`
-
----
-
-- [x] `#let-bindings`
-
-- [ ] `#let-many-bindings`
-
-- [ ] `#let-patterns` (only for `#tuples` and `#records`)
-
-- [ ] `#structural-patterns`
-
-- [ ] `#type-ascriptions`
-
-- [ ] `#letrec-bindings` (typecheck-only)
-
-- [x] `#fixpoint-combinator` (typecheck-only)
-
----
-
-- [x] `#nullary-functions`
-
-- [x] `#multiparameter-functions`
-
-- [x] `#nested-function-declarations`
-
----
-
-- [x] `#natural-literals`
-
-- [x] `#arithmetic-operators`
-
-- [x] `#comparison-operators`
-
-- [ ] `#logical-operators`
+| Extension                           | Status         |
+| ----------------------------------- | -------------- |
+| `core`                              | ✅ `READY`     |
+| `#structural-patterns`              | 🧪 `TYPECHECK` |
+| `#let-bindings`                     | ✅ `READY`     |
+| `#let-patterns`                     | ⏳ `TBD`       |
+| `#let-many-bindings`                | ⏳ `TBD`       |
+| `#letrec-bindings`                  | ⏳ `TBD`       |
+| `#nested-function-declarations`     | ✅ `READY`     |
+| `#wildcard-binders`                 | ⏳ `TBD`       |
+| `#natural-literals`                 | ✅ `READY`     |
+| `#arithmetic-operators`             | ✅ `READY`     |
+| `#comparison-operators`             | ✅ `READY`     |
+| `#logical-operators`                | ⏳ `TBD`       |
+| `#nullary-functions`                | ✅ `READY`     |
+| `#multiparameter-functions`         | ✅ `READY`     |
+| `#curried-multiparameter-functions` | ⏳ `TBD`       |
+| `#sequencing`                       | ⏳ `TBD`       |
+| `#type-ascriptions`                 | ✅ `READY`     |
+| `#type-aliases`                     | ✅ `READY`     |
+| `#unit-type`                        | ✅ `READY`     |
+| `#pairs`                            | ✅ `READY`     |
+| `#tuples`                           | ✅ `READY`     |
+| `#records`                          | ✅ `READY`     |
+| `#sum-types`                        | ✅ `READY`     |
+| `#variants`                         | ✅ `READY`     |
+| `#nullary-variant-labels`           | ✅ `READY`     |
+| `#lists`                            | ✅ `READY`     |
+| `#references`                       | ⏳ `TBD`       |
+| `#exception-type-declaration`       | ⏳ `TBD`       |
+| `#open-variant-exceptions`          | ⏳ `TBD`       |
+| `#exceptions`                       | ⏳ `TBD`       |
+| `#panic`                            | ⏳ `TBD`       |
+| `#structural-subtyping`             | ⏳ `TBD`       |
+| `#top-type`                         | ⏳ `TBD`       |
+| `#bottom-type`                      | ⏳ `TBD`       |
+| `#type-cast`                        | ⏳ `TBD`       |
+| `#universal-types`                  | ⏳ `TBD`       |
+| `#fixpoint-combinator`              | 🧪 `TYPECHECK` |
+| `#general-recursion`                | ⏳ `TBD`       |
 
 ## YQL Correspondence
 
