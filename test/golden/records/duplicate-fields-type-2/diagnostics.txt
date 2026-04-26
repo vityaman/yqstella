@@ -2,11 +2,3 @@ test/golden/records/duplicate-fields-type-2/input.yqst:5:24: [ERROR_DUPLICATE_RE
 duplicate field: a
 > fn main(x : { a : Nat, a : Nat }) -> { a : { a : Nat } } {
                          ^
-test/golden/records/duplicate-fields-type-2/input.yqst:5:24: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
-duplicate field: a
-> fn main(x : { a : Nat, a : Nat }) -> { a : { a : Nat } } {
-                         ^
-test/golden/records/duplicate-fields-type-2/input.yqst:5:24: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
-duplicate field: a
-> fn main(x : { a : Nat, a : Nat }) -> { a : { a : Nat } } {
-                         ^

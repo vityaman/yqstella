@@ -1,6 +1,7 @@
 module Type.Expectation
   ( TypeKind (..),
     sanitizeT,
+    sanitizeTSilent,
     liftType,
     liftType',
     listItemType,
@@ -28,10 +29,19 @@ import Type.Env (TypeAnnotationEnv)
 
 data TypeKind = Expected | Inferred
 
+-- | Like 'sanitizeT' but omits duplicate record\/variant field diagnostics. Use
+-- in the annotation pass (and 'Type.Decl.toParamSilent') after 'sanitizeT' has
+-- already run while building the context, so those errors are not reported twice.
+sanitizeTSilent :: AST.Type' Position -> TypeAnnotationEnv Type
+sanitizeTSilent = sanitizeT' False
+
 sanitizeT :: AST.Type' Position -> TypeAnnotationEnv Type
-sanitizeT (AST.TypeRecord _ fields) = do
+sanitizeT = sanitizeT' True
+
+sanitizeT' :: Bool -> AST.Type' Position -> TypeAnnotationEnv Type
+sanitizeT' reporting (AST.TypeRecord _ fields) = do
   let sanitizeF (AST.ARecordFieldType p' n t) = do
-        (Type t') <- sanitizeT t
+        (Type t') <- sanitizeT' reporting t
         return (AST.ARecordFieldType p' n (fmap (const unknown) t'))
 
   fields' <- mapM sanitizeF fields
@@ -40,11 +50,11 @@ sanitizeT (AST.TypeRecord _ fields) = do
         let message = "duplicate field: " ++ name'
          in diagnostic Error DUPLICATE_RECORD_TYPE_FIELDS (pointRange p') message
 
-  tell $ fmap toDiagnostic dup
+  when reporting $ tell $ fmap toDiagnostic dup
   return $ Type $ AST.TypeRecord () (fmap void uniq)
-sanitizeT (AST.TypeVariant _ fields) = do
+sanitizeT' rep (AST.TypeVariant _ fields) = do
   let sanitizeF (AST.AVariantFieldType p' n (AST.SomeTyping p'' t)) = do
-        (Type t') <- sanitizeT t
+        (Type t') <- sanitizeT' rep t
         return (AST.AVariantFieldType p' n (AST.SomeTyping p'' (fmap (const unknown) t')))
       sanitizeF t = pure t
 
@@ -54,14 +64,14 @@ sanitizeT (AST.TypeVariant _ fields) = do
         let message = "duplicate field: " ++ name'
          in diagnostic Error DUPLICATE_VARIANT_TYPE_FIELDS (pointRange p') message
 
-  tell $ fmap toDiagnostic dup
+  when rep $ tell $ fmap toDiagnostic dup
   return $ Type $ AST.TypeVariant () (fmap void uniq)
-sanitizeT (AST.TypeVar _ (AST.StellaIdent name)) = do
+sanitizeT' _ (AST.TypeVar _ (AST.StellaIdent name)) = do
   context <- get
   case Context.typeWithAlias name context of
     Just t -> return t
     Nothing -> return $ Type $ AST.TypeVar () (AST.StellaIdent name)
-sanitizeT t = pure $ Type $ void t
+sanitizeT' _ t = pure $ Type $ void t
 
 -- TODO: make it return Maybe Type
 liftType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type

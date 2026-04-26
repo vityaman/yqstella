@@ -16,9 +16,9 @@ import Type.Application (annotateAbstractionType, annotateApplicationType)
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Decl (toPair, withDecls, withParamDecls)
+import Type.Decl (toParamSilent, withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
-import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', listItemType, mismatchSS, sanitizeT)
+import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
 import Type.Match (annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
@@ -73,12 +73,12 @@ instance TypeAnnotatable AST.Decl' where
 
     decls' <- withStateTAE (const context') (mapM inferType decls)
     returnExpect <- case returntype of
-      AST.SomeReturnType _ t -> Just <$> sanitizeT t
+      AST.SomeReturnType _ t -> Just <$> sanitizeTSilent t
       AST.NoReturnType _ -> pure Nothing
 
     expr' <- withStateTAE (const context') (annotateType returnExpect expr)
 
-    argTypes <- mapM toPair paramdecls
+    argTypes <- mapM toParamSilent paramdecls
 
     let t' = fmap (Type.fn $ fmap snd argTypes) (typeOf expr')
 

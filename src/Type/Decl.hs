@@ -1,6 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
-module Type.Decl (withParamDecls, withDecls, toPair) where
+module Type.Decl (withParamDecls, withDecls, toPair, toParamSilent) where
 
 import Control.Monad.Writer (tell)
 import qualified Data.Map as Map
@@ -16,7 +16,7 @@ import qualified Type.Context as Context
 import Type.Core (Type (..))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, withStateTAE)
-import Type.Expectation (sanitizeT)
+import Type.Expectation (sanitizeT, sanitizeTSilent)
 
 withParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
 withParamDecls paramdecls context = do
@@ -69,7 +69,7 @@ withDecls decls context = do
   where
     visitFuns :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
     visitFuns (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
-      args'' <- mapM toPair paramdecls
+      args'' <- mapM toParamSilent paramdecls
       let args' = fmap snd args''
       returntype' <- sanitizeT returntype
       return $ Just (name, [(p, Type.fn args' returntype')])
@@ -88,7 +88,20 @@ withDecls decls context = do
       tell [notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name]
       return Nothing
 
+-- | 'sanitize' the parameter type for the typing environment. Duplicate
+-- record\/variant fields in the written type are diagnosed here. The annotation
+-- pass (see 'Type.Annotation', 'toParamSilent') re-shapes the same syntax again
+-- without emitting those diagnostics a second time.
 toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
 toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = do
   t' <- sanitizeT t
+  return (key, t')
+
+-- | Like 'toPair' but does not re-report duplicate record\/variant type fields.
+-- Used in 'visitFuns' (param types are later checked with 'toPair' in
+-- 'withParamDecls'), in 'Type.Annotation' and 'Type.Application' after the
+-- context pass.
+toParamSilent :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
+toParamSilent (AST.AParamDecl _ (AST.StellaIdent key) t) = do
+  t' <- sanitizeTSilent t
   return (key, t')

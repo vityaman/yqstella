@@ -1,0 +1,4 @@
+test/golden/type-aliases/duplicate-fields-type/input.yqst:5:22: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: a
+> type AA = { a : Nat, a : Nat }
+                       ^

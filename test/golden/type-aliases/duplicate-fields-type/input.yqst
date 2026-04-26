@@ -1,0 +1,9 @@
+language core;
+
+extend with #records, #type-aliases;
+
+type AA = { a : Nat, a : Nat }
+
+fn main(x : Nat) -> AA {
+  return { a = x }
+}
