@@ -2,7 +2,6 @@ language core;
 
 extend with
   #structural-patterns,
-  #wildcard-binders,
   #natural-literals,
   #arithmetic-operators,
   #type-aliases,
