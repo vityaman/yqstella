@@ -352,6 +352,25 @@ recipes (AST.PatternRecord _ patterns'') = do
       recipesM i = fmap (recipesF i)
 
   return $ Map.unions $ fmap (uncurry recipesM) recipes''
+recipes (AST.PatternList (p, _) []) = do
+  let core = Y [A "OptionalIf", Y [A "Not", Y [A "HasItems", A "x"]], Y [A "EmptyList"]]
+      f x = mapcoerce' x $ Y [A "lambda", Q $ Y [A "x"], core]
+      name = "yqstellamatchnil:" ++ show p
+  return $ Map.singleton name f
+recipes (AST.PatternList p (x : xs)) = do
+  recipes (AST.PatternCons p x (AST.PatternList p xs))
+recipes (AST.PatternCons (p, _) head' tail') = do
+  one <- toYQL (AST.ConstInt (p, Just $ Type.fromAST' AST.TypeNat) 1)
+
+  let headF :: (Node -> Node) -> (Node -> Node)
+      headF f x = f $ Y [A "ToOptional", x]
+
+      tailF :: (Node -> Node) -> (Node -> Node)
+      tailF f x = f $ Y [A "Skip", x, one]
+
+  head'' <- recipes head'
+  tail'' <- recipes tail'
+  return $ Map.union (fmap headF head'') (fmap tailF tail'')
 recipes (AST.PatternFalse (p, t)) = do
   false <- toYQL (AST.ConstFalse (p, t))
   let f x = Y [A "OptionalIf", Y [A "Not", x], false]

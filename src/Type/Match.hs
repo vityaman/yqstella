@@ -108,10 +108,13 @@ checkType t@(Type (AST.TypeRecord _ ts)) (AST.PatternRecord p fs) = do
 
   fs' <- traverse annotateType uniq
   Right (AST.PatternRecord (p, t) fs')
-checkType _ (AST.PatternList p _) =
-  Left $ notImplemented p "PatternList Matching"
-checkType _ (AST.PatternCons p _ _) =
-  Left $ notImplemented p "PatternCons Matching"
+checkType t@(Type (AST.TypeList _ itemT)) (AST.PatternList p patterns') = do
+  patterns'' <- mapM (checkType $ Type itemT) patterns'
+  Right (AST.PatternList (p, t) patterns'')
+checkType t@(Type (AST.TypeList _ itemT)) (AST.PatternCons p head' tail') = do
+  head'' <- checkType (Type itemT) head'
+  tail'' <- checkType t tail'
+  Right (AST.PatternCons (p, t) head'' tail'')
 checkType t@(Type (AST.TypeBool _)) (AST.PatternFalse p) =
   Right (AST.PatternFalse (p, t))
 checkType t@(Type (AST.TypeBool _)) (AST.PatternTrue p) =
@@ -239,6 +242,12 @@ encode (AST.PatternTuple t patterns) =
 encode (AST.PatternRecord t fields) =
   let encode' (AST.ALabelledPattern _ (AST.StellaIdent _) pattern') = encode pattern'
    in C "record" (fmap encode' fields) ::: t
+encode (AST.PatternList t []) =
+  C "nil" [] ::: t
+encode (AST.PatternCons t head' tail') =
+  let head'' = encode head'
+      tail'' = encode tail'
+   in C "cons" [head'', tail''] ::: t
 encode (AST.PatternFalse t) =
   C "false" [] ::: t
 encode (AST.PatternTrue t) =
@@ -265,6 +274,10 @@ decode (C "record" fields ::: t) =
   let decode' p@(_ ::: t') =
         AST.ALabelledPattern t' (AST.StellaIdent "?") (decode p)
    in AST.PatternRecord t (fmap decode' fields)
+decode (C "nil" [] ::: t) =
+  AST.PatternList t []
+decode (C "cons" [head', tail'] ::: t) =
+  AST.PatternCons t (decode head') (decode tail')
 decode (C "false" [] ::: t) =
   AST.PatternFalse t
 decode (C "true" [] ::: t) =
@@ -290,6 +303,8 @@ ctors (Type (AST.TypeTuple _ types)) =
 ctors (Type (AST.TypeRecord _ recordfieldtypes)) =
   let ctor' (AST.ARecordFieldType _ (AST.StellaIdent _) type_) = Type.fromAST type_
    in Map.fromList [("record", fmap ctor' recordfieldtypes)]
+ctors (Type (AST.TypeList _ itemT)) =
+  Map.fromList [("nil", []), ("cons", [Type itemT, Type (AST.TypeList () itemT)])]
 ctors (Type (AST.TypeVariant _ variantfieldtypes)) =
   Map.fromList
     [ (tag, [Type t])
@@ -325,8 +340,11 @@ normalizeP (AST.PatternRecord p fields) =
   let withNoTypingAsUnit'' (AST.ALabelledPattern p' n pattern') =
         AST.ALabelledPattern p' n (normalizeP pattern')
    in AST.PatternRecord p (fmap withNoTypingAsUnit'' fields)
+normalizeP (AST.PatternList p []) =
+  AST.PatternList p []
 normalizeP (AST.PatternList p patterns) =
-  AST.PatternList p (fmap normalizeP patterns)
+  let patterns' = fmap normalizeP patterns
+   in foldl (AST.PatternCons p) (AST.PatternList p []) patterns'
 normalizeP (AST.PatternCons p pattern1 pattern2) =
   let pattern1' = normalizeP pattern1
       pattern2' = normalizeP pattern2
