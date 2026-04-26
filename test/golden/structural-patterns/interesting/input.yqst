@@ -9,7 +9,8 @@ extend with
   #tuples,
   #records,
   #sum-types,
-  #variants
+  #variants,
+  #lists
 ;
 
 type   InputVariant = <| a : Nat, b : Bool |>
@@ -40,6 +41,26 @@ type  InputRecord = { a : Nat, b :Nat }
 type OutputRecord = Nat
 fn     TestRecord(n : InputRecord) -> OutputRecord {
   return match (n) { { a = a, b = b } => a + b }
+}
+
+type  InputList = [Nat]
+type OutputList = [Nat]
+fn     TestList(n : InputList) -> OutputList {
+  return match (n) {
+      []     => [0]
+    | [n]    => [1]
+    | [n, m] => [2]
+    | cons(head, tail) => [head]
+  }
+}
+
+type  InputCons = [Nat]
+type OutputCons = [Nat]
+fn     TestCons(n : InputCons) -> OutputCons {
+  return match (n) {
+      []               => []
+    | cons(head, tail) => [head]
+  }
 }
 
 type  InputBool = Bool
@@ -85,6 +106,8 @@ type Input = {
   ISum     : InputSum,
   ITuple   : InputTuple,
   IRecord  : InputRecord,
+  IList    : InputList,
+  ICons    : InputCons,
   IBool    : InputBool,
   IUnit    : InputUnit,
   ISucc    : InputSucc,
@@ -96,6 +119,8 @@ type Output = {
   OSum     : OutputSum,
   OTuple   : OutputTuple,
   ORecord  : OutputRecord,
+  OList    : OutputList,
+  OCons    : OutputCons,
   OBool    : OutputBool,
   OUnit    : OutputUnit,
   OSucc    : OutputSucc,
@@ -108,6 +133,8 @@ fn main(input : Input) -> Output {
     OSum     = TestSum(input.ISum),
     OTuple   = TestTuple(input.ITuple),
     ORecord  = TestRecord(input.IRecord),
+    OList    = TestList(input.IList),
+    OCons    = TestCons(input.ICons),
     OBool    = TestBool(input.IBool),
     OUnit    = TestUnit(input.IUnit),
     OSucc    = TestSucc(input.ISucc),
