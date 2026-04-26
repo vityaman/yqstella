@@ -387,7 +387,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.LogicOr p expr1 expr2) =
-    AST.LogicOr (p, Set.empty) expr1' expr2'
+    AST.LogicOr (p, Set.singleton Extension.LogicalOperators) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
@@ -402,7 +402,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.LogicAnd p expr1 expr2) =
-    AST.LogicAnd (p, Set.empty) expr1' expr2'
+    AST.LogicAnd (p, Set.singleton Extension.LogicalOperators) expr1' expr2'
     where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
@@ -503,7 +503,7 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.LogicNot p expr) =
-    AST.LogicNot (p, Set.empty) expr'
+    AST.LogicNot (p, Set.singleton Extension.LogicalOperators) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Pred p expr) =

@@ -217,18 +217,22 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Subtract p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Subtract (p, t') lhs' rhs')
-  annotateType _ x@(AST.LogicOr {}) = do
-    tell [notImplemented (annotation x) "LogicOr"]
-    return $ stub x
+  annotateType t (AST.LogicOr p lhs rhs) = do
+    lhs' <- checkType (Type.fromAST' AST.TypeBool) lhs
+    rhs' <- checkType (Type.fromAST' AST.TypeBool) rhs
+    t' <- liftType p AST.TypeBool t
+    return (AST.LogicOr (p, Just t') lhs' rhs')
   annotateType t (AST.Multiply p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Multiply (p, t') lhs' rhs')
   annotateType t (AST.Divide p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2T annotateType annotateType t lhs rhs
     return (AST.Divide (p, t') lhs' rhs')
-  annotateType _ x@(AST.LogicAnd {}) = do
-    tell [notImplemented (annotation x) "LogicAnd"]
-    return $ stub x
+  annotateType t (AST.LogicAnd p lhs rhs) = do
+    lhs' <- checkType (Type.fromAST' AST.TypeBool) lhs
+    rhs' <- checkType (Type.fromAST' AST.TypeBool) rhs
+    t' <- liftType p AST.TypeBool t
+    return (AST.LogicAnd (p, Just t') lhs' rhs')
   annotateType _ x@(AST.Ref {}) = do
     tell [notImplemented (annotation x) "Ref"]
     return $ stub x
@@ -328,9 +332,10 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- checkType (Type.fromAST' AST.TypeNat) expr
     t' <- liftType p AST.TypeNat t
     return $ AST.Succ (p, Just t') expr'
-  annotateType _ x@(AST.LogicNot {}) = do
-    tell [notImplemented (annotation x) "LogicNot"]
-    return $ stub x
+  annotateType t (AST.LogicNot p expr) = do
+    expr' <- checkType (Type.fromAST' AST.TypeBool) expr
+    t' <- liftType p AST.TypeBool t
+    return $ AST.LogicNot (p, Just t') expr'
   annotateType _ x@(AST.Pred {}) = do
     tell [notImplemented (annotation x) "Pred"]
     return $ stub x

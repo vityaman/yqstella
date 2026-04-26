@@ -1,0 +1,20 @@
+language core;
+
+extend with
+  #multiparameter-functions;
+
+fn fand(a : Bool, b : Bool) -> Bool {
+  return a and b
+}
+
+fn for(a : Bool, b : Bool) -> Bool {
+  return a or b
+}
+
+fn fnot(a : Bool) -> Bool {
+  return not(a)
+}
+
+fn main(n : Bool) -> Bool {
+  return fand(n, n)
+}

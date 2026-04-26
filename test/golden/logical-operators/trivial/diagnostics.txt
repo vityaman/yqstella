@@ -1,0 +1,12 @@
+test/golden/logical-operators/trivial/input.yqst:7:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #logical-operators
+>   return a and b
+           ^
+test/golden/logical-operators/trivial/input.yqst:11:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #logical-operators
+>   return a or b
+           ^
+test/golden/logical-operators/trivial/input.yqst:15:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #logical-operators
+>   return not(a)
+           ^
