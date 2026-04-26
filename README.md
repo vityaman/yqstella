@@ -46,7 +46,6 @@ There are following questions under this project:
 | `#let-many-bindings`                | ⏳ `TBD`       |
 | `#letrec-bindings`                  | ⏳ `TBD`       |
 | `#nested-function-declarations`     | ✅ `READY`     |
-| `#wildcard-binders`                 | ⏳ `TBD`       |
 | `#natural-literals`                 | ✅ `READY`     |
 | `#arithmetic-operators`             | ✅ `READY`     |
 | `#comparison-operators`             | ✅ `READY`     |

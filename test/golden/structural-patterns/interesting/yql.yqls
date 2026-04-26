@@ -25,6 +25,43 @@
           (return (If yqstellamatchcond (Just (Uint64 '2)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let InputNullaryVariant (Void))
+  (let OutputNullaryVariant (Void))
+  (let TestNullaryVariant (lambda '(n) (block '(
+    (let yqstellamatchexpr n)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchunit:1:0 (Guess yqstellamatcharg 'a))
+          (let yqstellamatchcond (And (Exists yqstellamatchunit:1:0) (Bool 'true)))
+          (let yqstellamatchunit:1:0 (Unwrap yqstellamatchunit:1:0))
+          (return (If yqstellamatchcond (Just (Uint64 '1)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchunit:1:0 (Guess yqstellamatcharg 'b))
+          (let yqstellamatchcond (And (Exists yqstellamatchunit:1:0) (Bool 'true)))
+          (let yqstellamatchunit:1:0 (Unwrap yqstellamatchunit:1:0))
+          (return (If yqstellamatchcond (Just (Uint64 '2)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr2
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let _ (Guess yqstellamatcharg 'c))
+          (let yqstellamatchcond (And (Exists _) (Bool 'true)))
+          (let _ (Unwrap _))
+          (return (If yqstellamatchcond (Just (Uint64 '3)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr3
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchunit:1:0 (Guess yqstellamatcharg 'd))
+          (let yqstellamatchcond (And (Exists yqstellamatchunit:1:0) (Bool 'true)))
+          (let yqstellamatchunit:1:0 (Unwrap yqstellamatchunit:1:0))
+          (return (If yqstellamatchcond (Just (Uint64 '4)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2 yqstellamatchbr3)))))))
   (let InputSum (Void))
   (let OutputSum (Void))
   (let TestSum (lambda '(n) (block '(
@@ -83,7 +120,7 @@
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchnil:50:7
+          (let yqstellamatchnil:63:7
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -93,8 +130,8 @@
                   (lambda '(x) (Apply f x))))
               yqstellamatcharg
               (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
-          (let yqstellamatchcond (And (Exists yqstellamatchnil:50:7) (Bool 'true)))
-          (let yqstellamatchnil:50:7 (Unwrap yqstellamatchnil:50:7))
+          (let yqstellamatchcond (And (Exists yqstellamatchnil:63:7) (Bool 'true)))
+          (let yqstellamatchnil:63:7 (Unwrap yqstellamatchnil:63:7))
           (return
             (If
               yqstellamatchcond
@@ -105,7 +142,7 @@
       (Apply
         (lambda '(yqstellamatcharg) (block '(
           (let n (ToOptional yqstellamatcharg))
-          (let yqstellamatchnil:51:7
+          (let yqstellamatchnil:64:7
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -115,9 +152,9 @@
                   (lambda '(x) (Apply f x))))
               (Skip yqstellamatcharg (Uint64 '1))
               (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
-          (let yqstellamatchcond (And (Exists n) (And (Exists yqstellamatchnil:51:7) (Bool 'true))))
+          (let yqstellamatchcond (And (Exists n) (And (Exists yqstellamatchnil:64:7) (Bool 'true))))
           (let n (Unwrap n))
-          (let yqstellamatchnil:51:7 (Unwrap yqstellamatchnil:51:7))
+          (let yqstellamatchnil:64:7 (Unwrap yqstellamatchnil:64:7))
           (return
             (If
               yqstellamatchcond
@@ -129,7 +166,7 @@
         (lambda '(yqstellamatcharg) (block '(
           (let m (ToOptional (Skip yqstellamatcharg (Uint64 '1))))
           (let n (ToOptional yqstellamatcharg))
-          (let yqstellamatchnil:52:7
+          (let yqstellamatchnil:65:7
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -140,10 +177,10 @@
               (Skip (Skip yqstellamatcharg (Uint64 '1)) (Uint64 '1))
               (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
           (let yqstellamatchcond
-            (And (Exists m) (And (Exists n) (And (Exists yqstellamatchnil:52:7) (Bool 'true)))))
+            (And (Exists m) (And (Exists n) (And (Exists yqstellamatchnil:65:7) (Bool 'true)))))
           (let m (Unwrap m))
           (let n (Unwrap n))
-          (let yqstellamatchnil:52:7 (Unwrap yqstellamatchnil:52:7))
+          (let yqstellamatchnil:65:7 (Unwrap yqstellamatchnil:65:7))
           (return
             (If
               yqstellamatchcond
@@ -162,14 +199,14 @@
             (If yqstellamatchcond (Just (AsList head)) (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
         yqstellamatchexpr))
     (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2 yqstellamatchbr3)))))))
-  (let InputCons (Void))
-  (let OutputCons (Void))
-  (let TestCons (lambda '(n) (block '(
+  (let InputListReverse (Void))
+  (let OutputListReverse (Void))
+  (let TestListReverse (lambda '(n) (block '(
     (let yqstellamatchexpr n)
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchnil:61:7
+          (let yqstellamatchnil:74:7
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -179,8 +216,116 @@
                   (lambda '(x) (Apply f x))))
               yqstellamatcharg
               (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
-          (let yqstellamatchcond (And (Exists yqstellamatchnil:61:7) (Bool 'true)))
-          (let yqstellamatchnil:61:7 (Unwrap yqstellamatchnil:61:7))
+          (let yqstellamatchcond (And (Exists yqstellamatchnil:74:7) (Bool 'true)))
+          (let yqstellamatchnil:74:7 (Unwrap yqstellamatchnil:74:7))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (ToList (Nothing (OptionalType (DataType 'Uint64)))))
+              (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let a (ToOptional yqstellamatcharg))
+          (let yqstellamatchnil:75:7
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Skip yqstellamatcharg (Uint64 '1))
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond (And (Exists a) (And (Exists yqstellamatchnil:75:7) (Bool 'true))))
+          (let a (Unwrap a))
+          (let yqstellamatchnil:75:7 (Unwrap yqstellamatchnil:75:7))
+          (return
+            (If yqstellamatchcond (Just (AsList a)) (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr2
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let a (ToOptional yqstellamatcharg))
+          (let b (ToOptional (Skip yqstellamatcharg (Uint64 '1))))
+          (let yqstellamatchnil:76:7
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Skip (Skip yqstellamatcharg (Uint64 '1)) (Uint64 '1))
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond
+            (And (Exists a) (And (Exists b) (And (Exists yqstellamatchnil:76:7) (Bool 'true)))))
+          (let a (Unwrap a))
+          (let b (Unwrap b))
+          (let yqstellamatchnil:76:7 (Unwrap yqstellamatchnil:76:7))
+          (return
+            (If yqstellamatchcond (Just (AsList b a)) (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr3
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let a (ToOptional yqstellamatcharg))
+          (let b (ToOptional (Skip yqstellamatcharg (Uint64 '1))))
+          (let c (ToOptional (Skip (Skip yqstellamatcharg (Uint64 '1)) (Uint64 '1))))
+          (let yqstellamatchnil:77:7
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Skip (Skip (Skip yqstellamatcharg (Uint64 '1)) (Uint64 '1)) (Uint64 '1))
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond
+            (And (Exists a) (And (Exists b) (And (Exists c) (And (Exists yqstellamatchnil:77:7) (Bool 'true))))))
+          (let a (Unwrap a))
+          (let b (Unwrap b))
+          (let c (Unwrap c))
+          (let yqstellamatchnil:77:7 (Unwrap yqstellamatchnil:77:7))
+          (return
+            (If yqstellamatchcond (Just (AsList c b a)) (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr4
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let _ yqstellamatcharg)
+          (let yqstellamatchcond (And (Exists _) (Bool 'true)))
+          (let _ (Unwrap _))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (ToList (Nothing (OptionalType (DataType 'Uint64)))))
+              (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+        yqstellamatchexpr))
+    (return
+      (Unwrap
+        (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2 yqstellamatchbr3 yqstellamatchbr4)))))))
+  (let InputCons (Void))
+  (let OutputCons (Void))
+  (let TestCons (lambda '(n) (block '(
+    (let yqstellamatchexpr n)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchnil:86:7
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond (And (Exists yqstellamatchnil:86:7) (Bool 'true)))
+          (let yqstellamatchnil:86:7 (Unwrap yqstellamatchnil:86:7))
           (return
             (If
               yqstellamatchcond
@@ -206,17 +351,17 @@
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:70:7 (OptionalIf (Not yqstellamatcharg) (Bool 'false)))
-          (let yqstellamatchcond (And (Exists yqstellamatchfalse:70:7) (Bool 'true)))
-          (let yqstellamatchfalse:70:7 (Unwrap yqstellamatchfalse:70:7))
+          (let yqstellamatchfalse:95:7 (OptionalIf (Not yqstellamatcharg) (Bool 'false)))
+          (let yqstellamatchcond (And (Exists yqstellamatchfalse:95:7) (Bool 'true)))
+          (let yqstellamatchfalse:95:7 (Unwrap yqstellamatchfalse:95:7))
           (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (let yqstellamatchbr1
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchtrue:71:7 (OptionalIf yqstellamatcharg (Bool 'true)))
-          (let yqstellamatchcond (And (Exists yqstellamatchtrue:71:7) (Bool 'true)))
-          (let yqstellamatchtrue:71:7 (Unwrap yqstellamatchtrue:71:7))
+          (let yqstellamatchtrue:96:7 (OptionalIf yqstellamatcharg (Bool 'true)))
+          (let yqstellamatchcond (And (Exists yqstellamatchtrue:96:7) (Bool 'true)))
+          (let yqstellamatchtrue:96:7 (Unwrap yqstellamatchtrue:96:7))
           (return (If yqstellamatchcond (Just (Uint64 '1)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
@@ -227,9 +372,9 @@
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchunit:79:5 yqstellamatcharg)
-          (let yqstellamatchcond (And (Exists yqstellamatchunit:79:5) (Bool 'true)))
-          (let yqstellamatchunit:79:5 (Unwrap yqstellamatchunit:79:5))
+          (let yqstellamatchunit:104:5 yqstellamatcharg)
+          (let yqstellamatchcond (And (Exists yqstellamatchunit:104:5) (Bool 'true)))
+          (let yqstellamatchunit:104:5 (Unwrap yqstellamatchunit:104:5))
           (return (If yqstellamatchcond (Just (Void)) (Nothing (OptionalType (VoidType))))))))
         yqstellamatchexpr))
     (return (Unwrap (Coalesce yqstellamatchbr0)))))))
@@ -287,7 +432,7 @@
     (let yqstellamatchbr2
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchint:89:7:0
+          (let yqstellamatchint:114:7:0
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -297,8 +442,8 @@
                   (lambda '(x) (Apply f x))))
               yqstellamatcharg
               (lambda '(x) (OptionalIf (== x (Uint64 '0)) (Uint64 '0)))))
-          (let yqstellamatchcond (And (Exists yqstellamatchint:89:7:0) (Bool 'true)))
-          (let yqstellamatchint:89:7:0 (Unwrap yqstellamatchint:89:7:0))
+          (let yqstellamatchcond (And (Exists yqstellamatchint:114:7:0) (Bool 'true)))
+          (let yqstellamatchint:114:7:0 (Unwrap yqstellamatchint:114:7:0))
           (return
             (If
               yqstellamatchcond
@@ -313,7 +458,7 @@
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchint:97:7:0
+          (let yqstellamatchint:122:7:0
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -323,14 +468,14 @@
                   (lambda '(x) (Apply f x))))
               yqstellamatcharg
               (lambda '(x) (OptionalIf (== x (Uint64 '0)) (Uint64 '0)))))
-          (let yqstellamatchcond (And (Exists yqstellamatchint:97:7:0) (Bool 'true)))
-          (let yqstellamatchint:97:7:0 (Unwrap yqstellamatchint:97:7:0))
+          (let yqstellamatchcond (And (Exists yqstellamatchint:122:7:0) (Bool 'true)))
+          (let yqstellamatchint:122:7:0 (Unwrap yqstellamatchint:122:7:0))
           (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (let yqstellamatchbr1
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchint:98:7:1
+          (let yqstellamatchint:123:7:1
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -340,14 +485,14 @@
                   (lambda '(x) (Apply f x))))
               yqstellamatcharg
               (lambda '(x) (OptionalIf (== x (Uint64 '1)) (Uint64 '1)))))
-          (let yqstellamatchcond (And (Exists yqstellamatchint:98:7:1) (Bool 'true)))
-          (let yqstellamatchint:98:7:1 (Unwrap yqstellamatchint:98:7:1))
+          (let yqstellamatchcond (And (Exists yqstellamatchint:123:7:1) (Bool 'true)))
+          (let yqstellamatchint:123:7:1 (Unwrap yqstellamatchint:123:7:1))
           (return (If yqstellamatchcond (Just (Uint64 '1)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (let yqstellamatchbr2
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchint:99:7:2
+          (let yqstellamatchint:124:7:2
             (Apply
               (lambda '(x f)
                 (MatchType
@@ -357,8 +502,8 @@
                   (lambda '(x) (Apply f x))))
               yqstellamatcharg
               (lambda '(x) (OptionalIf (== x (Uint64 '2)) (Uint64 '2)))))
-          (let yqstellamatchcond (And (Exists yqstellamatchint:99:7:2) (Bool 'true)))
-          (let yqstellamatchint:99:7:2 (Unwrap yqstellamatchint:99:7:2))
+          (let yqstellamatchcond (And (Exists yqstellamatchint:124:7:2) (Bool 'true)))
+          (let yqstellamatchint:124:7:2 (Unwrap yqstellamatchint:124:7:2))
           (return (If yqstellamatchcond (Just (Uint64 '2)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (let yqstellamatchbr3
@@ -375,10 +520,12 @@
   (let main (lambda '(input)
     (AsStruct
       '('OVariant (Apply TestVariant (Member input 'IVariant)))
+      '('ONullaryVariant (Apply TestNullaryVariant (Member input 'INullaryVariant)))
       '('OSum (Apply TestSum (Member input 'ISum)))
       '('OTuple (Apply TestTuple (Member input 'ITuple)))
       '('ORecord (Apply TestRecord (Member input 'IRecord)))
       '('OList (Apply TestList (Member input 'IList)))
+      '('OListReverse (Apply TestListReverse (Member input 'IListReverse)))
       '('OCons (Apply TestCons (Member input 'ICons)))
       '('OBool (Apply TestBool (Member input 'IBool)))
       '('OUnit (Apply TestUnit (Member input 'IUnit)))
@@ -388,10 +535,13 @@
     __input__
     (StructType
       '('IVariant (VariantType (StructType '('a (DataType 'Uint64)) '('b (DataType 'Bool)))))
+      '('INullaryVariant (VariantType
+        (StructType '('a (VoidType)) '('b (VoidType)) '('c (DataType 'Uint64)) '('d (VoidType)))))
       '('ISum (VariantType (StructType '('inl (DataType 'Uint64)) '('inr (DataType 'Bool)))))
       '('ITuple (TupleType (DataType 'Uint64) (DataType 'Uint64)))
       '('IRecord (StructType '('a (DataType 'Uint64)) '('b (DataType 'Uint64))))
       '('IList (ListType (DataType 'Uint64)))
+      '('IListReverse (ListType (DataType 'Uint64)))
       '('ICons (ListType (DataType 'Uint64)))
       '('IBool (DataType 'Bool))
       '('IUnit (VoidType))
