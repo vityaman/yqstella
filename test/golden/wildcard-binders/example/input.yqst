@@ -1,0 +1,25 @@
+language core;
+
+extend with
+  #arithmetic-operators;
+
+fn atFunArg(_ : Nat) -> Nat {
+  return 0
+}
+
+fn atAnonFunArg(_ : Nat) -> Nat {
+  return (fn (_ : Nat) {
+    return 0
+  })(0)
+}
+
+fn atMatch(n : Nat) -> Nat {
+  return match (n) { _ => 0 }
+}
+
+fn main(n : Nat) -> Nat {
+  return
+      atFunArg(n)
+    + atAnonFunArg(n)
+    + atMatch(n)
+}

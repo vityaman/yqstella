@@ -255,10 +255,8 @@ instance ExtensionsAnnotatable AST.Pattern' where
     AST.PatternSucc (p, Set.fromList [Extension.StructuralPatterns]) pattern_'
     where
       pattern_' = annotateExtensions pattern_
-  annotateExtensions (AST.PatternVar p stellaident'@(AST.StellaIdent stellaident)) =
-    AST.PatternVar (p, Set.fromList wildcard) stellaident'
-    where
-      wildcard = [Extension.WildcardBinders | stellaident == "_"]
+  annotateExtensions (AST.PatternVar p stellaident') =
+    AST.PatternVar (p, Set.empty) stellaident'
 
 instance ExtensionsAnnotatable AST.LabelledPattern' where
   annotateExtensions (AST.ALabelledPattern p stellaident pattern_) =

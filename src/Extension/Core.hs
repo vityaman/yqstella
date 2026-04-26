@@ -12,7 +12,6 @@ data Extension
   | LetPatterns
   | LetManyBindings
   | NestedFunctionDeclarations
-  | WildcardBinders
   | NaturalLiterals
   | ArithmeticOperators
   | ComparisonOperations
@@ -64,7 +63,6 @@ extensionNameMap =
       (LetPatterns, "#let-patterns"),
       (LetManyBindings, "#let-many-bindings"),
       (NestedFunctionDeclarations, "#nested-function-declarations"),
-      (WildcardBinders, "#wildcard-binders"),
       (NaturalLiterals, "#natural-literals"),
       (ArithmeticOperators, "#arithmetic-operators"),
       (ComparisonOperations, "#comparison-operators"),

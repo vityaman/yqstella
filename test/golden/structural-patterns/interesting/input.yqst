@@ -10,15 +10,27 @@ extend with
   #records,
   #sum-types,
   #variants,
+  #nullary-variant-labels,
   #lists
 ;
 
-type   InputVariant = <| a : Nat, b : Bool |>
-type  OutputVariant = Nat
+type  InputVariant = <| a : Nat, b : Bool |>
+type OutputVariant = Nat
 fn     TestVariant(n : InputVariant) -> OutputVariant {
   return match (n) {
       <| a = a |> => 1
     | <| b = b |> => 2
+  }
+}
+
+type  InputNullaryVariant = <| a, b, c : Nat, d |>
+type OutputNullaryVariant = Nat
+fn     TestNullaryVariant(n : InputNullaryVariant) -> OutputNullaryVariant {
+  return match (n) {
+      <| a |>     => 1
+    | <| b |>     => 2
+    | <| c = _ |> => 3
+    | <| d |>     => 4
   }
 }
 
@@ -51,6 +63,18 @@ fn     TestList(n : InputList) -> OutputList {
     | [n]    => [1]
     | [n, m] => [2]
     | cons(head, tail) => [head]
+  }
+}
+
+type  InputListReverse = [Nat]
+type OutputListReverse = [Nat]
+fn     TestListReverse(n : InputListReverse) -> OutputListReverse {
+  return match (n) {
+      []        => []
+    | [a]       => [a]
+    | [a, b]    => [b, a]
+    | [a, b, c] => [c, b, a]
+    | _         => []
   }
 }
 
@@ -102,42 +126,48 @@ fn     TestInt(n : InputInt) -> OutputInt {
 }
 
 type Input = {
-  IVariant : InputVariant,
-  ISum     : InputSum,
-  ITuple   : InputTuple,
-  IRecord  : InputRecord,
-  IList    : InputList,
-  ICons    : InputCons,
-  IBool    : InputBool,
-  IUnit    : InputUnit,
-  ISucc    : InputSucc,
-  IInt     : InputInt
+  IVariant        : InputVariant,
+  INullaryVariant : InputNullaryVariant,
+  ISum            : InputSum,
+  ITuple          : InputTuple,
+  IRecord         : InputRecord,
+  IList           : InputList,
+  IListReverse    : InputListReverse,
+  ICons           : InputCons,
+  IBool           : InputBool,
+  IUnit           : InputUnit,
+  ISucc           : InputSucc,
+  IInt            : InputInt
 }
 
 type Output = {
-  OVariant : OutputVariant,
-  OSum     : OutputSum,
-  OTuple   : OutputTuple,
-  ORecord  : OutputRecord,
-  OList    : OutputList,
-  OCons    : OutputCons,
-  OBool    : OutputBool,
-  OUnit    : OutputUnit,
-  OSucc    : OutputSucc,
-  OInt     : OutputInt
+  OVariant        : OutputVariant,
+  ONullaryVariant : OutputNullaryVariant,
+  OSum            : OutputSum,
+  OTuple          : OutputTuple,
+  ORecord         : OutputRecord,
+  OList           : OutputList,
+  OListReverse    : OutputListReverse,
+  OCons           : OutputCons,
+  OBool           : OutputBool,
+  OUnit           : OutputUnit,
+  OSucc           : OutputSucc,
+  OInt            : OutputInt
 }
 
 fn main(input : Input) -> Output {
   return {
-    OVariant = TestVariant(input.IVariant),
-    OSum     = TestSum(input.ISum),
-    OTuple   = TestTuple(input.ITuple),
-    ORecord  = TestRecord(input.IRecord),
-    OList    = TestList(input.IList),
-    OCons    = TestCons(input.ICons),
-    OBool    = TestBool(input.IBool),
-    OUnit    = TestUnit(input.IUnit),
-    OSucc    = TestSucc(input.ISucc),
-    OInt     = TestInt(input.IInt)
+    OVariant        = TestVariant(input.IVariant),
+    ONullaryVariant = TestNullaryVariant(input.INullaryVariant),
+    OSum            = TestSum(input.ISum),
+    OTuple          = TestTuple(input.ITuple),
+    ORecord         = TestRecord(input.IRecord),
+    OList           = TestList(input.IList),
+    OListReverse    = TestListReverse(input.IListReverse),
+    OCons           = TestCons(input.ICons),
+    OBool           = TestBool(input.IBool),
+    OUnit           = TestUnit(input.IUnit),
+    OSucc           = TestSucc(input.ISucc),
+    OInt            = TestInt(input.IInt)
   }
 }
