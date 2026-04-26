@@ -4,7 +4,7 @@ module Type.Annotation (annotateType, inferType) where
 
 import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (unless, void)
+import Control.Monad (unless)
 import Control.Monad.State
 import Control.Monad.Writer
 import Data.Foldable (find)
@@ -171,7 +171,7 @@ instance TypeAnnotatable AST.Expr' where
     (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.NotEqual (p, t') lhs' rhs')
   annotateType t (AST.TypeAsc p expr type_) = do
-    type'' <- Type . void <$> sanitizeT type_
+    type'' <- sanitizeT type_
     expr' <- checkType type'' expr
     t' <- liftType' p type'' t
     return (AST.TypeAsc (p, Just t') expr' (stub type_))

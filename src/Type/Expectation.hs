@@ -11,25 +11,29 @@ module Type.Expectation
 where
 
 import Control.Monad (when)
+import Control.Monad.State (get)
 import Control.Monad.Writer (tell)
+import Data.Functor (void)
 import Data.List (groupBy, intercalate)
 import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
 import Data.Maybe (mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Severity (..), diagnostic)
-import Diagnostic.Position (Position, pointRange)
+import Diagnostic.Position (Position, pointRange, unknown)
 import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import Type.Env (TypeAnnotationEnv)
+import Debug.Trace
 
 data TypeKind = Expected | Inferred
 
-sanitizeT :: AST.Type' Position -> TypeAnnotationEnv (AST.Type' Position)
-sanitizeT (AST.TypeRecord p fields) = do
+sanitizeT :: AST.Type' Position -> TypeAnnotationEnv Type
+sanitizeT (AST.TypeRecord _ fields) = do
   let sanitizeF (AST.ARecordFieldType p' n t) = do
-        t' <- sanitizeT t
-        return (AST.ARecordFieldType p' n t')
+        (Type t') <- sanitizeT t
+        return (AST.ARecordFieldType p' n (fmap (const unknown) t'))
 
   fields' <- mapM sanitizeF fields
   let (uniq, dup) = sepUniqDupBy (\(AST.ARecordFieldType _ n _) -> n) fields'
@@ -38,11 +42,11 @@ sanitizeT (AST.TypeRecord p fields) = do
          in diagnostic Error DUPLICATE_RECORD_TYPE_FIELDS (pointRange p') message
 
   tell $ fmap toDiagnostic dup
-  return (AST.TypeRecord p uniq)
-sanitizeT (AST.TypeVariant p fields) = do
+  return $ Type $ AST.TypeRecord () (fmap void uniq)
+sanitizeT (AST.TypeVariant _ fields) = do
   let sanitizeF (AST.AVariantFieldType p' n (AST.SomeTyping p'' t)) = do
-        t' <- sanitizeT t
-        return (AST.AVariantFieldType p' n (AST.SomeTyping p'' t'))
+        (Type t') <- sanitizeT t
+        return (AST.AVariantFieldType p' n (AST.SomeTyping p'' (fmap (const unknown) t')))
       sanitizeF t = pure t
 
   fields' <- mapM sanitizeF fields
@@ -52,8 +56,13 @@ sanitizeT (AST.TypeVariant p fields) = do
          in diagnostic Error DUPLICATE_VARIANT_TYPE_FIELDS (pointRange p') message
 
   tell $ fmap toDiagnostic dup
-  return (AST.TypeVariant p uniq)
-sanitizeT t = pure t
+  return $ Type $ AST.TypeVariant () (fmap void uniq)
+sanitizeT (AST.TypeVar _ (AST.StellaIdent name)) = do
+  context <- get
+  case trace (show context) $ Context.typeWithAlias name context of
+    Just t -> return t
+    Nothing -> return $ Type $ AST.TypeVar () (AST.StellaIdent name)
+sanitizeT t = pure $ Type $ void t
 
 -- TODO: make it return Maybe Type
 liftType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
