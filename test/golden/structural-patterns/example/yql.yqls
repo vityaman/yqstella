@@ -1,0 +1,54 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let main (lambda '(input) (block '(
+    (let yqstellamatchexpr input)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let n (Guess yqstellamatcharg 'inl))
+          (let yqstellamatchcond (And (Exists n) (Bool 'true)))
+          (let n (Unwrap n))
+          (return (If yqstellamatchcond (Just n) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let b (Guess (Guess yqstellamatcharg 'inr) 'inl))
+          (let yqstellamatchcond (And (Exists b) (Bool 'true)))
+          (let b (Unwrap b))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (If b (+ (Uint64 '0) (Uint64 '1)) (Uint64 '0)))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr2
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let f (Guess (Guess yqstellamatcharg 'inr) 'inr))
+          (let yqstellamatchcond (And (Exists f) (Bool 'true)))
+          (let f (Unwrap f))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (Apply f (+ (Uint64 '0) (Uint64 '1))))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2)))))))
+  (declare
+    __input__
+    (VariantType
+      (StructType
+        '('inl (DataType 'Uint64))
+        '('inr (VariantType
+          (StructType
+            '('inl (DataType 'Bool))
+            '('inr (CallableType '() '((DataType 'Uint64)) '((DataType 'Uint64))))))))))
+  (let result (Apply main __input__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

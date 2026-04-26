@@ -1,0 +1,4 @@
+minirun ABI version: 2.45.0
+test/golden/llm/structural-nat-succ/yql.yqls:<main>:44:31: Error: Name not found: add_acc
+	              (Just (+ (Apply add_acc a0 b) (Uint64 '1)))
+	                              ^

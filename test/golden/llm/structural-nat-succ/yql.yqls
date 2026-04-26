@@ -1,0 +1,98 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let add_acc (lambda '(a b) (block '(
+    (let yqstellamatchexpr a)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchint:17:7:0
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (== x (Uint64 '0)) (Uint64 '0)))))
+          (let yqstellamatchcond (And (Exists yqstellamatchint:17:7:0) (Bool 'true)))
+          (let yqstellamatchint:17:7:0 (Unwrap yqstellamatchint:17:7:0))
+          (return (If yqstellamatchcond (Just b) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let a0
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (!= x (Uint64 '0)) (-MayWarn x (Uint64 '1))))))
+          (let yqstellamatchcond (And (Exists a0) (Bool 'true)))
+          (let a0 (Unwrap a0))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (+ (Apply add_acc a0 b) (Uint64 '1)))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let pair_tag (lambda '(n) (block '(
+    (let yqstellamatchexpr '(n (+ (Uint64 '0) (Uint64 '1))))
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let k (Nth yqstellamatcharg '1))
+          (let yqstellamatchint:24:9:0
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (== x (Uint64 '0)) (Uint64 '0)))))
+          (let yqstellamatchcond (And (Exists k) (And (Exists yqstellamatchint:24:9:0) (Bool 'true))))
+          (let k (Unwrap k))
+          (let yqstellamatchint:24:9:0 (Unwrap yqstellamatchint:24:9:0))
+          (return (If yqstellamatchcond (Just (Uint64 '1)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let k2 (Nth yqstellamatcharg '1))
+          (let m
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (!= x (Uint64 '0)) (-MayWarn x (Uint64 '1))))))
+          (let yqstellamatchcond (And (Exists k2) (And (Exists m) (Bool 'true))))
+          (let k2 (Unwrap k2))
+          (let m (Unwrap m))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1)))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let main (lambda '(n) (Apply add_acc (Apply pair_tag n) n)))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

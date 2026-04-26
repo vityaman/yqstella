@@ -10,12 +10,12 @@ extend with
   #type-ascriptions,
   #structural-patterns;
 
-// Structural match on Nat (Peano) plus one tuple-of-nat pattern. YQL unsupported for #structural-patterns.
+// Structural match on Nat (Peano) plus one tuple-of-nat pattern.
 
 fn add_acc(a : Nat, b : Nat) -> Nat {
   return match (a) {
       0 => b
-    | succ(a0) => succ(add_acc(a0, b))
+    | succ(a0) => succ(add_acc(a0, b)) // recursion
   }
 }
 

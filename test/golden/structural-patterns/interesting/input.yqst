@@ -1,0 +1,116 @@
+language core;
+
+extend with
+  #structural-patterns,
+  #natural-literals,
+  #arithmetic-operators,
+  #type-aliases,
+  #unit-type,
+  #tuples,
+  #records,
+  #sum-types,
+  #variants
+;
+
+type   InputVariant = <| a : Nat, b : Bool |>
+type  OutputVariant = Nat
+fn     TestVariant(n : InputVariant) -> OutputVariant {
+  return match (n) {
+      <| a = a |> => 1
+    | <| b = b |> => 2
+  }
+}
+
+type  InputSum = Nat + Bool
+type OutputSum = Nat
+fn     TestSum(n : InputSum) -> OutputSum {
+  return match (n) {
+      inl(n) => 1
+    | inr(b) => 2
+  }
+}
+
+type  InputTuple = { Nat, Nat }
+type OutputTuple = Nat
+fn     TestTuple(n : InputTuple) -> OutputTuple {
+  return match (n) { { n, m } => n + m }
+}
+
+type  InputRecord = { a : Nat, b :Nat }
+type OutputRecord = Nat
+fn     TestRecord(n : InputRecord) -> OutputRecord {
+  return match (n) { { a = a, b = b } => a + b }
+}
+
+type  InputBool = Bool
+type OutputBool = Nat
+fn     TestBool(n : InputBool) -> OutputBool {
+  return match (n) {
+      false => 0
+    | true => 1
+  }
+}
+
+type  InputUnit = Unit
+type OutputUnit = Unit
+fn     TestUnit(n : InputUnit) -> OutputUnit {
+  return match (n) {
+    unit => unit
+  }
+}
+
+type  InputSucc = Nat
+type OutputSucc = Nat
+fn     TestSucc(n : InputSucc) -> OutputSucc {
+  return match (n) {
+      succ(succ(n)) => 2 + n
+    | succ(n)       => 1 + 0
+    | 0             => 0 + 0
+  }
+}
+
+type  InputInt = Nat
+type OutputInt = Nat
+fn     TestInt(n : InputInt) -> OutputInt {
+  return match (n) {
+      0 => 0
+    | 1 => 1
+    | 2 => 2
+    | n => n
+  }
+}
+
+type Input = {
+  IVariant : InputVariant,
+  ISum     : InputSum,
+  ITuple   : InputTuple,
+  IRecord  : InputRecord,
+  IBool    : InputBool,
+  IUnit    : InputUnit,
+  ISucc    : InputSucc,
+  IInt     : InputInt
+}
+
+type Output = {
+  OVariant : OutputVariant,
+  OSum     : OutputSum,
+  OTuple   : OutputTuple,
+  ORecord  : OutputRecord,
+  OBool    : OutputBool,
+  OUnit    : OutputUnit,
+  OSucc    : OutputSucc,
+  OInt     : OutputInt
+}
+
+fn main(input : Input) -> Output {
+  return {
+    OVariant = TestVariant(input.IVariant),
+    OSum     = TestSum(input.ISum),
+    OTuple   = TestTuple(input.ITuple),
+    ORecord  = TestRecord(input.IRecord),
+    OBool    = TestBool(input.IBool),
+    OUnit    = TestUnit(input.IUnit),
+    OSucc    = TestSucc(input.ISucc),
+    OInt     = TestInt(input.IInt)
+  }
+}

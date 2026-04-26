@@ -5,6 +5,7 @@ import Control.Monad.Writer (runWriter)
 import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
 import qualified Data.Set as Set
 import Diagnostic.Core (Diagnostic, notImplemented)
 import Diagnostic.Position (Position, unknown)
@@ -12,6 +13,7 @@ import Extension.Activation (enabledExtensions)
 import Extension.Core (Extension (..), extensionName)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
+import qualified Type.Core as Type
 import Type.Env (typeOf)
 import YQL.AST (Node (..))
 
@@ -48,8 +50,10 @@ instance YQLTranslatable AST.Program' where
       mainparams' (AST.DeclFun _ _ (AST.StellaIdent "main") paramdecls _ _ _ _) = [paramdecls]
       mainparams' _ = []
 
-      declare (AST.AParamDecl _ (AST.StellaIdent name') t) = do
-        t' <- toYQL t
+      declare :: AST.ParamDecl' (Position, Maybe Type) -> Either Diagnostic Node
+      declare (AST.AParamDecl (_, t'') (AST.StellaIdent name') _) = do
+        let t''' = fmap (const (unknown, Nothing)) . Type.toAST <$> t''
+        t' <- toYQL $ fromMaybe (error "expected a paramdecl type") t'''
         return $ Y [A "declare", A $ "__" ++ name' ++ "__", t']
 
       toMainArg (AST.AParamDecl _ (AST.StellaIdent name') _) = do
@@ -240,6 +244,10 @@ instance YQLTranslatable AST.Expr' where
   toYQL x = Left $ unsupported x "AST.Expr'"
 
 instance YQLTranslatable AST.Type' where
+  toYQL (AST.TypeFun _ argts returnts) = do
+    argts' <- mapM toYQL argts
+    returnt' <- toYQL returnts
+    Right $ Y [A "CallableType", Q $ Y [], Q $ Y [returnt'], Q $ Y argts']
   toYQL (AST.TypeSum _ inl inr) = do
     inl' <- toYQL inl
     inr' <- toYQL inr
@@ -254,7 +262,7 @@ instance YQLTranslatable AST.Type' where
         ]
   toYQL (AST.TypeTuple _ ts) = do
     ts' <- mapM toYQL ts
-    Right $ Y [A "TupleType", Y ts']
+    Right $ Y $ A "TupleType" : ts'
   toYQL (AST.TypeRecord _ fields) = do
     fields' <- mapM toYQL' fields
     Right $ Y $ A "StructType" : fields'
@@ -309,6 +317,9 @@ recipes (AST.PatternVariant _ (AST.StellaIdent tag) (AST.SomePatternData _ patte
   recipes'' <- recipes pattern''
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A tag]) recipes''
   return recipes'
+recipes (AST.PatternVariant p (AST.StellaIdent tag) (AST.NoPatternData p')) = do
+  let pattern'' = AST.PatternUnit p'
+  recipes (AST.PatternVariant p (AST.StellaIdent tag) (AST.SomePatternData p' pattern''))
 recipes (AST.PatternInl _ pattern'') = do
   recipes'' <- recipes pattern''
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inl"]) recipes''
@@ -316,6 +327,57 @@ recipes (AST.PatternInl _ pattern'') = do
 recipes (AST.PatternInr _ pattern'') = do
   recipes'' <- recipes pattern''
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inr"]) recipes''
+  return recipes'
+recipes (AST.PatternTuple _ patterns'') = do
+  recipes'' <- zip [0 ..] <$> mapM recipes patterns''
+
+  let recipesF :: Integer -> (Node -> Node) -> Node -> Node
+      recipesF i f x = f $ Y [A "Nth", x, Q $ A $ show i]
+
+      recipesM :: Integer -> Map String (Node -> Node) -> Map String (Node -> Node)
+      recipesM i = fmap (recipesF i)
+
+  return $ Map.unions $ fmap (uncurry recipesM) recipes''
+recipes (AST.PatternRecord _ patterns'') = do
+  let recipesP (AST.ALabelledPattern _ (AST.StellaIdent name) pattern') = do
+        recipes' <- recipes pattern'
+        return (name, recipes')
+
+  recipes'' <- mapM recipesP patterns''
+
+  let recipesF :: String -> (Node -> Node) -> Node -> Node
+      recipesF i f x = f $ Y [A "Member", x, Q $ A $ show i]
+
+      recipesM :: String -> Map String (Node -> Node) -> Map String (Node -> Node)
+      recipesM i = fmap (recipesF i)
+
+  return $ Map.unions $ fmap (uncurry recipesM) recipes''
+recipes (AST.PatternFalse (p, t)) = do
+  false <- toYQL (AST.ConstFalse (p, t))
+  let f x = Y [A "OptionalIf", Y [A "Not", x], false]
+  let name = "yqstellamatchfalse:" ++ show p
+  return $ Map.singleton name f
+recipes (AST.PatternTrue (p, t)) = do
+  true <- toYQL (AST.ConstTrue (p, t))
+  let f x = Y [A "OptionalIf", x, true]
+  let name = "yqstellamatchtrue:" ++ show p
+  return $ Map.singleton name f
+recipes (AST.PatternUnit (p, _)) = do
+  let name = "yqstellamatchunit:" ++ show p
+  return $ Map.singleton name id
+recipes (AST.PatternInt (p, t) n) = do
+  int <- toYQL (AST.ConstInt (p, t) n)
+  let core = Y [A "OptionalIf", Y [A "==", A "x", int], int]
+      f x = mapcoerce' x $ Y [A "lambda", Q $ Y [A "x"], core]
+      name = "yqstellamatchint:" ++ show p ++ ":" ++ show n
+  return $ Map.singleton name f
+recipes (AST.PatternSucc (p, t) pattern'') = do
+  recipes'' <- recipes pattern''
+  zero <- toYQL (AST.ConstInt (p, t) 0)
+  one <- toYQL (AST.ConstInt (p, t) 1)
+  let core = Y [A "OptionalIf", Y [A "!=", A "x", zero], Y [A "-MayWarn", A "x", one]]
+      wrap f x = f $ mapcoerce' x $ Y [A "lambda", Q $ Y [A "x"], core]
+      recipes' = fmap wrap recipes''
   return recipes'
 recipes (AST.PatternVar _ (AST.StellaIdent name)) =
   Right $ Map.singleton name id
@@ -328,6 +390,7 @@ checkExtensions extensions = case findUnsupported extensions of
   Just e -> Left $ unsupported' unknown ("Extension " ++ extensionName e)
   where
     isSupportedExtension :: Extension -> Bool
+    isSupportedExtension StructuralPatterns = True
     isSupportedExtension TypeAliases = True
     isSupportedExtension UnitType = True
     isSupportedExtension Pairs = True
@@ -359,6 +422,17 @@ unsupported' p reason =
   let message = "YQL translation unsupported: " ++ reason
    in notImplemented p message
 
+mapcoerce' :: Node -> Node -> Node
+mapcoerce' x f = Y [A "Apply", Y [A "lambda", Q $ Y [A "x", A "f"], body], x, f]
+  where
+    lambdaX x' = Y [A "lambda", Q $ Y [A "x"], x']
+    apply = Y [A "Apply", A "f", A "x"]
+    body =
+      Y $
+        [A "MatchType", A "x"]
+          ++ [Q $ A "Optional", lambdaX $ Y [A "FlatMap", A "x", lambdaX apply]]
+          ++ [{-             -} lambdaX {-                        -} apply]
+
 prelude :: String -> [Node]
 prelude provider =
   let print' = Y [A "let", A "print", Y [A "lambda", Q $ Y [A "world", A "rows"], Y [A "block", Q $ Y stmts]]]
@@ -369,5 +443,4 @@ prelude provider =
               Y [A "let", A "world", Y [A "ResFill!", A "world", A "sink", Y [A "Key"], A "rows", A "options", Q $ A provider]],
               Y [A "return", Y [A "Commit!", A "world", A "sink"]]
             ]
-   in [ print'
-      ]
+   in [print']
