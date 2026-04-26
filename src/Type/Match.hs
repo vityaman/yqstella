@@ -118,8 +118,8 @@ checkType t@(Type (AST.TypeBool _)) (AST.PatternTrue p) =
   Right (AST.PatternTrue (p, t))
 checkType t@(Type (AST.TypeUnit _)) (AST.PatternUnit p) =
   Right (AST.PatternUnit (p, t))
-checkType t@(Type (AST.TypeNat _)) (AST.PatternInt p 0) =
-  Right (AST.PatternInt (p, t) 0)
+checkType t@(Type (AST.TypeNat _)) (AST.PatternInt p n) =
+  Right (AST.PatternInt (p, t) n)
 checkType t@(Type (AST.TypeNat _)) (AST.PatternSucc p pattern') = do
   pattern'' <- checkType t pattern'
   Right (AST.PatternSucc (p, t) pattern'')
@@ -337,8 +337,11 @@ normalizeP (AST.PatternTrue p) =
   AST.PatternTrue p
 normalizeP (AST.PatternUnit p) =
   AST.PatternUnit p
-normalizeP (AST.PatternInt p n) =
-  AST.PatternInt p n
+normalizeP (AST.PatternInt p n)
+  | 0 <= n =
+      iterate (AST.PatternSucc p) (AST.PatternInt p 0) !! fromInteger n
+  | otherwise =
+      AST.PatternInt p n
 normalizeP (AST.PatternSucc p pattern'') =
   let pattern' = normalizeP pattern''
    in AST.PatternSucc p pattern'

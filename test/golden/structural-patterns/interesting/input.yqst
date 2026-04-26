@@ -49,28 +49,42 @@ fn     TestSucc(n : InputSucc) -> OutputSucc {
   }
 }
 
+type  InputInt = Nat
+type OutputInt = Nat
+fn     TestInt(n : InputInt) -> OutputInt {
+  return match (n) {
+      0 => 0
+    | 1 => 1
+    | 2 => 2
+    | n => n
+  }
+}
+
 type Input = {
-  ITupleSum : InputTupleSum,
-  IRecordSum : InputRecordSum,
-  IBool : InputBool,
-  IUnit : InputUnit,
-  ISucc : InputSucc
+  ITupleSum   : InputTupleSum,
+  IRecordSum  : InputRecordSum,
+  IBool       : InputBool,
+  IUnit       : InputUnit,
+  ISucc       : InputSucc,
+  IInt        : InputInt
 }
 
 type Output = {
-  OTupleSum : OutputTupleSum,
-  ORecordSum : OutputRecordSum,
-  OBool : OutputBool,
-  OUnit : OutputUnit,
-  OSucc : OutputSucc
+  OTupleSum   : OutputTupleSum,
+  ORecordSum  : OutputRecordSum,
+  OBool       : OutputBool,
+  OUnit       : OutputUnit,
+  OSucc       : OutputSucc,
+  OInt        : OutputInt
 }
 
 fn main(input : Input) -> Output {
   return {
-    OTupleSum = TestTupleSum(input.ITupleSum),
-    ORecordSum = TestRecordSum(input.IRecordSum),
-    OBool = TestBool(input.IBool),
-    OUnit = TestUnit(input.IUnit),
-    OSucc = TestSucc(input.ISucc)
+    OTupleSum   = TestTupleSum(input.ITupleSum),
+    ORecordSum  = TestRecordSum(input.IRecordSum),
+    OBool       = TestBool(input.IBool),
+    OUnit       = TestUnit(input.IUnit),
+    OSucc       = TestSucc(input.ISucc),
+    OInt        = TestInt(input.IInt)
   }
 }
