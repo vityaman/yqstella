@@ -1,0 +1,12 @@
+test/golden/logical-operators/wrong/input.yqst:8:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return a and b
+           ^
+test/golden/logical-operators/wrong/input.yqst:12:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return a or b
+                ^
+test/golden/logical-operators/wrong/input.yqst:16:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return not(a)
+               ^

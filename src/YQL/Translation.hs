@@ -224,6 +224,17 @@ instance YQLTranslatable AST.Expr' where
     return $ Y [A "Uint64", Q (A $ show n)]
   toYQL (AST.ConstUnit _) = do
     return $ Y [A "Void"]
+  toYQL (AST.LogicOr _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "Or", lhs', rhs']
+  toYQL (AST.LogicAnd _ lhs rhs) = do
+    lhs' <- toYQL lhs
+    rhs' <- toYQL rhs
+    return $ Y [A "And", lhs', rhs']
+  toYQL (AST.LogicNot _ expr) = do
+    expr' <- toYQL expr
+    return $ Y [A "Not", expr']
   toYQL (AST.Var _ (AST.StellaIdent name)) = do
     return $ A name
   toYQL x = Left $ unsupported x "AST.Expr'"
@@ -334,6 +345,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension NaturalLiterals = True
     isSupportedExtension ArithmeticOperators = True
     isSupportedExtension ComparisonOperations = True
+    isSupportedExtension LogicalOperators = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension

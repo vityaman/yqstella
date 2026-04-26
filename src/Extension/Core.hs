@@ -16,6 +16,7 @@ data Extension
   | NaturalLiterals
   | ArithmeticOperators
   | ComparisonOperations
+  | LogicalOperators
   | NullaryFunctions
   | MultiparameterFunctions
   | CurriedMultiparameterFunctions
@@ -67,6 +68,7 @@ extensionNameMap =
       (NaturalLiterals, "#natural-literals"),
       (ArithmeticOperators, "#arithmetic-operators"),
       (ComparisonOperations, "#comparison-operators"),
+      (LogicalOperators, "#logical-operators"),
       (NullaryFunctions, "#nullary-functions"),
       (MultiparameterFunctions, "#multiparameter-functions"),
       (CurriedMultiparameterFunctions, "#curried-multiparameter-functions"),

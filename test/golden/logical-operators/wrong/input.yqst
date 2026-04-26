@@ -1,0 +1,21 @@
+language core;
+
+extend with
+  #logical-operators,
+  #multiparameter-functions;
+
+fn wrongAnd(a : Nat, b : Bool) -> Bool {
+  return a and b
+}
+
+fn wrongOr(a : Bool, b : Nat) -> Bool {
+  return a or b
+}
+
+fn wrongNot(a : Nat) -> Bool {
+  return not(a)
+}
+
+fn main(n : Bool) -> Bool {
+  return n
+}
