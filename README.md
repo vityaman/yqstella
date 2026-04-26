@@ -40,12 +40,14 @@ There are following questions under this project:
 | Extension                           | Status         |
 | ----------------------------------- | -------------- |
 | `core`                              | ✅ `READY`     |
-| `#structural-patterns`              | 🧪 `TYPECHECK` |
+| `#structural-patterns`              | 🧪 `READY`     |
 | `#let-bindings`                     | ✅ `READY`     |
 | `#let-patterns`                     | ⏳ `TBD`       |
 | `#let-many-bindings`                | ⏳ `TBD`       |
 | `#letrec-bindings`                  | ⏳ `TBD`       |
+| `#fixpoint-combinator`              | 🧪 `TYPECHECK` |
 | `#nested-function-declarations`     | ✅ `READY`     |
+| `#type-aliases`                     | ✅ `READY`     |
 | `#natural-literals`                 | ✅ `READY`     |
 | `#arithmetic-operators`             | ✅ `READY`     |
 | `#comparison-operators`             | ✅ `READY`     |
@@ -53,9 +55,6 @@ There are following questions under this project:
 | `#nullary-functions`                | ✅ `READY`     |
 | `#multiparameter-functions`         | ✅ `READY`     |
 | `#curried-multiparameter-functions` | ⏳ `TBD`       |
-| `#sequencing`                       | ⏳ `TBD`       |
-| `#type-ascriptions`                 | ✅ `READY`     |
-| `#type-aliases`                     | ✅ `READY`     |
 | `#unit-type`                        | ✅ `READY`     |
 | `#pairs`                            | ✅ `READY`     |
 | `#tuples`                           | ✅ `READY`     |
@@ -64,6 +63,9 @@ There are following questions under this project:
 | `#variants`                         | ✅ `READY`     |
 | `#nullary-variant-labels`           | ✅ `READY`     |
 | `#lists`                            | ✅ `READY`     |
+| `#type-ascriptions`                 | ✅ `READY`     |
+| `#pattern-ascriptions`              | ⏳ `TBD`       |
+| `#sequencing`                       | ⏳ `TBD`       |
 | `#references`                       | ⏳ `TBD`       |
 | `#exception-type-declaration`       | ⏳ `TBD`       |
 | `#open-variant-exceptions`          | ⏳ `TBD`       |
@@ -74,7 +76,6 @@ There are following questions under this project:
 | `#bottom-type`                      | ⏳ `TBD`       |
 | `#type-cast`                        | ⏳ `TBD`       |
 | `#universal-types`                  | ⏳ `TBD`       |
-| `#fixpoint-combinator`              | 🧪 `TYPECHECK` |
 | `#general-recursion`                | ⏳ `TBD`       |
 
 ## YQL Correspondence
