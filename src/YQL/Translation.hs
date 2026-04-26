@@ -417,8 +417,8 @@ unsupported' p reason =
   let message = "YQL translation unsupported: " ++ reason
    in notImplemented p message
 
-prelude :: String -> [Node]
-prelude provider =
+prelude :: [Extension] -> String -> [Node]
+prelude extensions provider =
   let print' = Y [A "let", A "print", Y [A "lambda", Q $ Y [A "world", A "rows"], Y [A "block", Q $ Y stmts]]]
         where
           stmts =
@@ -436,6 +436,4 @@ prelude provider =
               [A "MatchType", A "x"]
                 ++ [Q $ A "Optional", lambdaX $ Y [A "FlatMap", A "x", lambdaX apply]]
                 ++ [{-             -} lambdaX {-                        -} apply]
-   in [ print',
-        mapcoerce'
-      ]
+   in print' : [mapcoerce' | not $ null $ find (== StructuralPatterns) extensions]
