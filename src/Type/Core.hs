@@ -7,7 +7,6 @@ module Type.Core
     neqT,
     fn,
     list,
-    fromReturn,
   )
 where
 
@@ -106,7 +105,3 @@ fn args (Type returntype) = Type $ AST.TypeFun () (fmap toAST args) returntype
 
 list :: Type -> Type
 list (Type t) = Type $ AST.TypeList () t
-
-fromReturn :: AST.ReturnType' a -> Maybe Type
-fromReturn (AST.NoReturnType _) = Nothing
-fromReturn (AST.SomeReturnType _ t) = Just $ fromAST t

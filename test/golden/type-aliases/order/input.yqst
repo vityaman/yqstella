@@ -13,3 +13,8 @@ fn increment_twice(n : N) -> Nat {
 fn main(n : Nat) -> N {
   return increment_twice(n)
 }
+
+// Nikolai Kudasov has a bug.
+fn xfail(n : Nat) -> Bool {
+  return n
+}

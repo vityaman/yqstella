@@ -25,7 +25,6 @@ import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import Type.Env (TypeAnnotationEnv)
-import Debug.Trace
 
 data TypeKind = Expected | Inferred
 
@@ -59,7 +58,7 @@ sanitizeT (AST.TypeVariant _ fields) = do
   return $ Type $ AST.TypeVariant () (fmap void uniq)
 sanitizeT (AST.TypeVar _ (AST.StellaIdent name)) = do
   context <- get
-  case trace (show context) $ Context.typeWithAlias name context of
+  case Context.typeWithAlias name context of
     Just t -> return t
     Nothing -> return $ Type $ AST.TypeVar () (AST.StellaIdent name)
 sanitizeT t = pure $ Type $ void t

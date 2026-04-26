@@ -4,6 +4,7 @@
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
+  (let N (Void))
   (let increment_twice (lambda '(n) (+ (+ n (Uint64 '1)) (Uint64 '1))))
   (let main (lambda '(n) (Apply increment_twice n)))
   (declare __n__ (DataType 'Uint64))

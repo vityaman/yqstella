@@ -67,6 +67,8 @@ instance YQLTranslatable AST.Decl' where
             else Y [A "block", Q $ Y $ decls' ++ [Y [A "return", expr']]]
 
     return $ Y [A "let", A name, Y [A "lambda", Q (Y paramdecls'), body]]
+  toYQL (AST.DeclTypeAlias _ (AST.StellaIdent name) _) = do
+    return $ Y [A "let", A name, Y [A "Void"]]
   toYQL x = Left $ unsupported x "AST.Decl'"
 
 instance YQLTranslatable AST.ParamDecl' where
@@ -315,6 +317,7 @@ checkExtensions extensions = case findUnsupported extensions of
   Just e -> Left $ unsupported' unknown ("Extension " ++ extensionName e)
   where
     isSupportedExtension :: Extension -> Bool
+    isSupportedExtension TypeAliases = True
     isSupportedExtension UnitType = True
     isSupportedExtension Pairs = True
     isSupportedExtension Tuples = True

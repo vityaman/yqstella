@@ -72,7 +72,11 @@ instance TypeAnnotatable AST.Decl' where
       (AST.SomeThrowType _ _) -> tell [notImplemented p "DeclFun ThrowType"]
 
     decls' <- withStateTAE (const context') (mapM inferType decls)
-    expr' <- withStateTAE (const context') (annotateType (Type.fromReturn returntype) expr)
+    returnExpect <- case returntype of
+      AST.SomeReturnType _ t -> Just <$> sanitizeT t
+      AST.NoReturnType _ -> pure Nothing
+
+    expr' <- withStateTAE (const context') (annotateType returnExpect expr)
 
     argTypes <- mapM toPair paramdecls
 

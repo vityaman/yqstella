@@ -17,7 +17,6 @@ import Type.Core (Type (..))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, withStateTAE)
 import Type.Expectation (sanitizeT)
-import Debug.Trace
 
 withParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
 withParamDecls paramdecls context = do

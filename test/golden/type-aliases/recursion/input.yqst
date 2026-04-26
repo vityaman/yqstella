@@ -2,7 +2,8 @@ language core;
 
 extend with #type-aliases;
 
-type N = M
+// Nikolai Kudasov has a bug.
+type N = M -- ERROR_UNDEFINED_TYPE_VARIABLE
 type M = N
 
 fn increment_twice(n : N) -> Nat {
