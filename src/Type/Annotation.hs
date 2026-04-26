@@ -71,6 +71,13 @@ instance TypeAnnotatable AST.Decl' where
       (AST.NoThrowType _) -> pure ()
       (AST.SomeThrowType _ _) -> tell [notImplemented p "DeclFun ThrowType"]
 
+    let paramT :: AST.ParamDecl' Position -> AST.ParamDecl' (Position, Maybe Type)
+        paramT (AST.AParamDecl p' (AST.StellaIdent name) t) =
+          let t' = Context.typeOf name context'
+           in AST.AParamDecl (p', t') (AST.StellaIdent name) (stub t)
+
+    let paramdecls' = fmap paramT paramdecls
+
     decls' <- withStateTAE (const context') (mapM inferType decls)
     returnExpect <- case returntype of
       AST.SomeReturnType _ t -> Just <$> sanitizeTSilent t
@@ -87,7 +94,7 @@ instance TypeAnnotatable AST.Decl' where
           (p, t')
           (stubL annotations)
           stellaident
-          (stubL paramdecls)
+          paramdecls'
           (stub returntype)
           (stub throwtype)
           decls'

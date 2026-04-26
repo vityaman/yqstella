@@ -14,6 +14,8 @@ import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import Type.Env (typeOf)
 import YQL.AST (Node (..))
+import Data.Maybe (fromMaybe)
+import qualified Type.Core as Type
 
 class YQLTranslatable f where
   toYQL :: f (Position, Maybe Type) -> Either Diagnostic Node
@@ -48,8 +50,10 @@ instance YQLTranslatable AST.Program' where
       mainparams' (AST.DeclFun _ _ (AST.StellaIdent "main") paramdecls _ _ _ _) = [paramdecls]
       mainparams' _ = []
 
-      declare (AST.AParamDecl _ (AST.StellaIdent name') t) = do
-        t' <- toYQL t
+      declare :: AST.ParamDecl' (Position, Maybe Type) -> Either Diagnostic Node
+      declare (AST.AParamDecl (_, t'') (AST.StellaIdent name') _) = do
+        let t''' = fmap (const (unknown, Nothing)) . Type.toAST <$> t''
+        t' <- toYQL $ fromMaybe (error "expected a paramdecl type") t'''
         return $ Y [A "declare", A $ "__" ++ name' ++ "__", t']
 
       toMainArg (AST.AParamDecl _ (AST.StellaIdent name') _) = do
@@ -254,7 +258,7 @@ instance YQLTranslatable AST.Type' where
         ]
   toYQL (AST.TypeTuple _ ts) = do
     ts' <- mapM toYQL ts
-    Right $ Y [A "TupleType", Y ts']
+    Right $ Y $ A "TupleType" : ts'
   toYQL (AST.TypeRecord _ fields) = do
     fields' <- mapM toYQL' fields
     Right $ Y $ A "StructType" : fields'
@@ -317,6 +321,18 @@ recipes (AST.PatternInr _ pattern'') = do
   recipes'' <- recipes pattern''
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inr"]) recipes''
   return recipes'
+recipes (AST.PatternTuple _ patterns'') = do
+  recipes'' <- mapM recipes patterns''
+  let recipesF :: Integer -> (Node -> Node) -> Node -> Node
+      recipesF i f x = f $ Y [A "Nth", x, Q $ A $ show i]
+
+      recipesM :: Integer -> Map String (Node -> Node) -> Map String (Node -> Node)
+      recipesM i = fmap (recipesF i)
+
+      recipesI :: [(Integer, Map String (Node -> Node))]
+      recipesI = zip [0 ..] recipes''
+
+  return $ Map.unions $ fmap (uncurry recipesM) recipesI
 recipes (AST.PatternVar _ (AST.StellaIdent name)) =
   Right $ Map.singleton name id
 recipes x =
@@ -328,6 +344,7 @@ checkExtensions extensions = case findUnsupported extensions of
   Just e -> Left $ unsupported' unknown ("Extension " ++ extensionName e)
   where
     isSupportedExtension :: Extension -> Bool
+    isSupportedExtension StructuralPatterns = True
     isSupportedExtension TypeAliases = True
     isSupportedExtension UnitType = True
     isSupportedExtension Pairs = True
