@@ -50,7 +50,7 @@ There are following questions under this project:
 | `#natural-literals`                 | ✅ `READY`     |
 | `#arithmetic-operators`             | ✅ `READY`     |
 | `#comparison-operators`             | ✅ `READY`     |
-| `#logical-operators`                | ⏳ `TBD`       |
+| `#logical-operators`                | ✅ `READY`     |
 | `#nullary-functions`                | ✅ `READY`     |
 | `#multiparameter-functions`         | ✅ `READY`     |
 | `#curried-multiparameter-functions` | ⏳ `TBD`       |
