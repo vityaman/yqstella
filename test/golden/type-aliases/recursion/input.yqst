@@ -1,0 +1,15 @@
+language core;
+
+extend with #type-aliases;
+
+// Nikolai Kudasov has a bug.
+type N = M -- ERROR_UNDEFINED_TYPE_VARIABLE
+type M = N
+
+fn increment_twice(n : N) -> Nat {
+  return succ(succ(n))
+}
+
+fn main(n : Nat) -> N {
+  return increment_twice(n)
+}

@@ -9,39 +9,29 @@ extend with
   #records,
   #type-ascriptions,
   #unit-type,
-  #variants;
+  #variants,
+  #type-aliases;
 
 // Three-label expression: literal, pair sum, or boolean-guarded choice
-//   <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
+type Expr = <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
 
 fn mod2(n : Nat) -> Nat {
   return n - (n / 2) * 2
 }
 
-fn elit(
-  a : Nat
-) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+fn elit(a : Nat) -> Expr {
   return <| lit = a |>
 }
 
-fn eadd(
-  a : Nat,
-  b : Nat
-) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+fn eadd(a : Nat, b : Nat) -> Expr {
   return <| add = { x = a, y = b } |>
 }
 
-fn echs(
-  c : Bool,
-  t : Nat,
-  e : Nat
-) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+fn echs(c : Bool, t : Nat, e : Nat) -> Expr {
   return <| chs = { c = c, t = t, e = e } |>
 }
 
-fn eval(
-  e : <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
-) -> Nat {
+fn eval(e : Expr) -> Nat {
   return match (e) {
       <| lit = v |> => v
     | <| add = p |> => p.x + p.y
@@ -49,9 +39,7 @@ fn eval(
   }
 }
 
-fn is_choice(
-  e : <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
-) -> Bool {
+fn is_choice(e : Expr) -> Bool {
   return match (e) {
       <| lit = v |> => false
     | <| add = p |> => false
@@ -59,9 +47,7 @@ fn is_choice(
   }
 }
 
-fn weight(
-  e : <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |>
-) -> Nat {
+fn weight(e : Expr) -> Nat {
   return match (e) {
       <| lit = v |> => 1
     | <| add = p |> => 2 + p.x + p.y
@@ -69,10 +55,7 @@ fn weight(
   }
 }
 
-fn combine(
-  a : Nat,
-  b : Nat
-) -> <| lit : Nat, add : ({ x : Nat, y : Nat }), chs : ({ c : Bool, t : Nat, e : Nat }) |> {
+fn combine(a : Nat,b : Nat) -> Expr {
   return
     if a < b
       then eadd(a, b)

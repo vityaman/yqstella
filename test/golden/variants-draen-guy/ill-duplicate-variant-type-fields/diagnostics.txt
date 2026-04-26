@@ -2,11 +2,3 @@ test/golden/variants-draen-guy/ill-duplicate-variant-type-fields/input.yqst:5:40
 duplicate field: num
 > fn main(n : <| num : Nat, bool : Bool, num : Bool |>) -> Nat {
                                          ^
-test/golden/variants-draen-guy/ill-duplicate-variant-type-fields/input.yqst:5:40: [ERROR_DUPLICATE_VARIANT_TYPE_FIELDS]
-duplicate field: num
-> fn main(n : <| num : Nat, bool : Bool, num : Bool |>) -> Nat {
-                                         ^
-test/golden/variants-draen-guy/ill-duplicate-variant-type-fields/input.yqst:5:40: [ERROR_DUPLICATE_VARIANT_TYPE_FIELDS]
-duplicate field: num
-> fn main(n : <| num : Nat, bool : Bool, num : Bool |>) -> Nat {
-                                         ^

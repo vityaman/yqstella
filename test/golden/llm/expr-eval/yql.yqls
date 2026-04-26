@@ -4,6 +4,7 @@
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
+  (let Expr (Void))
   (let mod2 (lambda '(n)
     (If
       (< n (*MayWarn (Unwrap (/MayWarn n (Uint64 '2))) (Uint64 '2)))

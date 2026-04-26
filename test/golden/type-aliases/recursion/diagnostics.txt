@@ -1,0 +1,4 @@
+test/golden/type-aliases/recursion/input.yqst:6:12: [ERROR_SYNTAX]
+syntax error at line 6, column 12 before `-'
+> type N = M -- ERROR_UNDEFINED_TYPE_VARIABLE
+             ^

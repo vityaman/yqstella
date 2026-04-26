@@ -1,0 +1,4 @@
+test/golden/type-aliases/order/input.yqst:19:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return n
+           ^

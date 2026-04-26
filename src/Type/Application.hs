@@ -15,7 +15,7 @@ import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Decl (toPair, withParamDecls)
+import Type.Decl (toParamSilent, withParamDecls)
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
 import Type.Expectation (mismatch, mismatchSS)
 
@@ -30,12 +30,12 @@ annotateAbstractionType t p paramdecls expr annotateType = do
   let infer' expr'' = do
         context' <- get >>= withParamDecls paramdecls
         expr' <- withStateTAE (const context') (annotateType Nothing expr'')
-        argtypes <- Type.fn . fmap snd <$> mapM toPair paramdecls
+        argtypes <- Type.fn . fmap snd <$> mapM toParamSilent paramdecls
         return (fmap argtypes (typeOf expr'), expr')
 
   (t', expr') <- case t of
     Just t'@(Type (AST.TypeFun () argtypes returntype)) -> do
-      paramdecls' <- mapM toPair paramdecls
+      paramdecls' <- mapM toParamSilent paramdecls
 
       let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls'
           expected = fmap Type argtypes

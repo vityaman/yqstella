@@ -1,0 +1,13 @@
+language core;
+
+extend with #type-aliases;
+
+type N = Nat
+
+fn increment_twice(n : N) -> Nat {
+  return succ(succ(n))
+}
+
+fn main(n : Nat) -> N {
+  return increment_twice(n)
+}

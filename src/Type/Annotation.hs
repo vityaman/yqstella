@@ -4,7 +4,7 @@ module Type.Annotation (annotateType, inferType) where
 
 import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (unless, void)
+import Control.Monad (unless)
 import Control.Monad.State
 import Control.Monad.Writer
 import Data.Foldable (find)
@@ -16,9 +16,9 @@ import Type.Application (annotateAbstractionType, annotateApplicationType)
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Decl (toPair, withDecls, withParamDecls)
+import Type.Decl (toParamSilent, withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
-import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', listItemType, mismatchSS, sanitizeT)
+import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
 import Type.Match (annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
@@ -72,9 +72,13 @@ instance TypeAnnotatable AST.Decl' where
       (AST.SomeThrowType _ _) -> tell [notImplemented p "DeclFun ThrowType"]
 
     decls' <- withStateTAE (const context') (mapM inferType decls)
-    expr' <- withStateTAE (const context') (annotateType (Type.fromReturn returntype) expr)
+    returnExpect <- case returntype of
+      AST.SomeReturnType _ t -> Just <$> sanitizeTSilent t
+      AST.NoReturnType _ -> pure Nothing
 
-    argTypes <- mapM toPair paramdecls
+    expr' <- withStateTAE (const context') (annotateType returnExpect expr)
+
+    argTypes <- mapM toParamSilent paramdecls
 
     let t' = fmap (Type.fn $ fmap snd argTypes) (typeOf expr')
 
@@ -171,7 +175,7 @@ instance TypeAnnotatable AST.Expr' where
     (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.NotEqual (p, t') lhs' rhs')
   annotateType t (AST.TypeAsc p expr type_) = do
-    type'' <- Type . void <$> sanitizeT type_
+    type'' <- sanitizeT type_
     expr' <- checkType type'' expr
     t' <- liftType' p type'' t
     return (AST.TypeAsc (p, Just t') expr' (stub type_))
