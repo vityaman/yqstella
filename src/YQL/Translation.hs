@@ -363,7 +363,7 @@ recipes (AST.PatternUnit (p, _)) = do
 recipes (AST.PatternInt (p, t) n) = do
   int <- toYQL (AST.ConstInt (p, t) n)
   let core = Y [A "OptionalIf", Y [A "==", A "x", int], int]
-      f x = Y [A "Apply", A "mapcoerce", x, Y [A "lambda", Q $ Y [A "x"], core]]
+      f x = mapcoerce' x $ Y [A "lambda", Q $ Y [A "x"], core]
       name = "yqstellamatchint:" ++ show p ++ ":" ++ show n
   return $ Map.singleton name f
 recipes (AST.PatternSucc (p, t) pattern'') = do
@@ -371,7 +371,7 @@ recipes (AST.PatternSucc (p, t) pattern'') = do
   zero <- toYQL (AST.ConstInt (p, t) 0)
   one <- toYQL (AST.ConstInt (p, t) 1)
   let core = Y [A "OptionalIf", Y [A "!=", A "x", zero], Y [A "-MayWarn", A "x", one]]
-      wrap f x = f $ Y [A "Apply", A "mapcoerce", x, Y [A "lambda", Q $ Y [A "x"], core]]
+      wrap f x = f $ mapcoerce' x $ Y [A "lambda", Q $ Y [A "x"], core]
       recipes' = fmap wrap recipes''
   return recipes'
 recipes (AST.PatternVar _ (AST.StellaIdent name)) =
@@ -417,8 +417,19 @@ unsupported' p reason =
   let message = "YQL translation unsupported: " ++ reason
    in notImplemented p message
 
-prelude :: [Extension] -> String -> [Node]
-prelude extensions provider =
+mapcoerce' :: Node -> Node -> Node
+mapcoerce' x f = Y [A "Apply", Y [A "lambda", Q $ Y [A "x", A "f"], body], x, f]
+  where
+    lambdaX x' = Y [A "lambda", Q $ Y [A "x"], x']
+    apply = Y [A "Apply", A "f", A "x"]
+    body =
+      Y $
+        [A "MatchType", A "x"]
+          ++ [Q $ A "Optional", lambdaX $ Y [A "FlatMap", A "x", lambdaX apply]]
+          ++ [{-             -} lambdaX {-                        -} apply]
+
+prelude :: String -> [Node]
+prelude provider =
   let print' = Y [A "let", A "print", Y [A "lambda", Q $ Y [A "world", A "rows"], Y [A "block", Q $ Y stmts]]]
         where
           stmts =
@@ -427,13 +438,4 @@ prelude extensions provider =
               Y [A "let", A "world", Y [A "ResFill!", A "world", A "sink", Y [A "Key"], A "rows", A "options", Q $ A provider]],
               Y [A "return", Y [A "Commit!", A "world", A "sink"]]
             ]
-      mapcoerce' = Y [A "let", A "mapcoerce", Y [A "lambda", Q $ Y [A "x", A "f"], body]]
-        where
-          lambdaX x = Y [A "lambda", Q $ Y [A "x"], x]
-          apply = Y [A "Apply", A "f", A "x"]
-          body =
-            Y $
-              [A "MatchType", A "x"]
-                ++ [Q $ A "Optional", lambdaX $ Y [A "FlatMap", A "x", lambdaX apply]]
-                ++ [{-             -} lambdaX {-                        -} apply]
-   in print' : [mapcoerce' | not $ null $ find (== StructuralPatterns) extensions]
+   in [print']
