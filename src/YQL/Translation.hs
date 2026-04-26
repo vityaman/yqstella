@@ -1,5 +1,3 @@
-{-# LANGUAGE TupleSections #-}
-
 module YQL.Translation (toYQL) where
 
 import Annotation (Annotated (annotation))
