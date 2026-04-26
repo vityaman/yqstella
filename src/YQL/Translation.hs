@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module YQL.Translation (toYQL) where
 
 import Annotation (Annotated (annotation))
@@ -5,6 +7,7 @@ import Control.Monad.Writer (runWriter)
 import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
 import qualified Data.Set as Set
 import Diagnostic.Core (Diagnostic, notImplemented)
 import Diagnostic.Position (Position, unknown)
@@ -12,10 +15,9 @@ import Extension.Activation (enabledExtensions)
 import Extension.Core (Extension (..), extensionName)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
+import qualified Type.Core as Type
 import Type.Env (typeOf)
 import YQL.AST (Node (..))
-import Data.Maybe (fromMaybe)
-import qualified Type.Core as Type
 
 class YQLTranslatable f where
   toYQL :: f (Position, Maybe Type) -> Either Diagnostic Node
@@ -322,17 +324,29 @@ recipes (AST.PatternInr _ pattern'') = do
   let recipes' = fmap (\f x -> f $ Y [A "Guess", x, Q $ A "inr"]) recipes''
   return recipes'
 recipes (AST.PatternTuple _ patterns'') = do
-  recipes'' <- mapM recipes patterns''
+  recipes'' <- zip [0 ..] <$> mapM recipes patterns''
+
   let recipesF :: Integer -> (Node -> Node) -> Node -> Node
       recipesF i f x = f $ Y [A "Nth", x, Q $ A $ show i]
 
       recipesM :: Integer -> Map String (Node -> Node) -> Map String (Node -> Node)
       recipesM i = fmap (recipesF i)
 
-      recipesI :: [(Integer, Map String (Node -> Node))]
-      recipesI = zip [0 ..] recipes''
+  return $ Map.unions $ fmap (uncurry recipesM) recipes''
+recipes (AST.PatternRecord _ patterns'') = do
+  let recipesP (AST.ALabelledPattern _ (AST.StellaIdent name) pattern') = do
+        recipes' <- recipes pattern'
+        return (name, recipes')
 
-  return $ Map.unions $ fmap (uncurry recipesM) recipesI
+  recipes'' <- mapM recipesP patterns''
+
+  let recipesF :: String -> (Node -> Node) -> Node -> Node
+      recipesF i f x = f $ Y [A "Member", x, Q $ A $ show i]
+
+      recipesM :: String -> Map String (Node -> Node) -> Map String (Node -> Node)
+      recipesM i = fmap (recipesF i)
+
+  return $ Map.unions $ fmap (uncurry recipesM) recipes''
 recipes (AST.PatternVar _ (AST.StellaIdent name)) =
   Right $ Map.singleton name id
 recipes x =

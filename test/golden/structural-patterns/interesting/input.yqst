@@ -11,20 +11,29 @@ extend with
 
 type  InputTupleSum = { Nat, Nat }
 type OutputTupleSum = Nat
-fn TestTupleSum(n : InputTupleSum) -> OutputTupleSum {
+fn     TestTupleSum(n : InputTupleSum) -> OutputTupleSum {
   return match (n) { { n, m } => n + m }
 }
 
+type  InputRecordSum = { a : Nat, b :Nat }
+type OutputRecordSum = Nat
+fn     TestRecordSum(n : InputRecordSum) -> OutputRecordSum {
+  return match (n) { { a = a, b = b } => a + b }
+}
+
 type Input = {
-  TupleSum : InputTupleSum
+  TupleSum : InputTupleSum,
+  RecordSum : InputRecordSum
 }
 
 type Output = {
-  TupleSum : OutputTupleSum
+  TupleSum : OutputTupleSum,
+  RecordSum : OutputRecordSum
 }
 
 fn main(input : Input) -> Output {
   return {
-    TupleSum = TestTupleSum(input.TupleSum)
+    TupleSum = TestTupleSum(input.TupleSum),
+    RecordSum = TestRecordSum(input.RecordSum)
   }
 }

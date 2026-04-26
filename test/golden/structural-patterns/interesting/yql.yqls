@@ -19,10 +19,32 @@
           (return (If yqstellamatchcond (Just (+MayWarn n m)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (return (Unwrap (Coalesce yqstellamatchbr0)))))))
+  (let InputRecordSum (Void))
+  (let OutputRecordSum (Void))
+  (let TestRecordSum (lambda '(n) (block '(
+    (let yqstellamatchexpr n)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let a (Member yqstellamatcharg '"a"))
+          (let b (Member yqstellamatcharg '"b"))
+          (let yqstellamatchcond (And (Exists a) (And (Exists b) (Bool 'true))))
+          (let a (Unwrap a))
+          (let b (Unwrap b))
+          (return (If yqstellamatchcond (Just (+MayWarn a b)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0)))))))
   (let Input (Void))
   (let Output (Void))
-  (let main (lambda '(input) (AsStruct '('TupleSum (Apply TestTupleSum (Member input 'TupleSum))))))
-  (declare __input__ (StructType '('TupleSum (TupleType (DataType 'Uint64) (DataType 'Uint64)))))
+  (let main (lambda '(input)
+    (AsStruct
+      '('TupleSum (Apply TestTupleSum (Member input 'TupleSum)))
+      '('RecordSum (Apply TestRecordSum (Member input 'RecordSum))))))
+  (declare
+    __input__
+    (StructType
+      '('TupleSum (TupleType (DataType 'Uint64) (DataType 'Uint64)))
+      '('RecordSum (StructType '('a (DataType 'Uint64)) '('b (DataType 'Uint64))))))
   (let result (Apply main __input__))
   (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)

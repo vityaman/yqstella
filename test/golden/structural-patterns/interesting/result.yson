@@ -13,6 +13,13 @@
                                     "StructType";
                                     [
                                         [
+                                            "RecordSum";
+                                            [
+                                                "DataType";
+                                                "Uint64"
+                                            ]
+                                        ];
+                                        [
                                             "TupleSum";
                                             [
                                                 "DataType";
@@ -28,7 +35,8 @@
                 "Data" = [
                     [
                         [
-                            "12"
+                            "3";
+                            "7"
                         ]
                     ]
                 ]
