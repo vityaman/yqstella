@@ -4,6 +4,12 @@
     (let options '('('type) '('autoref) '('unordered)))
     (let world (ResFill! world sink (Key) rows options 'pure))
     (return (Commit! world sink))))))
+  (let mapcoerce (lambda '(x f)
+    (MatchType
+      x
+      'Optional
+      (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+      (lambda '(x) (Apply f x)))))
   (let InputTupleSum (Void))
   (let OutputTupleSum (Void))
   (let TestTupleSum (lambda '(n) (block '(
@@ -34,17 +40,107 @@
           (return (If yqstellamatchcond (Just (+MayWarn a b)) (Nothing (OptionalType (DataType 'Uint64))))))))
         yqstellamatchexpr))
     (return (Unwrap (Coalesce yqstellamatchbr0)))))))
+  (let InputBool (Void))
+  (let OutputBool (Void))
+  (let TestBool (lambda '(n) (block '(
+    (let yqstellamatchexpr n)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchfalse:29:7 (OptionalIf (Not yqstellamatcharg) (Bool 'false)))
+          (let yqstellamatchcond (And (Exists yqstellamatchfalse:29:7) (Bool 'true)))
+          (let yqstellamatchfalse:29:7 (Unwrap yqstellamatchfalse:29:7))
+          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchtrue:30:7 (OptionalIf yqstellamatcharg (Bool 'true)))
+          (let yqstellamatchcond (And (Exists yqstellamatchtrue:30:7) (Bool 'true)))
+          (let yqstellamatchtrue:30:7 (Unwrap yqstellamatchtrue:30:7))
+          (return (If yqstellamatchcond (Just (Uint64 '1)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let InputUnit (Void))
+  (let OutputUnit (Void))
+  (let TestUnit (lambda '(n) (block '(
+    (let yqstellamatchexpr n)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchunit:38:5 yqstellamatcharg)
+          (let yqstellamatchcond (And (Exists yqstellamatchunit:38:5) (Bool 'true)))
+          (let yqstellamatchunit:38:5 (Unwrap yqstellamatchunit:38:5))
+          (return (If yqstellamatchcond (Just (Void)) (Nothing (OptionalType (VoidType))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0)))))))
+  (let InputSucc (Void))
+  (let OutputSucc (Void))
+  (let TestSucc (lambda '(n) (block '(
+    (let yqstellamatchexpr n)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let n
+            (Apply
+              mapcoerce
+              (Apply
+                mapcoerce
+                yqstellamatcharg
+                (lambda '(x) (OptionalIf (!= x (Uint64 '0)) (-MayWarn x (Uint64 '1)))))
+              (lambda '(x) (OptionalIf (!= x (Uint64 '0)) (-MayWarn x (Uint64 '1))))))
+          (let yqstellamatchcond (And (Exists n) (Bool 'true)))
+          (let n (Unwrap n))
+          (return
+            (If yqstellamatchcond (Just (+MayWarn (Uint64 '2) n)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let n
+            (Apply
+              mapcoerce
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (!= x (Uint64 '0)) (-MayWarn x (Uint64 '1))))))
+          (let yqstellamatchcond (And (Exists n) (Bool 'true)))
+          (let n (Unwrap n))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (+MayWarn (Uint64 '1) (Uint64 '0)))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr2
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchint:48:7:0
+            (Apply mapcoerce yqstellamatcharg (lambda '(x) (OptionalIf (== x (Uint64 '0)) (Uint64 '0)))))
+          (let yqstellamatchcond (And (Exists yqstellamatchint:48:7:0) (Bool 'true)))
+          (let yqstellamatchint:48:7:0 (Unwrap yqstellamatchint:48:7:0))
+          (return
+            (If
+              yqstellamatchcond
+              (Just (+MayWarn (Uint64 '0) (Uint64 '0)))
+              (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2)))))))
   (let Input (Void))
   (let Output (Void))
   (let main (lambda '(input)
     (AsStruct
-      '('TupleSum (Apply TestTupleSum (Member input 'TupleSum)))
-      '('RecordSum (Apply TestRecordSum (Member input 'RecordSum))))))
+      '('OTupleSum (Apply TestTupleSum (Member input 'ITupleSum)))
+      '('ORecordSum (Apply TestRecordSum (Member input 'IRecordSum)))
+      '('OBool (Apply TestBool (Member input 'IBool)))
+      '('OUnit (Apply TestUnit (Member input 'IUnit)))
+      '('OSucc (Apply TestSucc (Member input 'ISucc))))))
   (declare
     __input__
     (StructType
-      '('TupleSum (TupleType (DataType 'Uint64) (DataType 'Uint64)))
-      '('RecordSum (StructType '('a (DataType 'Uint64)) '('b (DataType 'Uint64))))))
+      '('ITupleSum (TupleType (DataType 'Uint64) (DataType 'Uint64)))
+      '('IRecordSum (StructType '('a (DataType 'Uint64)) '('b (DataType 'Uint64))))
+      '('IBool (DataType 'Bool))
+      '('IUnit (VoidType))
+      '('ISucc (DataType 'Uint64))))
   (let result (Apply main __input__))
   (let world (Apply print world (AsList (AsStruct '('result result)))))
   (return world)

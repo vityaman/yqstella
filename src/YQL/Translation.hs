@@ -347,6 +347,33 @@ recipes (AST.PatternRecord _ patterns'') = do
       recipesM i = fmap (recipesF i)
 
   return $ Map.unions $ fmap (uncurry recipesM) recipes''
+recipes (AST.PatternFalse (p, t)) = do
+  false <- toYQL (AST.ConstFalse (p, t))
+  let f x = Y [A "OptionalIf", Y [A "Not", x], false]
+  let name = "yqstellamatchfalse:" ++ show p
+  return $ Map.singleton name f
+recipes (AST.PatternTrue (p, t)) = do
+  true <- toYQL (AST.ConstTrue (p, t))
+  let f x = Y [A "OptionalIf", x, true]
+  let name = "yqstellamatchtrue:" ++ show p
+  return $ Map.singleton name f
+recipes (AST.PatternUnit (p, _)) = do
+  let name = "yqstellamatchunit:" ++ show p
+  return $ Map.singleton name id
+recipes (AST.PatternInt (p, t) n) = do
+  int <- toYQL (AST.ConstInt (p, t) n)
+  let core = Y [A "OptionalIf", Y [A "==", A "x", int], int]
+      f x = Y [A "Apply", A "mapcoerce", x, Y [A "lambda", Q $ Y [A "x"], core]]
+      name = "yqstellamatchint:" ++ show p ++ ":" ++ show n
+  return $ Map.singleton name f
+recipes (AST.PatternSucc (p, t) pattern'') = do
+  recipes'' <- recipes pattern''
+  zero <- toYQL (AST.ConstInt (p, t) 0)
+  one <- toYQL (AST.ConstInt (p, t) 1)
+  let core = Y [A "OptionalIf", Y [A "!=", A "x", zero], Y [A "-MayWarn", A "x", one]]
+      wrap f x = f $ Y [A "Apply", A "mapcoerce", x, Y [A "lambda", Q $ Y [A "x"], core]]
+      recipes' = fmap wrap recipes''
+  return recipes'
 recipes (AST.PatternVar _ (AST.StellaIdent name)) =
   Right $ Map.singleton name id
 recipes x =
@@ -400,5 +427,15 @@ prelude provider =
               Y [A "let", A "world", Y [A "ResFill!", A "world", A "sink", Y [A "Key"], A "rows", A "options", Q $ A provider]],
               Y [A "return", Y [A "Commit!", A "world", A "sink"]]
             ]
-   in [ print'
+      mapcoerce' = Y [A "let", A "mapcoerce", Y [A "lambda", Q $ Y [A "x", A "f"], body]]
+        where
+          lambdaX x = Y [A "lambda", Q $ Y [A "x"], x]
+          apply = Y [A "Apply", A "f", A "x"]
+          body =
+            Y $
+              [A "MatchType", A "x"]
+                ++ [Q $ A "Optional", lambdaX $ Y [A "FlatMap", A "x", lambdaX apply]]
+                ++ [{-             -} lambdaX {-                        -} apply]
+   in [ print',
+        mapcoerce'
       ]

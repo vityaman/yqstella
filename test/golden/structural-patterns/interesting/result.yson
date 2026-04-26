@@ -13,17 +13,37 @@
                                     "StructType";
                                     [
                                         [
-                                            "RecordSum";
+                                            "OBool";
                                             [
                                                 "DataType";
                                                 "Uint64"
                                             ]
                                         ];
                                         [
-                                            "TupleSum";
+                                            "ORecordSum";
                                             [
                                                 "DataType";
                                                 "Uint64"
+                                            ]
+                                        ];
+                                        [
+                                            "OSucc";
+                                            [
+                                                "DataType";
+                                                "Uint64"
+                                            ]
+                                        ];
+                                        [
+                                            "OTupleSum";
+                                            [
+                                                "DataType";
+                                                "Uint64"
+                                            ]
+                                        ];
+                                        [
+                                            "OUnit";
+                                            [
+                                                "VoidType"
                                             ]
                                         ]
                                     ]
@@ -35,8 +55,11 @@
                 "Data" = [
                     [
                         [
+                            "0";
                             "3";
-                            "7"
+                            "3";
+                            "9";
+                            "Void"
                         ]
                     ]
                 ]

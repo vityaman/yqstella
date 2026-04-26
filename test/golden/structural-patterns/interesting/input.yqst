@@ -5,6 +5,7 @@ extend with
   #natural-literals,
   #arithmetic-operators,
   #type-aliases,
+  #unit-type,
   #tuples,
   #records
 ;
@@ -21,19 +22,55 @@ fn     TestRecordSum(n : InputRecordSum) -> OutputRecordSum {
   return match (n) { { a = a, b = b } => a + b }
 }
 
+type  InputBool = Bool
+type OutputBool = Nat
+fn     TestBool(n : InputBool) -> OutputBool {
+  return match (n) {
+      false => 0
+    | true => 1
+  }
+}
+
+type  InputUnit = Unit
+type OutputUnit = Unit
+fn     TestUnit(n : InputUnit) -> OutputUnit {
+  return match (n) {
+    unit => unit
+  }
+}
+
+type  InputSucc = Nat
+type OutputSucc = Nat
+fn     TestSucc(n : InputSucc) -> OutputSucc {
+  return match (n) {
+      succ(succ(n)) => 2 + n
+    | succ(n)       => 1 + 0
+    | 0             => 0 + 0
+  }
+}
+
 type Input = {
-  TupleSum : InputTupleSum,
-  RecordSum : InputRecordSum
+  ITupleSum : InputTupleSum,
+  IRecordSum : InputRecordSum,
+  IBool : InputBool,
+  IUnit : InputUnit,
+  ISucc : InputSucc
 }
 
 type Output = {
-  TupleSum : OutputTupleSum,
-  RecordSum : OutputRecordSum
+  OTupleSum : OutputTupleSum,
+  ORecordSum : OutputRecordSum,
+  OBool : OutputBool,
+  OUnit : OutputUnit,
+  OSucc : OutputSucc
 }
 
 fn main(input : Input) -> Output {
   return {
-    TupleSum = TestTupleSum(input.TupleSum),
-    RecordSum = TestRecordSum(input.RecordSum)
+    OTupleSum = TestTupleSum(input.ITupleSum),
+    ORecordSum = TestRecordSum(input.IRecordSum),
+    OBool = TestBool(input.IBool),
+    OUnit = TestUnit(input.IUnit),
+    OSucc = TestSucc(input.ISucc)
   }
 }
