@@ -4,7 +4,7 @@ extend with
 #fixpoint-combinator,
 #lists,
 #type-ascriptions,
-// #predecessor TODO
+#predecessor
 ;
 
 fn main(n : Nat) -> [Nat] {

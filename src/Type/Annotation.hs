@@ -324,9 +324,10 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- checkType (Type.fromAST' AST.TypeBool) expr
     t' <- liftType p AST.TypeBool t
     return $ AST.LogicNot (p, Just t') expr'
-  annotateType _ x@(AST.Pred {}) = do
-    tell [notImplemented (annotation x) "Pred"]
-    return $ stub x
+  annotateType t (AST.Pred p expr) = do
+    expr' <- checkType (Type.fromAST' AST.TypeNat) expr
+    t' <- liftType p AST.TypeNat t
+    return $ AST.Succ (p, Just t') expr'
   annotateType t (AST.IsZero p expr) = do
     expr' <- checkType (Type.fromAST' AST.TypeNat) expr
     t' <- liftType p AST.TypeBool t
