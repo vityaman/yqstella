@@ -11,6 +11,7 @@ on:
       - main
     paths-ignore:
       - 'vscode/**'
+  workflow_call:
 
 jobs:
   haskell:
@@ -76,3 +77,13 @@ jobs:
 
       - name: Check Haskell Style
         run: stack exec hlint -- .
+
+      - name: Copy Binary
+        run: cp "$(stack path --local-install-root)/bin/yqstella" "$RUNNER_TEMP/yqstella"
+
+      - name: Upload Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: yqstella
+          path: ${{ runner.temp }}/yqstella
+          retention-days: 1
