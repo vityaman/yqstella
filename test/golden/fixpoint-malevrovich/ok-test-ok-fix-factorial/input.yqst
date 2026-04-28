@@ -1,6 +1,9 @@
-// Ожидание: успех (код 0)
 language core;
-extend with #fixpoint-combinator;
+extend with
+  #fixpoint-combinator,
+  #natural-literals
+  // #predecessor TODO
+;
 
 fn multiply(n : Nat) -> fn(Nat) -> Nat {
   return fn(m : Nat) {

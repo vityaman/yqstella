@@ -505,7 +505,7 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Pred p expr) =
-    AST.Pred (p, Set.empty) expr'
+    AST.Pred (p, Set.singleton Extension.Predecessor) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.IsZero p expr) =
