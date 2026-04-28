@@ -1,0 +1,8 @@
+test/golden/sum-types-malevrovich/error-test-err-match-wrong-pattern-type/input.yqst:8:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat
+>       inl(x) => x
+        ^
+test/golden/sum-types-malevrovich/error-test-err-match-wrong-pattern-type/input.yqst:9:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat
+>     | inr(y) => y
+        ^

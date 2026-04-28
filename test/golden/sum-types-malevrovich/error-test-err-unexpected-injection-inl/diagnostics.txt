@@ -1,0 +1,4 @@
+test/golden/sum-types-malevrovich/error-test-err-unexpected-injection-inl/input.yqst:5:10: [ERROR_UNEXPECTED_INJECTION]
+expected Nat, but got inl(Nat)
+>   return inl(n)
+           ^

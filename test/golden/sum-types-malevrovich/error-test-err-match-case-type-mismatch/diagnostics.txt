@@ -1,0 +1,8 @@
+test/golden/sum-types-malevrovich/error-test-err-match-case-type-mismatch/input.yqst:7:17: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>     | inr(b) => b
+                  ^
+test/golden/sum-types-malevrovich/error-test-err-match-case-type-mismatch/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, Bool
+>   return match s {
+           ^
