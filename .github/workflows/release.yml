@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-binary:
+    uses: ./.github/workflows/haskell.yml
+
+  build-vsix:
+    uses: ./.github/workflows/vscode.yml
+
+  release:
+    name: Release
+    runs-on: ubuntu-24.04
+    needs:
+      - build-binary
+      - build-vsix
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Short Commit Hash
+        id: hash
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Download Binary
+        uses: actions/download-artifact@v4
+        with:
+          name: yqstella
+
+      - name: Download VSIX
+        uses: actions/download-artifact@v4
+        with:
+          name: yqstella-vsix
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.hash.outputs.short }}" \
+            --title "${{ steps.hash.outputs.short }}" \
+            yqstella \
+            yqstella.vsix
