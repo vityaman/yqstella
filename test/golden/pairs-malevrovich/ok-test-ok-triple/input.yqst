@@ -1,0 +1,7 @@
+// Corner case: 3-element tuple (triple)
+language core;
+extend with #pairs, #tuples;
+
+fn main(n : Nat) -> {Nat, Bool, Nat} {
+  return {n, true, succ(n)}
+}

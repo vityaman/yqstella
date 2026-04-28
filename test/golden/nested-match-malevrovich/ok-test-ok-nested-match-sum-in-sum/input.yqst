@@ -1,0 +1,14 @@
+// Nested match: sum type inside variant field (simulating sum-in-sum)
+// variant wraps a sum type, then we match both levels
+language core;
+extend with #sum-types, #variants, #natural-literals;
+
+fn main(x : <| left : Nat + Bool, right : Nat |>) -> Nat {
+  return match x {
+      <| left = inner |> => match inner {
+          inl(n) => n
+        | inr(b) => if b then 1 else 0
+      }
+    | <| right = n |> => succ(n)
+  }
+}

@@ -1,0 +1,6 @@
+// Corner case: if-then-else where both branches have the same non-trivial type
+language core;
+
+fn main(b : Bool) -> Bool {
+  return if (if b then true else false) then false else true
+}

@@ -1,0 +1,13 @@
+// Nested match: sum type inside variant field
+language core;
+extend with #sum-types, #variants, #natural-literals;
+
+fn main(x : <| result : Nat + Bool, empty : Bool |>) -> Nat {
+  return match x {
+      <| result = s |> => match s {
+          inl(n) => n
+        | inr(b) => if b then 1 else 0
+      }
+    | <| empty = _ |> => 0
+  }
+}

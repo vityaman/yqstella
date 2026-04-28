@@ -1,0 +1,8 @@
+// Corner case: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+// unit passed where Nat is expected
+language core;
+extend with #unit-type;
+
+fn main(n : Nat) -> Nat {
+  return succ(unit)
+}

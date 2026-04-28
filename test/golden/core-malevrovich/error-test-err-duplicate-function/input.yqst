@@ -1,0 +1,10 @@
+// Ожидание: ERROR_DUPLICATE_FUNCTION_DECLARATION
+language core;
+
+fn main(x : Nat) -> Nat {
+  return x
+}
+
+fn main(y : Nat) -> Nat {
+  return y
+}

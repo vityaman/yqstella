@@ -1,0 +1,4 @@
+test/golden/pairs-malevrovich/error-test-err-unexpected-tuple-length/input.yqst:5:10: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+type mismatch: expected {Nat, Bool, Nat}, got {Nat, Bool}
+>   return {n, true}
+           ^

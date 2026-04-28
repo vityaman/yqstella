@@ -1,0 +1,6 @@
+language core;
+extend with #records;
+
+fn main(r : {x : Nat, x : Bool}) -> Nat {
+  return r.x
+}

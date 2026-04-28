@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-duplicate-record-type-fields-asc/input.yqst:5:32: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: x
+>   return ({x = n} as {x : Nat, x : Bool}).x
+                                 ^

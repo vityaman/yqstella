@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/error-test-err-succ-on-bool/input.yqst:5:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return succ(b)   // succ >68405B Nat
+                ^

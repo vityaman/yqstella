@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-missing-record-fields/input.yqst:5:10: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: y
+>   return {x = n}
+           ^

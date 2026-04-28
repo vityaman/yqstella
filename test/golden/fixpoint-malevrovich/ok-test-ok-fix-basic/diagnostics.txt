@@ -1,0 +1,4 @@
+test/golden/fixpoint-malevrovich/ok-test-ok-fix-basic/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #fixpoint-combinator not implemented
+> language core;
+  ^

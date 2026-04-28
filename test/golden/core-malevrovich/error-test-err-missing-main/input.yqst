@@ -1,0 +1,6 @@
+// Ожидание: ERROR_MISSING_MAIN
+language core;
+
+fn foo(x : Nat) -> Nat {
+  return x
+}

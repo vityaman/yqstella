@@ -1,0 +1,6 @@
+language core;
+extend with #lists;
+
+fn main(n : [Bool]) -> [Nat] {
+  return List::tail(n)
+}

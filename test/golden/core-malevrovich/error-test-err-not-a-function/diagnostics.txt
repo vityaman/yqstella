@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/error-test-err-not-a-function/input.yqst:5:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected fn(Nat) -> auto, got Nat
+>   return x(0)   // x  =5 DC=:F8O
+           ^

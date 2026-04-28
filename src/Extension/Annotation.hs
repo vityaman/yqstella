@@ -432,7 +432,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr' = annotateExtensions expr
 
       extension = if isPair then Extension.Pairs else Extension.Tuples
-      isPair = n == 1 || n == 2
+      isPair = n == 0 || n == 1 || n == 2
   annotateExtensions (AST.Tuple p exprs) =
     AST.Tuple (p, Set.singleton extension) exprs'
     where
@@ -505,7 +505,7 @@ instance ExtensionsAnnotatable AST.Expr' where
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.Pred p expr) =
-    AST.Pred (p, Set.empty) expr'
+    AST.Pred (p, Set.singleton Extension.Predecessor) expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.IsZero p expr) =

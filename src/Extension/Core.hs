@@ -13,6 +13,7 @@ data Extension
   | LetManyBindings
   | NestedFunctionDeclarations
   | NaturalLiterals
+  | Predecessor
   | ArithmeticOperators
   | ComparisonOperations
   | LogicalOperators
@@ -64,6 +65,7 @@ extensionNameMap =
       (LetManyBindings, "#let-many-bindings"),
       (NestedFunctionDeclarations, "#nested-function-declarations"),
       (NaturalLiterals, "#natural-literals"),
+      (Predecessor, "#predecessor"),
       (ArithmeticOperators, "#arithmetic-operators"),
       (ComparisonOperations, "#comparison-operators"),
       (LogicalOperators, "#logical-operators"),

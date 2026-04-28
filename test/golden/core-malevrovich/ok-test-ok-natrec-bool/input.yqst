@@ -1,0 +1,9 @@
+language core;
+
+fn main(n : Nat) -> Bool {
+  return Nat::rec(n, true, fn(prev : Nat) {
+    return fn (acc : Bool) {
+      return if acc then false else true
+    }
+  })
+}

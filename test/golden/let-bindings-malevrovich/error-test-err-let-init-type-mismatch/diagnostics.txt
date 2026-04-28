@@ -1,0 +1,4 @@
+test/golden/let-bindings-malevrovich/error-test-err-let-init-type-mismatch/input.yqst:5:23: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return let x = succ(b) in x
+                        ^

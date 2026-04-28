@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/error-no-main/input.yqst:1:1: [ERROR_MISSING_MAIN]
+not found: main function
+> language core;
+  ^

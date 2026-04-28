@@ -1,0 +1,10 @@
+// Corner case: higher-order function with Bool parameter
+language core;
+
+fn apply_to_true(f : fn(Bool) -> Bool) -> Bool {
+  return f(true)
+}
+
+fn main(b : Bool) -> Bool {
+  return apply_to_true(fn(x : Bool) { return if x then false else true })
+}

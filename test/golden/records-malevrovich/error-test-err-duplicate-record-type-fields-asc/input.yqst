@@ -1,0 +1,6 @@
+language core;
+extend with #records, #type-ascriptions;
+
+fn main(n : Nat) -> Nat {
+  return ({x = n} as {x : Nat, x : Bool}).x
+}

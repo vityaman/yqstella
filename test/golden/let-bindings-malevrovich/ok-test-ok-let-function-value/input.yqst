@@ -1,0 +1,7 @@
+// Corner case: let binding with a function value
+language core;
+extend with #let-bindings;
+
+fn main(n : Nat) -> Nat {
+  return let f = fn(x : Nat) { return succ(x) } in f(f(n))
+}

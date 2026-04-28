@@ -1,0 +1,12 @@
+test/golden/core-malevrovich/error-functions-confict/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: increment_twice
+> // ?@>3@0<<0 =0 Stella
+  ^
+test/golden/core-malevrovich/error-functions-confict/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: increment_twice
+> // ?@>3@0<<0 =0 Stella
+  ^
+test/golden/core-malevrovich/error-functions-confict/input.yqst:14:52: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>     return increment_twice( if Nat::iszero(n) then false else true )
+                                                     ^

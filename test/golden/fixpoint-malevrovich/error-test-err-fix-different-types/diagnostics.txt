@@ -1,0 +1,4 @@
+test/golden/fixpoint-malevrovich/error-test-err-fix-different-types/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected T -> T, got fn(fn(Bool) -> Nat) -> fn(Bool) -> Bool
+>   return fix(fn(self : fn(Bool) -> Nat) {
+           ^

@@ -1,0 +1,6 @@
+language core;
+extend with #pairs;
+
+fn main(n : Nat) -> Nat {
+  return n.1
+}

@@ -1,0 +1,4 @@
+test/golden/pairs-malevrovich/error-test-err-tuple-index-zero/input.yqst:7:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+tuple index should be positive, got 0
+>   return {n, true}.0
+           ^

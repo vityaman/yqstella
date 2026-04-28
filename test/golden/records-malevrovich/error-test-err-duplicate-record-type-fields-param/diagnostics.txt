@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-duplicate-record-type-fields-param/input.yqst:4:23: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: x
+> fn main(r : {x : Nat, x : Bool}) -> Nat {
+                        ^

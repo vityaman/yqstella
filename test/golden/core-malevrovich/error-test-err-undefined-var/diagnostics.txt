@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/error-test-err-undefined-var/input.yqst:5:10: [ERROR_UNDEFINED_VARIABLE]
+undefined variable y
+>   return y
+           ^

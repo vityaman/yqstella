@@ -1,0 +1,6 @@
+language core;
+extend with #let-bindings;
+
+fn main(n : Nat) -> Bool {
+  return let x = succ(n) in x
+}

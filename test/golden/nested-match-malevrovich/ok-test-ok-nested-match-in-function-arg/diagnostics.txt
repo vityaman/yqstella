@@ -1,0 +1,8 @@
+test/golden/nested-match-malevrovich/ok-test-ok-nested-match-in-function-arg/input.yqst:11:47: [ERROR_AMBIGUOUS_SUM_TYPE]
+type inference for sum types is not supported (use type ascriptions)
+>       inl(n) => match (if Nat::iszero(n) then inl(0) else inr(true)) {
+                                                ^
+test/golden/nested-match-malevrovich/ok-test-ok-nested-match-in-function-arg/input.yqst:11:59: [ERROR_AMBIGUOUS_SUM_TYPE]
+type inference for sum types is not supported (use type ascriptions)
+>       inl(n) => match (if Nat::iszero(n) then inl(0) else inr(true)) {
+                                                            ^

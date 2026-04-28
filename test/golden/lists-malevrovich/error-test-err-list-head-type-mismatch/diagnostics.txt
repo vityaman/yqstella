@@ -1,0 +1,8 @@
+test/golden/lists-malevrovich/error-test-err-list-head-type-mismatch/input.yqst:5:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return List::head([n, succ(n)])
+                       ^
+test/golden/lists-malevrovich/error-test-err-list-head-type-mismatch/input.yqst:5:25: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return List::head([n, succ(n)])
+                          ^

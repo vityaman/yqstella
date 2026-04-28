@@ -1,0 +1,8 @@
+// Corner case: ERROR_TUPLE_INDEX_OUT_OF_BOUNDS
+// tuple index 0 is invalid (indices start at 1)
+language core;
+extend with #pairs;
+
+fn main(n : Nat) -> Nat {
+  return {n, true}.0
+}

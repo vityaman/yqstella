@@ -1,0 +1,7 @@
+// Corner case: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+// if branches have different types
+language core;
+
+fn main(b : Bool) -> Nat {
+  return if b then 0 else false
+}

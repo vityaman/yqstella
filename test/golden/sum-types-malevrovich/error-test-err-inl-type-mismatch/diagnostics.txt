@@ -1,0 +1,4 @@
+test/golden/sum-types-malevrovich/error-test-err-inl-type-mismatch/input.yqst:5:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return inl(b)
+               ^

@@ -1,0 +1,4 @@
+test/golden/variants-malevrovich/error-test-err-variant-match-missing-label/input.yqst:7:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| err = _ |>
+>   return match x {
+           ^

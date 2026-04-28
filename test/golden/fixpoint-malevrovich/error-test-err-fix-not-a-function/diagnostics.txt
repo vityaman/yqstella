@@ -1,0 +1,4 @@
+test/golden/fixpoint-malevrovich/error-test-err-fix-not-a-function/input.yqst:5:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(fn(Nat) -> Nat) -> fn(Nat) -> Nat, got Nat
+>   return fix(n)
+               ^

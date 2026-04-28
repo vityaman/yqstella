@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/ok-test-ok-list-isempty-empty/input.yqst:5:25: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return List::isempty(([] as [Nat]))
+                          ^

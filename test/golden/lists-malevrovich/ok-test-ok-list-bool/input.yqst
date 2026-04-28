@@ -1,0 +1,6 @@
+language core;
+extend with #lists;
+
+fn main(b : Bool) -> [Bool] {
+  return [true, false, b]
+}

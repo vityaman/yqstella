@@ -1,0 +1,4 @@
+test/golden/sum-types-malevrovich/error-test-err-ambiguous-sum-type-inl/input.yqst:5:18: [ERROR_AMBIGUOUS_SUM_TYPE]
+type inference for sum types is not supported (use type ascriptions)
+>   return let x = inl(n) in 0
+                   ^

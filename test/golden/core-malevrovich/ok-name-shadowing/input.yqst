@@ -1,0 +1,18 @@
+language core;
+
+extend with
+  #unit-type,
+  #references,
+  #arithmetic-operators,
+  #sequencing,
+  #natural-literals;
+
+fn main(n : Nat) -> Nat {
+  return foo(n)
+}
+
+fn foo(n : Nat) -> Nat {
+  return fn(n : Bool) {
+    return if n then 0 else 1
+  } (Nat::iszero(n))
+}

@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-unexpected-record-fields/input.yqst:5:10: [ERROR_UNEXPECTED_RECORD_FIELDS]
+unexpected record fields: 
+>   return {x = n, y = false}
+           ^

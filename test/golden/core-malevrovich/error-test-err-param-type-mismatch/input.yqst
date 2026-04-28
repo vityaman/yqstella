@@ -1,0 +1,11 @@
+// Ожидание: ERROR_UNEXPECTED_TYPE_FOR_PARAMETER
+language core;
+
+fn apply(f : fn (Nat) -> Nat) -> Nat {
+  return f(0)
+}
+
+fn main(n : Nat) -> Nat {
+  // параметр анонимной функции должен быть Nat, но указан Bool
+  return apply(fn (b : Bool) { return if b then 0 else 1 })
+}

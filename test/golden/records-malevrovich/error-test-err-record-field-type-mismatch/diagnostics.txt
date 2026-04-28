@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-record-field-type-mismatch/input.yqst:5:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return {x = false, y = false}
+                ^

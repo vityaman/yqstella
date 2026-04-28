@@ -1,0 +1,9 @@
+language core;
+
+fn apply(f : fn (Nat) -> Nat) -> Nat {
+  return f(0)
+}
+
+fn main(n : Nat) -> Nat {
+  return apply(fn (x : Nat) { return succ(x) })
+}

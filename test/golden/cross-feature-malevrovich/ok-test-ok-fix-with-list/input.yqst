@@ -1,0 +1,16 @@
+// Corner case: fixpoint combinator building a list recursively
+language core;
+extend with
+#fixpoint-combinator,
+#lists,
+#type-ascriptions,
+// #predecessor TODO
+;
+
+fn main(n : Nat) -> [Nat] {
+  return fix(fn(self : fn(Nat) -> [Nat]) {
+    return fn(x : Nat) {
+      return if Nat::iszero(x) then ([] as [Nat]) else cons(x, self(Nat::pred(x)))
+    }
+  })(n)
+}

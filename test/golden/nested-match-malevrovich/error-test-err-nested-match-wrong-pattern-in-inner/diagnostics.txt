@@ -1,0 +1,8 @@
+test/golden/nested-match-malevrovich/error-test-err-nested-match-wrong-pattern-in-inner/input.yqst:9:11: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat
+>           inl(k) => k    // n is Nat, not a sum type
+            ^
+test/golden/nested-match-malevrovich/error-test-err-nested-match-wrong-pattern-in-inner/input.yqst:10:11: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat
+>         | inr(b) => 0
+            ^

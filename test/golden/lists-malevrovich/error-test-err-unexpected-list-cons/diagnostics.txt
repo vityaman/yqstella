@@ -1,0 +1,8 @@
+test/golden/lists-malevrovich/error-test-err-unexpected-list-cons/input.yqst:5:19: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return cons(n, ([] as [Nat]))
+                    ^
+test/golden/lists-malevrovich/error-test-err-unexpected-list-cons/input.yqst:5:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return cons(n, ([] as [Nat]))
+           ^

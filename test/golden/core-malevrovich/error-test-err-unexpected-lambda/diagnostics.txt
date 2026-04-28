@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/error-test-err-unexpected-lambda/input.yqst:6:11: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Nat, got fn(Nat) -> Nat
+>   return (fn (y : Nat) { return y })
+            ^

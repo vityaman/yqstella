@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/ok-test-ok-list-cons-chain/input.yqst:5:33: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return cons(0, cons(succ(0), ([] as [Nat])))
+                                  ^

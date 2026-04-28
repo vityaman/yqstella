@@ -1,0 +1,8 @@
+// Corner case: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+// list of sum types with wrong element type
+language core;
+extend with #sum-types, #lists;
+
+fn main(n : Nat) -> [Nat + Bool] {
+  return [inl(n), inl(true)]
+}

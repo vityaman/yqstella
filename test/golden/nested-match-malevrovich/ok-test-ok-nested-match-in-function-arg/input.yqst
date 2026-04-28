@@ -1,0 +1,17 @@
+// Nested match: match expression used as function argument
+language core;
+extend with #sum-types, #variants, #natural-literals;
+
+fn process(n : Nat) -> Nat {
+  return succ(succ(n))
+}
+
+fn main(x : Nat + Bool) -> Nat {
+  return process(match x {
+      inl(n) => match (if Nat::iszero(n) then inl(0) else inr(true)) {
+          inl(z) => z
+        | inr(b) => if b then 1 else 0
+      }
+    | inr(b) => if b then 1 else 0
+  })
+}

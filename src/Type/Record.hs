@@ -57,6 +57,13 @@ annotateRecordType ::
   TypeAnnotator AST.Expr' ->
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateRecordType t p bindings annotateType = do
+  () <- case t of
+    Just (Type (AST.TypeRecord () _)) -> return ()
+    Just t' ->
+      let message = "expected " ++ show t' ++ ", got record"
+       in tell [diagnostic Error UNEXPECTED_RECORD (pointRange p) message]
+    Nothing -> return ()
+
   let name (AST.ABinding _ (AST.StellaIdent name') _) = name'
 
       toDiagnostic (AST.ABinding p' (AST.StellaIdent name') _) =

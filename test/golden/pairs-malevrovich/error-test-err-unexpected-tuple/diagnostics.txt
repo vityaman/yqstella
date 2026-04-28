@@ -1,0 +1,4 @@
+test/golden/pairs-malevrovich/error-test-err-unexpected-tuple/input.yqst:5:10: [ERROR_UNEXPECTED_TUPLE]
+type mismatch: expected Nat, got {Nat, Bool}
+>   return {n, true}
+           ^

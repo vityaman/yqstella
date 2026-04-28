@@ -1,0 +1,7 @@
+// Corner case: list of functions
+language core;
+extend with #lists;
+
+fn main(n : Nat) -> [fn(Nat) -> Nat] {
+  return [fn(x : Nat) { return succ(x) }, fn(x : Nat) { return x }]
+}

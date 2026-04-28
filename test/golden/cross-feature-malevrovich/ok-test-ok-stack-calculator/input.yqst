@@ -1,0 +1,163 @@
+// Stack-based calculator interpreter in Stella
+//
+// Instructions (variant type):
+//   push(n)  — push a number onto the stack
+//   add      — pop two numbers, push their sum
+//   mul      — pop two numbers, push their product
+//   dup      — duplicate the top of the stack
+//   pop      — discard the top of the stack
+//
+// The stack is a [Nat].
+// Each step returns a Result = [Nat] + Bool
+//   inl(stack) — success with new stack
+//   inr(false) — runtime error (e.g. stack underflow)
+//
+// We run a fixed program and return the top of the final stack (or 0 on error).
+
+language core;
+extend with
+  #fixpoint-combinator,
+  #lists,
+  #sum-types,
+  #variants,
+  #records,
+  #pairs,
+  #let-bindings,
+  #type-ascriptions,
+  #integers,
+  #unit-type;
+
+// ─── Arithmetic ───────────────────────────────────────────────────────────────
+
+fn add(n : Nat) -> fn(Nat) -> Nat {
+  return fn(m : Nat) {
+    return Nat::rec(m, n, fn(prev : Nat) { return fn(acc : Nat) { return succ(acc) } })
+  }
+}
+
+fn mul(n : Nat) -> fn(Nat) -> Nat {
+  return fn(m : Nat) {
+    return Nat::rec(m, 0, fn(prev : Nat) { return fn(acc : Nat) { return add(n)(acc) } })
+  }
+}
+
+// ─── Instruction set ─────────────────────────────────────────────────────────
+// <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>
+// (Bool is a dummy payload for zero-data labels)
+
+fn instr_push(n : Nat) -> <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |> {
+  return <| push = n |>
+}
+
+fn instr_add(u : Unit) -> <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |> {
+  return <| add = false |>
+}
+
+fn instr_mul(u : Unit) -> <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |> {
+  return <| mul = false |>
+}
+
+fn instr_dup(u : Unit) -> <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |> {
+  return <| dup = false |>
+}
+
+fn instr_pop(u : Unit) -> <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |> {
+  return <| pop = false |>
+}
+
+// ─── Result type: [Nat] + Bool ────────────────────────────────────────────────
+
+fn ok_stack(s : [Nat]) -> [Nat] + Bool {
+  return inl(s)
+}
+
+fn err_underflow(u : Unit) -> [Nat] + Bool {
+  return inr(false)
+}
+
+// ─── Single-step execution ────────────────────────────────────────────────────
+
+fn step(instr : <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>)
+       -> fn([Nat]) -> [Nat] + Bool {
+  return fn(stack : [Nat]) {
+    return match instr {
+        <| push = n |> => ok_stack(cons(n, stack))
+      | <| add = _ |>  =>
+          if List::isempty(stack) then err_underflow(unit)
+          else (let a = List::head(stack) in
+               let rest1 = List::tail(stack) in
+               if List::isempty(rest1) then err_underflow(unit)
+               else (let b = List::head(rest1) in
+                    let rest2 = List::tail(rest1) in
+                    ok_stack(cons(add(a)(b), rest2))))
+      | <| mul = _ |>  =>
+          if List::isempty(stack) then err_underflow(unit)
+          else (let a = List::head(stack) in
+               let rest1 = List::tail(stack) in
+               if List::isempty(rest1) then err_underflow(unit)
+               else (let b = List::head(rest1) in
+                    let rest2 = List::tail(rest1) in
+                    ok_stack(cons(mul(a)(b), rest2))))
+      | <| dup = _ |>  =>
+          if List::isempty(stack) then err_underflow(unit)
+          else ok_stack(cons(List::head(stack), stack))
+      | <| pop = _ |>  =>
+          if List::isempty(stack) then err_underflow(unit)
+          else ok_stack(List::tail(stack))
+    }
+  }
+}
+
+// ─── Run a program (list of instructions) ────────────────────────────────────
+
+fn run(program : [<| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>])
+     -> fn([Nat]) -> [Nat] + Bool {
+  return fix(fn(self : fn([<| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>]) -> fn([Nat]) -> [Nat] + Bool) {
+    return fn(instrs : [<| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>]) {
+      return fn(stack : [Nat]) {
+        return if List::isempty(instrs)
+          then ok_stack(stack)
+          else (let result = step(List::head(instrs))(stack) in
+               match result {
+                   inl(new_stack) => self(List::tail(instrs))(new_stack)
+                 | inr(_)         => err_underflow(unit)
+               })
+      }
+    }
+  })(program)
+}
+
+// ─── Peek top of stack ────────────────────────────────────────────────────────
+
+fn peek_top(result : [Nat] + Bool) -> Nat {
+  return match result {
+      inl(stack) => if List::isempty(stack) then 0 else List::head(stack)
+    | inr(_)     => 0
+  }
+}
+
+// ─── Main: compute (3 + 4) * (2 + 5) = 49 ───────────────────────────────────
+//
+// Program:
+//   push 3
+//   push 4
+//   add        → stack: [7]
+//   push 2
+//   push 5
+//   add        → stack: [7, 7]
+//   mul        → stack: [49]
+
+fn main(n : Nat) -> Nat {
+  return let program =
+    cons(instr_push(3),
+    cons(instr_push(4),
+    cons(instr_add(unit),
+    cons(instr_push(2),
+    cons(instr_push(5),
+    cons(instr_add(unit),
+    cons(instr_mul(unit),
+    ([] as [<| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>])))))))) in
+  let initial_stack = ([] as [Nat]) in
+  let result = run(program)(initial_stack) in
+  peek_top(result)
+}

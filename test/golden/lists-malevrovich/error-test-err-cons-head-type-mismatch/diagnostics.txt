@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/error-test-err-cons-head-type-mismatch/input.yqst:7:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return cons(true, [n])
+                ^

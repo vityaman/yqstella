@@ -49,6 +49,7 @@ There are following questions under this project:
 | `#nested-function-declarations`     | ✅ `READY`     |
 | `#type-aliases`                     | ✅ `READY`     |
 | `#natural-literals`                 | ✅ `READY`     |
+| `#predecessor`                      | ⏳ `TBD`       |
 | `#arithmetic-operators`             | ✅ `READY`     |
 | `#comparison-operators`             | ✅ `READY`     |
 | `#logical-operators`                | ✅ `READY`     |

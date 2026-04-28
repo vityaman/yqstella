@@ -1,0 +1,8 @@
+test/golden/core-malevrovich/ok-simple/input.yqst:6:52: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>     return increment_twice( if Nat::iszero(n) then 1 else 2 )
+                                                     ^
+test/golden/core-malevrovich/ok-simple/input.yqst:6:59: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>     return increment_twice( if Nat::iszero(n) then 1 else 2 )
+                                                            ^

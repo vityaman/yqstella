@@ -1,0 +1,8 @@
+// Corner case: ERROR_UNDEFINED_VARIABLE
+// variable used in let body that is not in scope
+language core;
+extend with #let-bindings;
+
+fn main(n : Nat) -> Nat {
+  return let x = n in y
+}

@@ -1,0 +1,4 @@
+test/golden/fixpoint-malevrovich/error-test-err-fix-wrong-return-type/input.yqst:7:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return fix(fn(self : fn(Nat) -> Nat) {
+           ^

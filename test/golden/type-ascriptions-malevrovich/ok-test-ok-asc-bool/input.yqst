@@ -1,0 +1,6 @@
+language core;
+extend with #type-ascriptions;
+
+fn main(b : Bool) -> Bool {
+  return (if b then true else false) as Bool
+}

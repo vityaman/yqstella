@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/error-test-err-type-mismatch-if/input.yqst:5:27: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return if b then 0 else false   // false 8<55B B8? Bool, 0 >68405BAO Nat
+                            ^

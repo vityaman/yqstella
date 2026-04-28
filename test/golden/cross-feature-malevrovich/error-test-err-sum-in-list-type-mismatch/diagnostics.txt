@@ -1,0 +1,4 @@
+test/golden/cross-feature-malevrovich/error-test-err-sum-in-list-type-mismatch/input.yqst:7:23: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return [inl(n), inl(true)]
+                        ^

@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/error-test-err-ambiguous-list/input.yqst:5:18: [ERROR_AMBIGUOUS_LIST_TYPE]
+type inference for empty lists is not supported (use type ascriptions)
+>   return let x = [] in n
+                   ^

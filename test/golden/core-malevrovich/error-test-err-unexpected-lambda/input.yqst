@@ -1,0 +1,7 @@
+// Ожидание: ERROR_UNEXPECTED_LAMBDA
+language core;
+
+fn main(x : Nat) -> Nat {
+  // ожидается тип Nat, но передаётся анонимная функция
+  return (fn (y : Nat) { return y })
+}

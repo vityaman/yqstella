@@ -1,0 +1,8 @@
+test/golden/fixpoint-malevrovich/ok-test-ok-fix-factorial/input.yqst:25:61: [ERROR_BAD_EXTENSION]
+disabled extension usage: #predecessor
+>       return if Nat::iszero(x) then 1 else multiply(x)(self(Nat::pred(x)))
+                                                              ^
+test/golden/fixpoint-malevrovich/ok-test-ok-fix-factorial/input.yqst:25:61: [FATAL_NOT_IMPLEMENTED]
+Pred not implemented
+>       return if Nat::iszero(x) then 1 else multiply(x)(self(Nat::pred(x)))
+                                                              ^

@@ -1,0 +1,4 @@
+test/golden/variants-malevrovich/error-test-err-unexpected-variant/input.yqst:5:11: [ERROR_UNEXPECTED_VARIANT]
+expected Nat, but got a variant
+>   return (<| a = n |> as Nat)
+            ^

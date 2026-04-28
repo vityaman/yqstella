@@ -1,0 +1,11 @@
+// Corner case: variant with three labels, exhaustive match
+language core;
+extend with #variants, #natural-literals;
+
+fn main(x : <| a : Nat, b : Bool, c : Nat |>) -> Nat {
+  return match x {
+      <| a = n |> => n
+    | <| b = f |> => if f then 1 else 0
+    | <| c = m |> => succ(m)
+  }
+}

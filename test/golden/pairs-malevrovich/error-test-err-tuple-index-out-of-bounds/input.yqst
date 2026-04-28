@@ -1,0 +1,6 @@
+language core;
+extend with #pairs, #tuples;
+
+fn main(n : Nat) -> Nat {
+  return {n, true}.3
+}

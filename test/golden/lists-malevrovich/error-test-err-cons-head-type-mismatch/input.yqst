@@ -1,0 +1,8 @@
+// Corner case: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+// cons head type doesn't match list element type
+language core;
+extend with #lists;
+
+fn main(n : Nat) -> [Nat] {
+  return cons(true, [n])
+}

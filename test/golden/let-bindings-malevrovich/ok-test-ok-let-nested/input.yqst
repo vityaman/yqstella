@@ -1,0 +1,6 @@
+language core;
+extend with #let-bindings;
+
+fn main(n : Nat) -> Nat {
+  return let x = succ(n) in let y = succ(x) in y
+}

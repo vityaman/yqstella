@@ -1,0 +1,10 @@
+language core;
+extend with #let-bindings;
+
+fn double(n : Nat) -> Nat {
+  return let m = succ(n) in succ(m)
+}
+
+fn main(n : Nat) -> Nat {
+  return double(n)
+}

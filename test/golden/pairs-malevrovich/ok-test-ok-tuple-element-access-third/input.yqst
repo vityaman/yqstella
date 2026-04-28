@@ -1,0 +1,7 @@
+// Corner case: accessing the third element of a triple
+language core;
+extend with #pairs, #tuples;
+
+fn main(n : Nat) -> Nat {
+  return {n, true, succ(n)}.3
+}

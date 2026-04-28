@@ -1,0 +1,4 @@
+test/golden/pairs-malevrovich/error-test-err-tuple-index-out-of-bounds/input.yqst:5:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+type mismatch: expected tuple with size at least 3, got {Nat, Bool}
+>   return {n, true}.3
+           ^

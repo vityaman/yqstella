@@ -1,0 +1,8 @@
+test/golden/core-malevrovich/error-test-err-duplicate-function/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: main
+> // 6840=85: ERROR_DUPLICATE_FUNCTION_DECLARATION
+  ^
+test/golden/core-malevrovich/error-test-err-duplicate-function/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: main
+> // 6840=85: ERROR_DUPLICATE_FUNCTION_DECLARATION
+  ^

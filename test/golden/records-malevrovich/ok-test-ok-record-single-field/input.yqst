@@ -1,0 +1,7 @@
+// Corner case: record with a single field
+language core;
+extend with #records;
+
+fn main(n : Nat) -> {x : Nat} {
+  return {x = n}
+}

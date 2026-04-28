@@ -1,0 +1,4 @@
+test/golden/nested-match-malevrovich/error-test-err-nested-match-inner-nonexhaustive/input.yqst:8:29: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: inr (_)
+>       <| left = inner |> => match inner {
+                              ^

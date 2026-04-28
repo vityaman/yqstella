@@ -1,0 +1,14 @@
+// Nested match: match result bound in let, then matched again
+language core;
+extend with #sum-types, #let-bindings;
+
+fn main(x : Nat + Bool) -> Nat + Bool {
+  return let intermediate = match x {
+      inl(n) => if Nat::iszero(n) then inr(true) else inl(succ(n))
+    | inr(b) => if b then inl(0) else inr(false)
+  } in
+  match intermediate {
+      inl(n) => inl(succ(n))
+    | inr(b) => inr(b)
+  }
+}

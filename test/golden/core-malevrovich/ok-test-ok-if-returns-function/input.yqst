@@ -1,0 +1,14 @@
+// Corner case: if expression returning a function value
+language core;
+
+fn identity(n : Nat) -> Nat {
+  return n
+}
+
+fn double(n : Nat) -> Nat {
+  return succ(succ(n))
+}
+
+fn main(b : Bool) -> fn(Nat) -> Nat {
+  return if b then fn(x : Nat) { return identity(x) } else fn(x : Nat) { return double(x) }
+}

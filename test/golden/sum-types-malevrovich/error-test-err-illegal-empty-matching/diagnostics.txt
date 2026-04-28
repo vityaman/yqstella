@@ -1,0 +1,4 @@
+test/golden/sum-types-malevrovich/error-test-err-illegal-empty-matching/input.yqst:5:10: [ERROR_ILLEGAL_EMPTY_MATCHING]
+expected at least one match case
+>   return match s {}
+           ^

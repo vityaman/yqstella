@@ -1,0 +1,8 @@
+// Corner case: ERROR_NOT_A_RECORD
+// trying to access a field on a Nat value
+language core;
+extend with #records;
+
+fn main(n : Nat) -> Nat {
+  return n.x
+}

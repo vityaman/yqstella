@@ -1,0 +1,4 @@
+test/golden/let-bindings-malevrovich/error-test-err-let-undefined-in-body/input.yqst:7:23: [ERROR_UNDEFINED_VARIABLE]
+undefined variable y
+>   return let x = n in y
+                        ^

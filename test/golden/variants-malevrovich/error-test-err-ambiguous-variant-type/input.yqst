@@ -1,0 +1,8 @@
+language core;
+extend with #variants;
+
+fn main(n : Nat) -> Nat {
+  return match <| a = n |> {
+    <| a = x |> => x
+  }
+}
