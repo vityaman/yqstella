@@ -1,6 +1,6 @@
 // Nested match: sum type inside variant field
 language core;
-extend with #sum-types, #variants;
+extend with #sum-types, #variants, #natural-literals;
 
 fn main(x : <| result : Nat + Bool, empty : Bool |>) -> Nat {
   return match x {

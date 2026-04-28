@@ -1,7 +1,7 @@
 // Nested match: ERROR_UNEXPECTED_PATTERN_FOR_TYPE
 // inner match uses inl/inr patterns on a non-sum type (Nat)
 language core;
-extend with #sum-types;
+extend with #sum-types, #natural-literals;
 
 fn main(x : Nat + Bool) -> Nat {
   return match x {

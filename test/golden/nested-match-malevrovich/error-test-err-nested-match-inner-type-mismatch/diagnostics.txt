@@ -1,0 +1,8 @@
+test/golden/nested-match-malevrovich/error-test-err-nested-match-inner-type-mismatch/input.yqst:10:21: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>         | inr(b) => b   // Bool where Nat expected
+                      ^
+test/golden/nested-match-malevrovich/error-test-err-nested-match-inner-type-mismatch/input.yqst:8:21: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, Bool
+>       inl(inner) => match inner {
+                      ^

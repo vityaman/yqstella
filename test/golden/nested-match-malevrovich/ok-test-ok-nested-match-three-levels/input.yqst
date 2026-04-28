@@ -1,7 +1,7 @@
 // Nested match: three levels deep using variants and sum types
 // outer: variant, middle: sum type, inner: variant
 language core;
-extend with #sum-types, #variants;
+extend with #sum-types, #variants, #natural-literals;
 
 fn main(x : <| outer : Nat + <| a : Nat, b : Bool |>, other : Bool |>) -> Nat {
   return match x {

@@ -1,7 +1,7 @@
 // Nested match: ERROR_NONEXHAUSTIVE_MATCH_PATTERNS
 // outer match on variant is missing a label, inner match is fine
 language core;
-extend with #sum-types, #variants;
+extend with #sum-types, #variants, #natural-literals;
 
 fn main(x : <| a : Nat + Bool, b : Nat, c : Bool |>) -> Nat {
   return match x {

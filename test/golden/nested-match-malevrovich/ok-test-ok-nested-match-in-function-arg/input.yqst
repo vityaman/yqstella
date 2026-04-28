@@ -1,6 +1,6 @@
 // Nested match: match expression used as function argument
 language core;
-extend with #sum-types, #variants;
+extend with #sum-types, #variants, #natural-literals;
 
 fn process(n : Nat) -> Nat {
   return succ(succ(n))
