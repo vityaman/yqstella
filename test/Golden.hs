@@ -123,7 +123,7 @@ makeTestCase casePath = do
         [ artifact "yql.yqls" yql',
           minirun
         ]
-      isYqlTested = areTypesCorrect' && not ("-malerovich" `isInfixOf` casePath)
+      isYqlTested = areTypesCorrect' && not ("-malevrovich" `isInfixOf` casePath)
 
   let artifacts =
         artifactsBase

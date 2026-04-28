@@ -1,0 +1,12 @@
+test/golden/core-malevrovich/error-test-err-natrec-wrong-z/input.yqst:6:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return Nat::rec(n, false, fn (prev : Nat) {
+                       ^
+test/golden/core-malevrovich/error-test-err-natrec-wrong-z/input.yqst:7:16: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Bool, got (acc : Nat)
+>     return fn (acc : Nat) { return acc }
+                 ^
+test/golden/core-malevrovich/error-test-err-natrec-wrong-z/input.yqst:7:36: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return fn (acc : Nat) { return acc }
+                                     ^

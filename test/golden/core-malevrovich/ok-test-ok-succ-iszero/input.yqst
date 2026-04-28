@@ -1,4 +1,3 @@
-// Ожидание: успех (код 0)
 language core;
 
 fn main(n : Nat) -> Bool {

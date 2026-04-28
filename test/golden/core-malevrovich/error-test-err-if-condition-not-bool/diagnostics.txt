@@ -1,0 +1,8 @@
+test/golden/core-malevrovich/error-test-err-if-condition-not-bool/input.yqst:6:27: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>   return if n then 0 else 1
+                            ^
+test/golden/core-malevrovich/error-test-err-if-condition-not-bool/input.yqst:6:13: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return if n then 0 else 1
+              ^

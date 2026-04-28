@@ -1,0 +1,8 @@
+test/golden/core-malevrovich/error-test-err-param-type-mismatch/input.yqst:10:56: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>   return apply(fn (b : Bool) { return if b then 0 else 1 })
+                                                         ^
+test/golden/core-malevrovich/error-test-err-param-type-mismatch/input.yqst:10:20: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Nat, got (b : Bool)
+>   return apply(fn (b : Bool) { return if b then 0 else 1 })
+                     ^

@@ -1,0 +1,8 @@
+test/golden/core-malevrovich/error-test-err-natrec-wrong-s/input.yqst:6:25: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>   return Nat::rec(n, 0, 42)
+                          ^
+test/golden/core-malevrovich/error-test-err-natrec-wrong-s/input.yqst:6:25: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Nat) -> fn(Nat) -> Nat, got Nat
+>   return Nat::rec(n, 0, 42)
+                          ^

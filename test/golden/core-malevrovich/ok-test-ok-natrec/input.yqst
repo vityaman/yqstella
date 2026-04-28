@@ -1,9 +1,6 @@
-// Ожидание: успех (код 0)
 language core;
 
 fn main(n : Nat) -> Nat {
-  // Nat::rec(n, z, s) — примитивная рекурсия по натуральным числам
-  // Здесь просто считаем n (каждый шаг делаем succ от аккумулятора)
   return Nat::rec(n, 0, fn(prev : Nat) {
     return fn (acc : Nat) {
       return succ(acc)

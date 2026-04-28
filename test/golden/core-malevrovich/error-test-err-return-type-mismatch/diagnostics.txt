@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/error-test-err-return-type-mismatch/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return succ(n)
+           ^

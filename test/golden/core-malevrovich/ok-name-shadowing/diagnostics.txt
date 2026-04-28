@@ -1,0 +1,4 @@
+test/golden/core-malevrovich/ok-name-shadowing/input.yqst:17:5: [ERROR_SYNTAX]
+syntax error at line 17, column 5 before `('
+>   } (Nat::iszero(n))
+      ^
