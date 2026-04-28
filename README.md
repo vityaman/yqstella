@@ -40,9 +40,9 @@ There are following questions under this project:
 | Extension                           | Status         |
 | ----------------------------------- | -------------- |
 | `core`                              | ✅ `READY`     |
-| `#structural-patterns`              | 🧪 `READY`     |
+| `#structural-patterns`              | ✅ `READY`     |
 | `#let-bindings`                     | ✅ `READY`     |
-| `#let-patterns`                     | ⏳ `TBD`       |
+| `#let-patterns`                     | ✅ `READY`     |
 | `#let-many-bindings`                | ⏳ `TBD`       |
 | `#letrec-bindings`                  | ⏳ `TBD`       |
 | `#fixpoint-combinator`              | 🧪 `TYPECHECK` |
