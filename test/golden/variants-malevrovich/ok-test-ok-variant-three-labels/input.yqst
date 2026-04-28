@@ -1,6 +1,6 @@
 // Corner case: variant with three labels, exhaustive match
 language core;
-extend with #variants;
+extend with #variants, #natural-literals;
 
 fn main(x : <| a : Nat, b : Bool, c : Nat |>) -> Nat {
   return match x {

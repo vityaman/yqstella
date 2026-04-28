@@ -1,0 +1,4 @@
+test/golden/variants-malevrovich/error-test-err-ambiguous-variant-type/input.yqst:5:16: [ERROR_AMBIGUOUS_VARIANT_TYPE]
+type inference for variant types is not supported (use type ascriptions)
+>   return match <| a = n |> {
+                 ^

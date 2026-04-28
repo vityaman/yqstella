@@ -1,0 +1,4 @@
+test/golden/variants-malevrovich/error-test-err-duplicate-variant-type-fields/input.yqst:4:25: [ERROR_DUPLICATE_VARIANT_TYPE_FIELDS]
+duplicate field: a
+> fn main(x : <| a : Nat, a : Bool |>) -> Nat {
+                          ^
