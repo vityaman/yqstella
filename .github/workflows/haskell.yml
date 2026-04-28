@@ -86,3 +86,4 @@ jobs:
         with:
           name: yqstella
           path: ${{ runner.temp }}/yqstella
+          retention-days: 1

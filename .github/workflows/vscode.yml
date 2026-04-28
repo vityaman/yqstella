@@ -50,3 +50,4 @@ jobs:
         with:
           name: yqstella-vsix
           path: yqstella.vsix
+          retention-days: 1
