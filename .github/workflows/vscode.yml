@@ -49,5 +49,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: yqstella-vsix
-          path: yqstella.vsix
+          path: vscode/yqstella.vsix
           retention-days: 1
