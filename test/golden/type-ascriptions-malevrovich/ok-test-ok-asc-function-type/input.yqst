@@ -3,5 +3,5 @@ language core;
 extend with #type-ascriptions;
 
 fn main(n : Nat) -> Nat {
-  return (fn(x : Nat) { return succ(x) } as fn(Nat) -> Nat)(n)
+  return (fn(x : Nat) { return succ(x) } as (fn(Nat) -> Nat))(n)
 }
