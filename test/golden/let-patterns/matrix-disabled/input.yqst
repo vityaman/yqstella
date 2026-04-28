@@ -1,0 +1,18 @@
+language core;
+
+extend with
+    #let-bindings,
+    #structural-patterns,
+    #unit-type,
+    #tuples,
+    #records,
+    #lists;
+
+fn main(n : Nat) -> [Nat] {
+  return
+    let a = succ(n) in
+    let {b, c} = {a, a} in
+    let { a = d, b = e } = { a = b, b = c } in
+    let unit = unit in
+        [a, b, c, d, e]
+}

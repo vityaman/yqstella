@@ -1,0 +1,12 @@
+test/golden/let-patterns/matrix-disabled/input.yqst:14:5: [ERROR_BAD_EXTENSION]
+disabled extension usage: #let-patterns
+>     let {b, c} = {a, a} in
+      ^
+test/golden/let-patterns/matrix-disabled/input.yqst:15:5: [ERROR_BAD_EXTENSION]
+disabled extension usage: #let-patterns
+>     let { a = d, b = e } = { a = b, b = c } in
+      ^
+test/golden/let-patterns/matrix-disabled/input.yqst:16:5: [ERROR_BAD_EXTENSION]
+disabled extension usage: #let-patterns
+>     let unit = unit in
+      ^
