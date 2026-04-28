@@ -1,0 +1,4 @@
+test/golden/cross-feature-malevrovich/error-test-err-let-with-wrong-record-field/input.yqst:7:39: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field z : Nat
+>   return let r = {x = n, y = true} in r.z
+                                        ^

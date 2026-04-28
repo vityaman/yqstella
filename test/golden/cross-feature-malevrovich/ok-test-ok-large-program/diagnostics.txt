@@ -1,0 +1,24 @@
+test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:5:1: [ERROR_BAD_EXTENSION]
+unknown extension #integers
+> extend with
+  ^
+test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:128:37: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>          let doubled = list_map(mul(2))(raw) in
+                                      ^
+test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:84:17: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected fn(fn([Nat]) -> [Nat]) -> fn([Nat]) -> [Nat], got (self : fn([Nat]) -> [Nat])
+>   return fix(fn(self : fn([Nat]) -> [Nat]) {
+                  ^
+test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:85:15: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected fn([Nat]) -> [Nat], got (xs : [Nat])
+>     return fn(xs : [Nat]) {
+                ^
+test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:87:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn([Nat]) -> [Nat], got [Nat]
+>         then ([] as [Nat])
+                ^
+test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:100:49: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got [Nat]
+>              if gt_zero(h) then cons(h, t) else t)
+                                                  ^
