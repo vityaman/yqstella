@@ -20,7 +20,7 @@ import Type.Decl (toParamSilent, withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
 import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
-import Type.Match (annotateMatchType)
+import Type.Match (annotateLetType, annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
@@ -136,27 +136,8 @@ instance TypeAnnotatable AST.Expr' where
     elseB' <- annotateType (typeOf thenB') elseB
     let t' = typeOf thenB' <|> typeOf elseB'
     return $ AST.If (p, t') condition' thenB' elseB'
-  annotateType t (AST.Let p [AST.APatternBinding p' (AST.PatternVar p'' (AST.StellaIdent name)) expr] inExpr) = do
-    expr' <- inferType expr
-    let expr't = typeOf expr'
-
-    inExpr' <- case expr't of
-      (Just t') -> do
-        context <- gets (Context.withTyped name t')
-        withStateTAE (const context) (annotateType t inExpr)
-      Nothing -> pure $ stub inExpr
-
-    let t' = typeOf inExpr'
-        pattern' = AST.PatternVar (p'', Nothing) (AST.StellaIdent name)
-        binding' = AST.APatternBinding (p', Nothing) pattern' expr'
-
-    return $ AST.Let (p, t') [binding'] inExpr'
-  annotateType _ x@(AST.Let p [_] _) = do
-    tell [notImplemented p "LetIn StructuralPattern"]
-    return $ stub x
-  annotateType _ x@(AST.Let p _ _) = do
-    tell [notImplemented p "LetManyBindings"]
-    return $ stub x
+  annotateType t (AST.Let p bindings inExpr) =
+    annotateLetType t p bindings inExpr annotateType
   annotateType _ x@(AST.LetRec {}) = do
     tell [notImplemented (annotation x) "LetRec"]
     return $ stub x

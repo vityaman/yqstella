@@ -1,14 +1,13 @@
 {-# LANGUAGE TupleSections #-}
 
-module Type.Match (annotateMatchType) where
+module Type.Match (annotateLetType, annotateMatchType) where
 
 import Annotation (Annotated (annotation))
-import Control.Monad (unless, when, zipWithM)
+import Control.Monad (unless, void, when, zipWithM)
 import Control.Monad.State
 import Control.Monad.Writer (tell)
 import qualified Data.Bifunctor
 import Data.Foldable (find)
-import Data.Functor (void)
 import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -133,6 +132,19 @@ checkType t p =
       message = "unexpected pattern for type " ++ show t
    in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE position message
 
+checkIrrefutable :: AST.Pattern' Position -> Either Diagnostic ()
+checkIrrefutable (AST.PatternTuple _ patterns) =
+  mapM_ checkIrrefutable patterns
+checkIrrefutable (AST.PatternRecord _ patterns) =
+  mapM_ checkIrrefutable [p | AST.ALabelledPattern _ _ p <- patterns]
+checkIrrefutable (AST.PatternUnit {}) =
+  pure ()
+checkIrrefutable (AST.PatternVar {}) =
+  pure ()
+checkIrrefutable p = do
+  let message = "expected irrefutable pattern"
+  Left $ diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange $ annotation p) message
+
 bindings :: AST.Pattern' (Position, Type) -> Map String Type
 bindings (AST.PatternVariant (_, Type (AST.TypeVariant _ fields)) (AST.StellaIdent tag) data') =
   let tag'' (AST.AVariantFieldType _ (AST.StellaIdent tag') _) = tag'
@@ -167,6 +179,40 @@ bindings (AST.PatternVar (_, t) (AST.StellaIdent name)) =
   Map.singleton name t
 bindings p =
   error $ "bindings: unexpected pattern " ++ show p
+
+annotateLetType ::
+  Maybe Type ->
+  Position ->
+  [AST.PatternBinding' Position] ->
+  AST.Expr' Position ->
+  TypeAnnotator AST.Expr' ->
+  TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
+annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType = do
+  expr' <- annotateType Nothing expr
+
+  _ <- case checkIrrefutable pattern' of
+    Left d -> void (tell [d])
+    Right () -> pure ()
+
+  (pattern'', inExpr'') <- case typeOf expr' of
+    (Just t') ->
+      case checkType t' pattern' of
+        (Right pattern'') -> do
+          context <- get
+          let context' = foldr (uncurry Context.withTyped) context (Map.toList $ bindings pattern'')
+          inExpr' <- withStateTAE (const context') (annotateType t inExpr)
+          return (fmap (Data.Bifunctor.second Just) pattern'', inExpr')
+        (Left d) -> do
+          tell [d]
+          return (fmap (,Nothing) pattern', fmap (,Nothing) inExpr)
+    Nothing ->
+      return (fmap (,Nothing) pattern', fmap (,Nothing) inExpr)
+
+  let t' = typeOf inExpr''
+  return $ AST.Let (p, t') [AST.APatternBinding (p', t) pattern'' expr'] inExpr''
+annotateLetType _ p bindings' inExpr _ = do
+  tell [notImplemented p "LetManyBindings"]
+  return $ fmap (,Nothing) (AST.Let p bindings' inExpr)
 
 annotateMatchType ::
   Maybe Type ->
@@ -320,8 +366,6 @@ ctors (Type (AST.TypeUnit _)) =
 ctors t =
   error $ "ctors: unexpected type " ++ show t
 
--- TODO: Desugar PatternInt to succ(...0)
--- TODO: Desugar PatternList to cons(..., [])
 normalizeP :: AST.Pattern' a -> AST.Pattern' a
 normalizeP (AST.PatternVariant p (AST.StellaIdent tag) (AST.NoPatternData p')) =
   AST.PatternVariant p (AST.StellaIdent tag) (AST.SomePatternData p' (AST.PatternUnit p'))
