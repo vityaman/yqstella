@@ -1,8 +1,8 @@
 language core;
 extend with
   #fixpoint-combinator,
-  #natural-literals
-  // #predecessor TODO
+  #natural-literals,
+  #predecessor
 ;
 
 fn multiply(n : Nat) -> fn(Nat) -> Nat {
