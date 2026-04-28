@@ -1,0 +1,4 @@
+test/golden/unit-malevrovich/error-test-err-unit-type-mismatch/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Unit
+>   return unit
+           ^

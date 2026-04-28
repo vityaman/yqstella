@@ -1,0 +1,4 @@
+test/golden/unit-malevrovich/error-test-err-unit-passed-as-nat/input.yqst:7:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Unit
+>   return succ(unit)
+                ^
