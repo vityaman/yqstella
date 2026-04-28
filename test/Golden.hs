@@ -3,7 +3,7 @@ module Golden (main) where
 import Control.Monad (filterM)
 import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char (toUpper)
-import Data.List (sort, isInfixOf)
+import Data.List (isInfixOf, sort)
 import Diagnostic.Core (display)
 import qualified Fizruk
 import qualified Lib as Stella
