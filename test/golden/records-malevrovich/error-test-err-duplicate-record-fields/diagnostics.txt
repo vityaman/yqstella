@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-duplicate-record-fields/input.yqst:5:18: [ERROR_DUPLICATE_RECORD_FIELDS]
+duplicate field: x
+>   return {x = n, x = succ(n)}
+                   ^

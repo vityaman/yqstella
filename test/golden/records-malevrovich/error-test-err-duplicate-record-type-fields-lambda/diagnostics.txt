@@ -1,0 +1,8 @@
+test/golden/records-malevrovich/error-test-err-duplicate-record-type-fields-lambda/input.yqst:5:28: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: x
+>   return (fn(r : {x : Nat, x : Bool}) { return r.x })(n)
+                             ^
+test/golden/records-malevrovich/error-test-err-duplicate-record-type-fields-lambda/input.yqst:5:55: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected {x : Nat}, got Nat
+>   return (fn(r : {x : Nat, x : Bool}) { return r.x })(n)
+                                                        ^

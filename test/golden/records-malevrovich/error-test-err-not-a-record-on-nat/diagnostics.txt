@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-not-a-record-on-nat/input.yqst:7:10: [ERROR_NOT_A_RECORD]
+type mismatch: expected record with x: Nat, got Nat
+>   return n.x
+           ^

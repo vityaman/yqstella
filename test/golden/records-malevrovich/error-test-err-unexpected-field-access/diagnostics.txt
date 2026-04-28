@@ -1,0 +1,4 @@
+test/golden/records-malevrovich/error-test-err-unexpected-field-access/input.yqst:5:10: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field z : Nat
+>   return {x = n, y = false}.z
+           ^
