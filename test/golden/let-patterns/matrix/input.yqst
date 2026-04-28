@@ -12,8 +12,8 @@ extend with
 fn main(n : Nat) -> [Nat] {
   return
     let a = succ(n) in
-    let {b, c} = {a, a} in
-    let { a = d, b = e } = { a = b, b = c } in
+    let {b, c} = {succ(a), succ(succ(a))} in
+    let { a = d, b = e } = { a = succ(b), b = succ(c) } in
     let unit = unit in
         [a, b, c, d, e]
 }

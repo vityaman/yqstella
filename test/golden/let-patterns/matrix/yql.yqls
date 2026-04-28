@@ -1,0 +1,62 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let main (lambda '(n) (block '(
+    (let a (+ n (Uint64 '1)))
+    (return (block '(
+      (let yqstellamatchexpr '((+ a (Uint64 '1)) (+ (+ a (Uint64 '1)) (Uint64 '1))))
+      (let yqstellamatchbr0
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let b (Nth yqstellamatcharg '0))
+            (let c (Nth yqstellamatcharg '1))
+            (let yqstellamatchcond (And (Exists b) (And (Exists c) (Bool 'true))))
+            (let b (Unwrap b))
+            (let c (Unwrap c))
+            (return
+              (If
+                yqstellamatchcond
+                (Just
+                  (block '(
+                    (let yqstellamatchexpr (AsStruct '('a (+ b (Uint64 '1))) '('b (+ c (Uint64 '1)))))
+                    (let yqstellamatchbr0
+                      (Apply
+                        (lambda '(yqstellamatcharg) (block '(
+                          (let d (Member yqstellamatcharg '"a"))
+                          (let e (Member yqstellamatcharg '"b"))
+                          (let yqstellamatchcond (And (Exists d) (And (Exists e) (Bool 'true))))
+                          (let d (Unwrap d))
+                          (let e (Unwrap e))
+                          (return
+                            (If
+                              yqstellamatchcond
+                              (Just
+                                (block '(
+                                  (let yqstellamatchexpr (Void))
+                                  (let yqstellamatchbr0
+                                    (Apply
+                                      (lambda '(yqstellamatcharg) (block '(
+                                        (let yqstellamatchunit:17:9 yqstellamatcharg)
+                                        (let yqstellamatchcond (And (Exists yqstellamatchunit:17:9) (Bool 'true)))
+                                        (let yqstellamatchunit:17:9 (Unwrap yqstellamatchunit:17:9))
+                                        (return
+                                          (If
+                                            yqstellamatchcond
+                                            (Just (AsList a b c d e))
+                                            (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+                                      yqstellamatchexpr))
+                                  (return (Unwrap (Coalesce yqstellamatchbr0))))))
+                              (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+                        yqstellamatchexpr))
+                    (return (Unwrap (Coalesce yqstellamatchbr0))))))
+                (Nothing (OptionalType (ListType (DataType 'Uint64)))))))))
+          yqstellamatchexpr))
+      (return (Unwrap (Coalesce yqstellamatchbr0))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)
