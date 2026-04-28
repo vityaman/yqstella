@@ -30,9 +30,6 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 
-EMPTY_FILES = ["yql.yqls", "parameters.yson", "result.yson", "diagnostics.txt"]
-
-
 def parse_input_section(content: str) -> str:
     in_input = False
     lines = []
@@ -94,8 +91,11 @@ def convert(input_dir: Path, output_dir: Path) -> int:
 
         test_dir.mkdir(parents=True, exist_ok=True)
 
+        # files = ["yql.yqls", "parameters.yson", "result.yson", "diagnostics.txt"]
+        files = ["diagnostics.txt"]
+
         (test_dir / "input.yqst").write_text(source + "\n" if source else "", encoding="utf-8")
-        for name in EMPTY_FILES:
+        for name in files:
             (test_dir / name).write_text("", encoding="utf-8")
 
         rel = golden_path.relative_to(input_dir)

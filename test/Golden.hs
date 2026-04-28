@@ -3,7 +3,7 @@ module Golden (main) where
 import Control.Monad (filterM)
 import Data.ByteString.Lazy.Char8 (pack)
 import Data.Char (toUpper)
-import Data.List (sort)
+import Data.List (sort, isInfixOf)
 import Diagnostic.Core (display)
 import qualified Fizruk
 import qualified Lib as Stella
@@ -114,12 +114,20 @@ makeTestCase casePath = do
               return $ stdout ++ (if exitCode == ExitSuccess then "" else stderr)
          in goldenVsStringDiff "Minirun" diff resultPath (fmap pack execute)
 
-  let artifacts =
+  let artifactsBase =
         [ artifact "diagnostics.txt" diagnostics',
-          artifact "yql.yqls" yql',
-          nikolai,
+          nikolai
+        ]
+
+  let artifactsYql =
+        [ artifact "yql.yqls" yql',
           minirun
         ]
+      isYqlTested = areTypesCorrect' && not ("-malerovich" `isInfixOf` casePath)
+
+  let artifacts =
+        artifactsBase
+          ++ (if isYqlTested then artifactsYql else [])
 
   return $ testGroup caseName artifacts
 
