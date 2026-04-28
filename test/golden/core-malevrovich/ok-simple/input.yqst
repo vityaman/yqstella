@@ -1,0 +1,11 @@
+// программа на Stella
+language core;
+
+// наличие main обязательно
+fn main(n : Nat) -> Nat {
+    return increment_twice( if Nat::iszero(n) then 1 else 2 )
+}
+
+fn increment_twice(n : Nat) -> Nat {
+    return succ(succ(n))
+}

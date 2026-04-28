@@ -1,0 +1,14 @@
+// Corner case: deeply nested function application
+language core;
+
+fn add_one(n : Nat) -> Nat {
+  return succ(n)
+}
+
+fn apply_twice(f : fn(Nat) -> Nat) -> fn(Nat) -> Nat {
+  return fn(x : Nat) { return f(f(x)) }
+}
+
+fn main(n : Nat) -> Nat {
+  return apply_twice(add_one)(apply_twice(add_one)(n))
+}

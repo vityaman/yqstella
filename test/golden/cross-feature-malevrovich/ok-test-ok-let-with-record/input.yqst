@@ -1,0 +1,7 @@
+// Corner case: let binding with record value
+language core;
+extend with #let-bindings, #records;
+
+fn main(n : Nat) -> Nat {
+  return let r = {x = n, y = true} in r.x
+}

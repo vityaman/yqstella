@@ -1,0 +1,14 @@
+// Nested match: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+// inner match branch returns wrong type
+language core;
+extend with #sum-types;
+
+fn main(x : (Nat + Bool) + Nat) -> Nat {
+  return match x {
+      inl(inner) => match inner {
+          inl(n) => n
+        | inr(b) => b   // Bool where Nat expected
+      }
+    | inr(n) => n
+  }
+}

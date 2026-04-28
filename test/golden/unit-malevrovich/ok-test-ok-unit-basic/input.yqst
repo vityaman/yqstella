@@ -1,0 +1,6 @@
+language core;
+extend with #unit-type;
+
+fn main(x : Unit) -> Unit {
+  return unit
+}

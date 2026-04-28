@@ -1,0 +1,17 @@
+// Nested match: three levels deep using variants and sum types
+// outer: variant, middle: sum type, inner: variant
+language core;
+extend with #sum-types, #variants;
+
+fn main(x : <| outer : Nat + <| a : Nat, b : Bool |>, other : Bool |>) -> Nat {
+  return match x {
+      <| outer = mid |> => match mid {
+          inl(n) => n
+        | inr(inner) => match inner {
+              <| a = n |> => succ(n)
+            | <| b = f |> => if f then 2 else 3
+          }
+      }
+    | <| other = f |> => if f then 0 else 1
+  }
+}

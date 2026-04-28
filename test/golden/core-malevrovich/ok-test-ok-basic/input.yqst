@@ -1,0 +1,6 @@
+// Ожидание: успех (код 0)
+language core;
+
+fn main(x : Nat) -> Nat {
+  return x
+}

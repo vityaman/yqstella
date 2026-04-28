@@ -1,0 +1,10 @@
+language core;
+extend with #lists;
+
+fn prepend(n : Nat) -> [Nat] {
+  return cons(n, ([] as [Nat]))
+}
+
+fn main(n : Nat) -> [Nat] {
+  return prepend(n)
+}

@@ -1,0 +1,11 @@
+// Corner case: ERROR_UNEXPECTED_PATTERN_FOR_TYPE
+// using inl/inr patterns on a non-sum type
+language core;
+extend with #sum-types;
+
+fn main(n : Nat) -> Nat {
+  return match n {
+      inl(x) => x
+    | inr(y) => y
+  }
+}

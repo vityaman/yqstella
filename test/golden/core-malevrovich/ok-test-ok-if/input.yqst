@@ -1,0 +1,6 @@
+// Ожидание: успех (код 0)
+language core;
+
+fn main(b : Bool) -> Nat {
+  return if b then 0 else succ(0)
+}

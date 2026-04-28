@@ -1,0 +1,7 @@
+// Corner case: record containing a variant field
+language core;
+extend with #records, #variants;
+
+fn main(n : Nat) -> {val : <| some : Nat, none : Bool |>} {
+  return {val = <| some = n |>}
+}

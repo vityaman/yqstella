@@ -1,0 +1,134 @@
+// Large comprehensive Stella program
+// Implements: option type (via variants), list utilities, arithmetic,
+// and a pipeline combining all features.
+language core;
+extend with
+  #fixpoint-combinator,
+  #lists,
+  #sum-types,
+  #variants,
+  #records,
+  #pairs,
+  #let-bindings,
+  #type-ascriptions,
+  #integers,
+  #unit-type;
+
+// ─── Arithmetic helpers ───────────────────────────────────────────────────────
+
+fn add(n : Nat) -> fn(Nat) -> Nat {
+  return fn(m : Nat) {
+    return Nat::rec(m, n, fn(prev : Nat) { return fn(acc : Nat) { return succ(acc) } })
+  }
+}
+
+fn mul(n : Nat) -> fn(Nat) -> Nat {
+  return fn(m : Nat) {
+    return Nat::rec(m, 0, fn(prev : Nat) { return fn(acc : Nat) { return add(n)(acc) } })
+  }
+}
+
+fn gt_zero(n : Nat) -> Bool {
+  return if Nat::iszero(n) then false else true
+}
+
+// ─── Option type (variant-based) ─────────────────────────────────────────────
+
+// <| some : Nat, none : Bool |>  — Bool is a dummy payload for none
+
+fn option_some(n : Nat) -> <| some : Nat, none : Bool |> {
+  return <| some = n |>
+}
+
+fn option_none(u : Unit) -> <| some : Nat, none : Bool |> {
+  return <| none = false |>
+}
+
+fn option_map(f : fn(Nat) -> Nat) -> fn(<| some : Nat, none : Bool |>) -> <| some : Nat, none : Bool |> {
+  return fn(opt : <| some : Nat, none : Bool |>) {
+    return match opt {
+        <| some = n |> => option_some(f(n))
+      | <| none = _ |> => option_none(unit)
+    }
+  }
+}
+
+fn option_get_or(default : Nat) -> fn(<| some : Nat, none : Bool |>) -> Nat {
+  return fn(opt : <| some : Nat, none : Bool |>) {
+    return match opt {
+        <| some = n |> => n
+      | <| none = _ |> => default
+    }
+  }
+}
+
+// ─── List utilities ───────────────────────────────────────────────────────────
+
+fn list_length(xs : [Nat]) -> Nat {
+  return fix(fn(self : fn([Nat]) -> Nat) {
+    return fn(ys : [Nat]) {
+      return if List::isempty(ys) then 0 else succ(self(List::tail(ys)))
+    }
+  })(xs)
+}
+
+fn list_sum(xs : [Nat]) -> Nat {
+  return fix(fn(self : fn([Nat]) -> Nat) {
+    return fn(ys : [Nat]) {
+      return if List::isempty(ys) then 0 else add(List::head(ys))(self(List::tail(ys)))
+    }
+  })(xs)
+}
+
+fn list_map(f : fn(Nat) -> Nat) -> fn([Nat]) -> [Nat] {
+  return fix(fn(self : fn([Nat]) -> [Nat]) {
+    return fn(xs : [Nat]) {
+      return if List::isempty(xs)
+        then ([] as [Nat])
+        else cons(f(List::head(xs)), self(List::tail(xs)))
+    }
+  })
+}
+
+fn list_filter_positive(xs : [Nat]) -> [Nat] {
+  return fix(fn(self : fn([Nat]) -> [Nat]) {
+    return fn(ys : [Nat]) {
+      return if List::isempty(ys)
+        then ([] as [Nat])
+        else (let h = List::head(ys) in
+             let t = self(List::tail(ys)) in
+             if gt_zero(h) then cons(h, t) else t)
+    }
+  })(xs)
+}
+
+// ─── Record-based "statistics" ────────────────────────────────────────────────
+
+fn compute_stats(xs : [Nat]) -> {len : Nat, total : Nat} {
+  return {len = list_length(xs), total = list_sum(xs)}
+}
+
+// ─── Sum-type based result ────────────────────────────────────────────────────
+
+fn safe_head(xs : [Nat]) -> Nat + Bool {
+  return if List::isempty(xs) then inr(false) else inl(List::head(xs))
+}
+
+fn result_to_nat(r : Nat + Bool) -> Nat {
+  return match r {
+      inl(n) => n
+    | inr(_) => 0
+  }
+}
+
+// ─── Main: pipeline ───────────────────────────────────────────────────────────
+
+fn main(n : Nat) -> {len : Nat, total : Nat} {
+  return let raw = [n, succ(n), succ(succ(n)), succ(succ(succ(n)))] in
+         let doubled = list_map(mul(2))(raw) in
+         let filtered = list_filter_positive(doubled) in
+         let stats = compute_stats(filtered) in
+         let head_opt = option_map(fn(x : Nat) { return succ(x) })(option_some(result_to_nat(safe_head(filtered)))) in
+         let head_val = option_get_or(0)(head_opt) in
+         {len = stats.len, total = add(stats.total)(head_val)}
+}

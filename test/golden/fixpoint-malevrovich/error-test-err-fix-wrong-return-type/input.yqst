@@ -1,0 +1,10 @@
+// Corner case: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+// fix argument returns wrong type
+language core;
+extend with #fixpoint-combinator;
+
+fn main(n : Nat) -> Bool {
+  return fix(fn(self : fn(Nat) -> Nat) {
+    return fn(x : Nat) { return x }
+  })(n)
+}

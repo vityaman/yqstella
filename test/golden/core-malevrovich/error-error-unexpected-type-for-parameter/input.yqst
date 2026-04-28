@@ -1,0 +1,18 @@
+language core;
+
+extend with
+  #unit-type,
+  #references,
+  #arithmetic-operators,
+  #sequencing,
+  #natural-literals;
+
+fn main(n : Nat) -> fn(Nat) -> Nat {
+  return foo(n)
+}
+
+fn foo(n : Nat) -> fn(Nat) -> Nat {
+  return fn(n : Bool) {
+    return n
+  }
+}

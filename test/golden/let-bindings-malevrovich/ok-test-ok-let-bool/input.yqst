@@ -1,0 +1,6 @@
+language core;
+extend with #let-bindings;
+
+fn main(b : Bool) -> Bool {
+  return let x = b in x
+}

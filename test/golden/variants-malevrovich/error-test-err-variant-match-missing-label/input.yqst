@@ -1,0 +1,10 @@
+// Corner case: ERROR_NONEXHAUSTIVE_MATCH_PATTERNS
+// match on variant missing one label
+language core;
+extend with #variants;
+
+fn main(x : <| ok : Nat, err : Bool |>) -> Nat {
+  return match x {
+    <| ok = n |> => n
+  }
+}

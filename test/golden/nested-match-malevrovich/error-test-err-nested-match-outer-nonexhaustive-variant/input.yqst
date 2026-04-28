@@ -1,0 +1,15 @@
+// Nested match: ERROR_NONEXHAUSTIVE_MATCH_PATTERNS
+// outer match on variant is missing a label, inner match is fine
+language core;
+extend with #sum-types, #variants;
+
+fn main(x : <| a : Nat + Bool, b : Nat, c : Bool |>) -> Nat {
+  return match x {
+      <| a = s |> => match s {
+          inl(n) => n
+        | inr(b) => if b then 1 else 0
+      }
+    | <| b = n |> => n
+    // missing: <| c = _ |>
+  }
+}

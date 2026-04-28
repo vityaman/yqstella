@@ -1,0 +1,6 @@
+// Ожидание: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+language core;
+
+fn main(b : Bool) -> Nat {
+  return succ(b)   // succ ожидает Nat
+}

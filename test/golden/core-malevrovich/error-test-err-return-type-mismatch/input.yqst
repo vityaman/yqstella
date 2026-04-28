@@ -1,0 +1,7 @@
+// Corner case: ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION
+// function return type doesn't match declared return type
+language core;
+
+fn main(n : Nat) -> Bool {
+  return succ(n)
+}

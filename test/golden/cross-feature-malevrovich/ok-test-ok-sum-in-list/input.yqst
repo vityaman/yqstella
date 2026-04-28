@@ -1,0 +1,7 @@
+// Corner case: list of sum types
+language core;
+extend with #sum-types, #lists;
+
+fn main(n : Nat) -> [Nat + Bool] {
+  return [inl(n), inr(true), inl(succ(n))]
+}

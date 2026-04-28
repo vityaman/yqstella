@@ -1,0 +1,15 @@
+language core;
+extend with #variants;
+
+fn classify(n : Nat) -> <| zero : Nat, positive : Nat |> {
+  return if Nat::iszero(n)
+    then <| zero = n |>
+    else <| positive = n |>
+}
+
+fn main(n : Nat) -> Nat {
+  return match classify(n) {
+    <| zero = z |> => 0
+  | <| positive = p |> => p
+  }
+}

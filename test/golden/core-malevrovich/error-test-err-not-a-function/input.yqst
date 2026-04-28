@@ -1,0 +1,6 @@
+// Ожидание: ERROR_NOT_A_FUNCTION
+language core;
+
+fn main(x : Nat) -> Nat {
+  return x(0)   // x — не функция
+}

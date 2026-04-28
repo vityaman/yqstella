@@ -1,0 +1,8 @@
+// Corner case: ERROR_UNEXPECTED_FIELD_ACCESS
+// let binding with record, accessing non-existent field
+language core;
+extend with #let-bindings, #records;
+
+fn main(n : Nat) -> Nat {
+  return let r = {x = n, y = true} in r.z
+}
