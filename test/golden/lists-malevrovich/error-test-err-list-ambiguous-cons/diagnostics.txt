@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/error-test-err-list-ambiguous-cons/input.yqst:5:30: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected [Nat], got [Bool]
+>   return List::head(cons(n, ([] as [Bool])))
+                               ^

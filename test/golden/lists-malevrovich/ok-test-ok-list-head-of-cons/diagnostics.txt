@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/ok-test-ok-list-head-of-cons/input.yqst:5:30: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return List::head(cons(n, ([] as [Nat])))
+                               ^

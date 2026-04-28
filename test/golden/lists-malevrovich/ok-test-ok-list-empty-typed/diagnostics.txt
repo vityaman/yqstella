@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/ok-test-ok-list-empty-typed/input.yqst:5:11: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return ([] as [Nat])
+            ^

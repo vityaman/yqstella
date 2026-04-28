@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/error-test-err-mismatched-list-head/input.yqst:5:21: [ERROR_NOT_A_LIST]
+type mismatch: expected [Nat], got Nat
+>   return List::head(n)
+                      ^

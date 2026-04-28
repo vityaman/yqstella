@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/error-test-err-not-a-list-tail/input.yqst:5:21: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected [Nat], got [Bool]
+>   return List::tail(n)
+                      ^

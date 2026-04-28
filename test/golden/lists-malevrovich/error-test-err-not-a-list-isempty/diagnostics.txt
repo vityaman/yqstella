@@ -1,0 +1,4 @@
+test/golden/lists-malevrovich/error-test-err-not-a-list-isempty/input.yqst:5:24: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return List::isempty(n)
+                         ^

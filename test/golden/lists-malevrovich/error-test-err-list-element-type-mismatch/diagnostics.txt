@@ -1,0 +1,8 @@
+test/golden/lists-malevrovich/error-test-err-list-element-type-mismatch/input.yqst:5:11: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return [true, false]
+            ^
+test/golden/lists-malevrovich/error-test-err-list-element-type-mismatch/input.yqst:5:17: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return [true, false]
+                  ^
