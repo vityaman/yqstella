@@ -123,3 +123,5 @@ the Stella reference implementation and is executed on the tool called
 - [YTsaurus, YQL Documentation](https://ytsaurus.tech/docs/en/yql/)
 
 - [YDB, YQL Essentials Source Code](https://github.com/ydb-platform/ydb/tree/main/yql/essentials)
+
+- [LUC MARANGET, Warnings for pattern matching](http://moscova.inria.fr/~maranget/papers/warn/warn.pdf)
