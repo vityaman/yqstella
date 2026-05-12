@@ -1,0 +1,8 @@
+minirun ABI version: 2.45.0
+test/golden/panic/example/yql.yqls:<main>:11:10: Error: Condition violated:
+
+panic at :9:27
+
+
+	        (Ensure (Uint64 '0) (Bool 'false) (String '"panic at :9:27"))
+	         ^

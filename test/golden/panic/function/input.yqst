@@ -1,0 +1,12 @@
+language core;
+
+extend with
+  #panic;
+
+fn main(n : Nat) -> Nat {
+  return (
+    if (Nat::iszero(n))
+    then (fn (x : Nat) { return x; })
+    else panic!
+  )(n)
+}

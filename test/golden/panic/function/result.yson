@@ -1,0 +1,27 @@
+minirun ABI version: 2.45.0
+test/golden/panic/function/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/panic/function/yql.yqls:<main>:16:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/panic/function/yql.yqls:<main>:16:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/panic/function/yql.yqls:<main>:16:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/panic/function/yql.yqls:<main>:8:6: Error: At function: Apply
+                	    (Apply
+	     ^
+                    test/golden/panic/function/yql.yqls:<main>:9:8: Error: At function: If
+                    	      (If
+	       ^
+                        test/golden/panic/function/yql.yqls:<main>:12:10: Error: At function: Ensure
+                        	        (Ensure (lambda '(x0) (Uint64 '0)) (Bool 'false) (String '"panic at :10:10")))
+	         ^
+                            test/golden/panic/function/yql.yqls:<main>:12:18: Error: Expected computable data, but got lambda
+                            	        (Ensure (lambda '(x0) (Uint64 '0)) (Bool 'false) (String '"panic at :10:10")))
+	                 ^
+                            test/golden/panic/function/yql.yqls:<main>:12:18: Error: Computable required. Atom, key, world, datasink, datasource, type, lambda are not computable
+                            	        (Ensure (lambda '(x0) (Uint64 '0)) (Bool 'false) (String '"panic at :10:10")))
+	                 ^

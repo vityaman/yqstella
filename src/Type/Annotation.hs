@@ -18,6 +18,7 @@ import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
+import Type.Exception (annotateExceptionExprType)
 import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
 import Type.Match (annotateLetType, annotateMatchType)
@@ -25,7 +26,6 @@ import Type.Record (annotateDotRecordType, annotateRecordType)
 import Type.Reference (annotateRefExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
-import Type.Exception (annotateExceptionExprType)
 
 class TypeAnnotatable f where
   annotateType :: Maybe Type -> f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
@@ -271,15 +271,12 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.Tail (p, listT') expr')
   annotateType t x@(AST.Panic {}) =
     annotateExceptionExprType t x annotateType
-  annotateType _ x@(AST.Throw {}) = do
-    tell [notImplemented (annotation x) "Throw"]
-    return $ stub x
-  annotateType _ x@(AST.TryCatch {}) = do
-    tell [notImplemented (annotation x) "TryCatch"]
-    return $ stub x
-  annotateType _ x@(AST.TryWith {}) = do
-    tell [notImplemented (annotation x) "TryWith"]
-    return $ stub x
+  annotateType t x@(AST.Throw {}) = do
+    annotateExceptionExprType t x annotateType
+  annotateType t x@(AST.TryCatch {}) = do
+    annotateExceptionExprType t x annotateType
+  annotateType t x@(AST.TryWith {}) = do
+    annotateExceptionExprType t x annotateType
   annotateType _ x@(AST.TryCastAs {}) = do
     tell [notImplemented (annotation x) "TryCastAs"]
     return $ stub x

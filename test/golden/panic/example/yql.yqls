@@ -1,0 +1,18 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let div (lambda '(n)
+    (lambda '(m)
+      (If
+        (== m (Uint64 '0))
+        (Ensure (Uint64 '0) (Bool 'false) (String '"panic at :9:27"))
+        (Ensure (Uint64 '0) (Bool 'false) (String '"panic at :9:39"))))))
+  (let main (lambda '(n) (Apply (Apply div n) (Uint64 '0))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)
