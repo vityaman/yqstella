@@ -1,0 +1,4 @@
+test/golden/references/ascribed-new-non-ref-type/input.yqst:6:11: [ERROR_UNEXPECTED_REFERENCE]
+expected reference type, but got Nat
+>   return (new(0) as Nat)
+            ^

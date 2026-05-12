@@ -1,0 +1,4 @@
+test/golden/sequencing/assign-not-reference-first-statement/input.yqst:6:11: [ERROR_NOT_A_REFERENCE]
+expected a reference, but got Nat
+>   return (0 := false); 0
+            ^

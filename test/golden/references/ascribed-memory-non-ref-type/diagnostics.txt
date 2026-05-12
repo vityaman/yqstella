@@ -1,0 +1,4 @@
+test/golden/references/ascribed-memory-non-ref-type/input.yqst:6:11: [ERROR_UNEXPECTED_MEMORY_ADDRESS]
+expected Nat, but got memory address
+>   return (<0x0> as Nat)
+            ^
