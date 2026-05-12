@@ -25,6 +25,7 @@ import Type.Record (annotateDotRecordType, annotateRecordType)
 import Type.Reference (annotateRefExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
+import Type.Exception (annotateExceptionExprType)
 
 class TypeAnnotatable f where
   annotateType :: Maybe Type -> f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
@@ -268,9 +269,8 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- annotateType listT expr
     let listT' = listT <|> snd (annotation expr')
     return (AST.Tail (p, listT') expr')
-  annotateType _ x@(AST.Panic {}) = do
-    tell [notImplemented (annotation x) "Panic"]
-    return $ stub x
+  annotateType t x@(AST.Panic {}) =
+    annotateExceptionExprType t x annotateType
   annotateType _ x@(AST.Throw {}) = do
     tell [notImplemented (annotation x) "Throw"]
     return $ stub x
