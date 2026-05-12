@@ -1,0 +1,8 @@
+language core;
+
+extend with
+  #unit-type;
+
+fn main(n : Nat) -> Nat {
+  return unit; n
+}

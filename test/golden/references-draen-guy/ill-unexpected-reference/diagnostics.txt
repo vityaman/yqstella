@@ -1,0 +1,4 @@
+test/golden/references-draen-guy/ill-unexpected-reference/input.yqst:8:10: [ERROR_UNEXPECTED_REFERENCE]
+expected reference type, but got Unit
+>   return new(0)
+           ^

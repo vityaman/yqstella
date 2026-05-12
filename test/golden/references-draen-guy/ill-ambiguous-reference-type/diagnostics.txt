@@ -1,0 +1,4 @@
+test/golden/references-draen-guy/ill-ambiguous-reference-type/input.yqst:8:20: [ERROR_AMBIGUOUS_REFERENCE_TYPE]
+type inference for memory address is not supported (use type ascriptions)
+>   return let ref = <0x0> in 0
+                     ^

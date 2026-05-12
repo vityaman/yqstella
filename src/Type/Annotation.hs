@@ -22,6 +22,7 @@ import Type.Expectation (TypeKind (Expected, Inferred), liftType, liftType', lis
 import Type.Expression (annotateTT2B, annotateTT2T)
 import Type.Match (annotateLetType, annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
+import Type.Reference (annotateRefExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
 
@@ -124,12 +125,10 @@ instance TypeAnnotatable AST.ExprData' where
     return (AST.NoExprData (p, t'))
 
 instance TypeAnnotatable AST.Expr' where
-  annotateType _ x@(AST.Sequence p _ _) = do
-    tell [notImplemented p "Sequence"]
-    return $ stub x
-  annotateType _ x@(AST.Assign {}) = do
-    tell [notImplemented (annotation x) "Assign"]
-    return $ stub x
+  annotateType t x@(AST.Sequence {}) = do
+    annotateRefExprType t x annotateType
+  annotateType t x@(AST.Assign {}) = do
+    annotateRefExprType t x annotateType
   annotateType t (AST.If p condition thenB elseB) = do
     condition' <- checkType (Type.fromAST' AST.TypeBool) condition
     thenB' <- annotateType t thenB
@@ -221,12 +220,10 @@ instance TypeAnnotatable AST.Expr' where
     rhs' <- checkType (Type.fromAST' AST.TypeBool) rhs
     t' <- liftType p AST.TypeBool t
     return (AST.LogicAnd (p, Just t') lhs' rhs')
-  annotateType _ x@(AST.Ref {}) = do
-    tell [notImplemented (annotation x) "Ref"]
-    return $ stub x
-  annotateType _ x@(AST.Deref {}) = do
-    tell [notImplemented (annotation x) "Deref"]
-    return $ stub x
+  annotateType t x@(AST.Ref {}) =
+    annotateRefExprType t x annotateType
+  annotateType t x@(AST.Deref {}) = do
+    annotateRefExprType t x annotateType
   annotateType t (AST.Application p f xs) =
     annotateApplicationType t p f xs annotateType
   annotateType _ x@(AST.TypeApplication {}) = do
@@ -380,9 +377,8 @@ instance TypeAnnotatable AST.Expr' where
           return Nothing
 
     return $ AST.ConstInt (p, t') n
-  annotateType _ x@(AST.ConstMemory {}) = do
-    tell [notImplemented (annotation x) "ConstMemory"]
-    return $ stub x
+  annotateType t x@(AST.ConstMemory {}) =
+    annotateRefExprType t x annotateType
   annotateType t (AST.Var p stellaident@(AST.StellaIdent name)) = do
     context <- get
 

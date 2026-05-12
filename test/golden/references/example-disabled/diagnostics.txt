@@ -1,0 +1,20 @@
+test/golden/references/example-disabled/input.yqst:8:18: [ERROR_BAD_EXTENSION]
+disabled extension usage: #references
+> fn inc_ref(ref : &Nat) -> Unit {
+                   ^
+test/golden/references/example-disabled/input.yqst:9:22: [ERROR_BAD_EXTENSION]
+disabled extension usage: #references
+>   return ref := succ(*ref)
+                       ^
+test/golden/references/example-disabled/input.yqst:12:15: [ERROR_BAD_EXTENSION]
+disabled extension usage: #references
+> fn inc3(ref : &Nat) -> Nat {
+                ^
+test/golden/references/example-disabled/input.yqst:17:5: [ERROR_BAD_EXTENSION]
+disabled extension usage: #references
+>     *ref
+      ^
+test/golden/references/example-disabled/input.yqst:21:20: [ERROR_BAD_EXTENSION]
+disabled extension usage: #references
+>   return let ref = new(n) in
+                     ^

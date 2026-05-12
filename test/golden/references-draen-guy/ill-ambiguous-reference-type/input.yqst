@@ -1,0 +1,9 @@
+language core;
+
+extend with
+  #references,
+  #let-bindings;
+
+fn main(a : Nat) -> Nat {
+  return let ref = <0x0> in 0
+}

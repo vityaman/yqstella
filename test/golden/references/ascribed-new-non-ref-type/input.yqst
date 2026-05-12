@@ -1,0 +1,7 @@
+language core;
+
+extend with #references, #type-ascriptions;
+
+fn main(n : Nat) -> Nat {
+  return (new(0) as Nat)
+}

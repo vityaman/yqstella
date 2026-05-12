@@ -1,0 +1,7 @@
+language core;
+
+extend with #sequencing, #references;
+
+fn main(n : Nat) -> Nat {
+  return (0 := false); 0
+}
