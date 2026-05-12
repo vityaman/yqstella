@@ -1,0 +1,4 @@
+test/golden/sequencing/trivial-disabled/input.yqst:7:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #sequencing
+>   return unit; n
+           ^

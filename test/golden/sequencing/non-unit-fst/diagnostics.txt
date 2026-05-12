@@ -1,0 +1,4 @@
+test/golden/sequencing/non-unit-fst/input.yqst:7:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Unit, got Nat
+>   return n; n
+           ^
