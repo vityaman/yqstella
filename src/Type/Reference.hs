@@ -1,11 +1,8 @@
-{-# LANGUAGE TupleSections #-}
-
 module Type.Reference (annotateRefExprType) where
 
-import Annotation (Annotated (annotation))
 import Control.Monad.Writer (tell)
 import Diagnostic.Code (Code (..))
-import Diagnostic.Core (Severity (Error), diagnostic, notImplemented)
+import Diagnostic.Core (Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (..))
@@ -56,8 +53,8 @@ annotateRefExprType t (AST.Deref p expr) annotateType = do
   expr' <- annotateType ref't expr
 
   t' <- case typeOf expr' of
-    Just t'@(Type (AST.TypeRef () _)) ->
-      return $ Just t'
+    Just (Type (AST.TypeRef () t')) ->
+      return $ Just $ Type t'
     Just t'@(Type _) -> do
       let message = "expected a reference type, got " ++ show t'
       tell [diagnostic Error NOT_A_REFERENCE (pointRange p) message]
@@ -66,7 +63,14 @@ annotateRefExprType t (AST.Deref p expr) annotateType = do
       return Nothing
 
   return (AST.Deref (p, t') expr')
-annotateRefExprType _ x@(AST.ConstMemory {}) _ = do
-  tell [notImplemented (annotation x) "ConstMemory"]
-  return $ fmap (,Nothing) x
+annotateRefExprType Nothing (AST.ConstMemory p addr) _ = do
+  let message = "type inference for memory address is not supported (use type ascriptions)"
+  tell [diagnostic Error AMBIGUOUS_REFERENCE_TYPE (pointRange p) message]
+  return (AST.ConstMemory (p, Nothing) addr)
+annotateRefExprType t@(Just (Type (AST.TypeRef () _))) (AST.ConstMemory p addr) _ = do
+  return (AST.ConstMemory (p, t) addr)
+annotateRefExprType (Just t) (AST.ConstMemory p addr) _ = do
+  let message = "expected " ++ show t ++ ", but got memory address"
+  tell [diagnostic Error UNEXPECTED_MEMORY_ADDRESS (pointRange p) message]
+  return (AST.ConstMemory (p, Nothing) addr)
 annotateRefExprType _ _ _ = error "Unexpected non-reference expression"

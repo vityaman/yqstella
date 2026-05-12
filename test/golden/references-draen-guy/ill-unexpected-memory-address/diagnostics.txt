@@ -1,0 +1,4 @@
+test/golden/references-draen-guy/ill-unexpected-memory-address/input.yqst:8:10: [ERROR_UNEXPECTED_MEMORY_ADDRESS]
+expected Nat, but got memory address
+>   return <0x0>
+           ^

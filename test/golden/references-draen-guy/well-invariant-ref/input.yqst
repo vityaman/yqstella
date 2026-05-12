@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #references,
+  #let-bindings,
+  #records;
+
+fn use(rec : &{ a : Nat, b : Bool }) -> Nat {
+  return (*rec).a
+}
+
+fn main(n : Nat) -> Nat {
+  return let x = new({ b = false, a = 0 }) in use(x)
+}

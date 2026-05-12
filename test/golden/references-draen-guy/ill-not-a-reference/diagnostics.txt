@@ -1,0 +1,4 @@
+test/golden/references-draen-guy/ill-not-a-reference/input.yqst:8:10: [ERROR_NOT_A_REFERENCE]
+expected a reference, but got Nat
+>   return 0 := false
+           ^
