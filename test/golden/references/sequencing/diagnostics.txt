@@ -1,0 +1,4 @@
+test/golden/references/sequencing/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #sequencing not implemented
+> language core;
+  ^

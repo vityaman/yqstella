@@ -42,9 +42,10 @@ annotateRefExprType Nothing (AST.Ref p expr) annotateType = do
   expr' <- annotateType Nothing expr
   let t = Type . AST.TypeRef () . (\(Type x) -> x) <$> typeOf expr'
   return (AST.Ref (p, t) expr')
-annotateRefExprType (Just t@(Type (AST.TypeRef () _))) (AST.Ref p expr) annotateType = do
-  expr' <- annotateType (Just t) expr
-  return (AST.Ref (p, typeOf expr' >> Just t) expr')
+annotateRefExprType (Just t'@(Type (AST.TypeRef () t))) (AST.Ref p expr) annotateType = do
+  let expr't = Type.fromAST t
+  expr' <- annotateType (Just expr't) expr
+  return (AST.Ref (p, typeOf expr' >> Just t') expr')
 annotateRefExprType (Just t) (AST.Ref p expr) annotateType = do
   expr' <- annotateType Nothing expr
   let message = "expected reference type, but got " ++ show t

@@ -1,0 +1,16 @@
+language core;
+
+extend with
+  #sequencing,
+  #references,
+  #let-bindings,
+  #arithmetic-operators;
+
+fn main(n : Nat) -> Nat {
+  // returns 2
+  return
+    let x = new(0) in
+    x := succ(*x);
+    x := *x + *x;
+    *x
+}
