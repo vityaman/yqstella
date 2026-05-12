@@ -1,4 +1,4 @@
-test/golden/references-draen-guy/well-invariant-ref/input.yqst:13:51: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+test/golden/references-draen-guy/ill-invariant-ref/input.yqst:13:51: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
 type mismatch: expected &{a : Nat, b : Bool}, got &{b : Bool, a : Nat}
 >   return let x = new({ b = false, a = 0 }) in use(x)
                                                     ^
