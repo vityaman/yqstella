@@ -126,9 +126,17 @@ annotateRecordType t p bindings annotateType = do
       return Nothing
 
   let toType map' =
-        let xs = [AST.ARecordFieldType () (AST.StellaIdent k) v | (k, Type v) <- map']
+        let xs = [AST.ARecordFieldType () (AST.StellaIdent k) v | (k, Type v) <- Map.toList map']
          in Type $ AST.TypeRecord () xs
 
-      t' = fmap (toType . Map.toList) t''
+      infer :: [AST.Binding' (Position, Maybe Type)] -> Maybe Type
+      infer bs =
+        let toField b@(AST.ABinding _ (AST.StellaIdent k) _) =
+              (\(Type ty) -> AST.ARecordFieldType () (AST.StellaIdent k) ty) <$> typeOf b
+         in Type . AST.TypeRecord () <$> traverse toField bs
+
+      t' = case expectedTMap of
+        Nothing -> infer bindingsUniq'
+        Just _ -> fmap toType t''
 
   return (AST.Record (p, t') bindings')
