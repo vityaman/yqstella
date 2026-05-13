@@ -208,6 +208,11 @@ instance YQLTranslatable AST.Expr' where
   toYQL (AST.Tail _ expr) = do
     expr' <- toYQL expr
     return $ Y [A "Skip", expr', Y [A "Uint64", Q $ A "1"]]
+  toYQL (AST.Panic (p, Just t)) = do
+    value <- toYQL $ defaultValue t
+    false <- toYQL (AST.ConstFalse (unknown, Just $ Type.fromAST' AST.TypeBool))
+    let message = Y [A "String", Q $ A $ "\"" ++ "panic at :" ++ show p ++ "\""]
+    return $ Y [A "Ensure", value, false, message]
   toYQL (AST.Inl (_, Just (Type t)) expr) = do
     t' <- toYQL $ fmap (const (unknown, Nothing)) t
     expr' <- toYQL expr
@@ -408,6 +413,42 @@ recipes (AST.PatternVar _ (AST.StellaIdent name)) =
 recipes x =
   Left $ unsupported x "AST.Pattern'"
 
+defaultValue :: Type -> AST.Expr' (Position, Maybe Type)
+defaultValue t@(Type (AST.TypeFun _ argts returnt)) =
+  let type' = fmap (const (unknown, Nothing))
+      decl i t' = AST.AParamDecl (unknown, Just (Type t')) (AST.StellaIdent $ "x" ++ show i) (type' t')
+      args = [decl i t' | (i, t') <- zip [0 :: Integer ..] argts]
+   in AST.Abstraction (unknown, Just t) args (defaultValue (Type returnt))
+defaultValue t@(Type (AST.TypeSum _ inl _)) =
+  AST.Inl (unknown, Just t) (defaultValue (Type inl))
+defaultValue t@(Type (AST.TypeTuple _ ts)) = do
+  let ts' = [defaultValue (Type t') | t' <- ts]
+   in AST.Tuple (unknown, Just t) ts'
+defaultValue t@(Type (AST.TypeRecord _ fields)) = do
+  let bindings = [binding id' t' | (AST.ARecordFieldType _ id' t') <- fields]
+      binding id' t' = AST.ABinding (unknown, Just (Type t')) id' (defaultValue (Type t'))
+   in AST.Record (unknown, Just t) bindings
+defaultValue t@(Type (AST.TypeVariant _ ((AST.AVariantFieldType _ id' (AST.NoTyping _)) : _))) =
+  let t' = Type.fromAST' AST.TypeUnit
+      data' = AST.SomeExprData (unknown, Just t') (AST.ConstUnit (unknown, Just t'))
+   in AST.Variant (unknown, Just t) id' data'
+defaultValue t@(Type (AST.TypeVariant _ ((AST.AVariantFieldType _ id' (AST.SomeTyping _ t')) : _))) =
+  let t'' = Type.fromAST t'
+      data' = AST.SomeExprData (unknown, Just t'') (AST.ConstUnit (unknown, Just t''))
+   in AST.Variant (unknown, Just t) id' data'
+defaultValue (Type (AST.TypeVariant _ [])) = do
+  error "defaultValue from AST.Type': empty variant type"
+defaultValue t@(Type (AST.TypeList _ _)) = do
+  AST.List (unknown, Just t) []
+defaultValue t@(Type (AST.TypeBool _)) =
+  AST.ConstFalse (unknown, Just t)
+defaultValue t@(Type (AST.TypeNat _)) =
+  AST.ConstInt (unknown, Just t) 0
+defaultValue t@(Type (AST.TypeUnit _)) =
+  AST.ConstUnit (unknown, Just t)
+defaultValue _ =
+  error "defaultValue from AST.Type': unexpected type"
+
 checkExtensions :: [Extension] -> Either Diagnostic ()
 checkExtensions extensions = case findUnsupported extensions of
   Nothing -> Right ()
@@ -435,6 +476,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension ArithmeticOperators = True
     isSupportedExtension ComparisonOperations = True
     isSupportedExtension LogicalOperators = True
+    isSupportedExtension Panic = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension

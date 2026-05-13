@@ -1,0 +1,8 @@
+test/golden/panic/example-disabled/input.yqst:8:27: [ERROR_BAD_EXTENSION]
+disabled extension usage: #panic
+>     return if m == 0 then panic! else panic!
+                            ^
+test/golden/panic/example-disabled/input.yqst:8:39: [ERROR_BAD_EXTENSION]
+disabled extension usage: #panic
+>     return if m == 0 then panic! else panic!
+                                        ^
