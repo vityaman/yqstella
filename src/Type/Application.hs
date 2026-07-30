@@ -92,14 +92,17 @@ annotateApplicationType t p f xs annotateType = do
 
       return (xs', returntype'')
     Just actual -> do
+      let message = "type mismatch: expected a function, got " ++ show actual
+       in tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
+
       xs' <- mapM (annotateType Nothing) xs
 
       let unknown = Type.fromAST' AST.TypeAuto
           expectedArgTypes = fmap (fromMaybe unknown . typeOf) xs'
           expected = Type.fn expectedArgTypes unknown
 
-      let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
-      tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
+      let message = "note: expected " ++ show expected
+       in tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
 
       return (xs', Nothing)
     Nothing -> do

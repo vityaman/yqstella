@@ -1,0 +1,11 @@
+language core;
+
+fn f(g : fn(Bool) -> Nat) -> fn(Nat) -> Nat {
+    return fn(n : Nat) {
+        return 0
+    }
+}
+
+fn main(f : Nat) -> Nat {
+  return f(fn (x : Bool) { return if x then n else succ(n) })(0)
+}
