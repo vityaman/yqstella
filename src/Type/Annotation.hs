@@ -337,7 +337,7 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.Fix (p, t') expr')
   annotateType (Just t) (AST.Fix p expr) = do
     let f = Type.fn [t] t
-    expr' <- checkType (Type.fn [f] f) expr
+    expr' <- checkType f expr
     let t' = typeOf expr'
     return (AST.Fix (p, t') expr')
   annotateType t (AST.NatRec p n z s) = do
