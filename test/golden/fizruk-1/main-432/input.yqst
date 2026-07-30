@@ -1,0 +1,9 @@
+language core;
+
+extend with
+    #let-bindings,
+    #fixpoint-combinator;
+
+fn main(n : fn(Nat) -> Nat) -> Nat {
+  return let a = fix(0) in a
+}

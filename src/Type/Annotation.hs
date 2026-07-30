@@ -331,7 +331,7 @@ instance TypeAnnotatable AST.Expr' where
     t' <- case typeOf expr' of
       Just (Type (AST.TypeFun () [arg] ret)) | arg == ret -> return $ Just (Type ret)
       Just t -> do
-        tell [mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p "T -> T" (show t)]
+        tell [mismatchSS NOT_A_FUNCTION p "T -> T" (show t)]
         return Nothing
       Nothing -> return Nothing
     return (AST.Fix (p, t') expr')
