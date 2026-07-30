@@ -74,7 +74,7 @@ checkType t@(Type (AST.TypeTuple _ ts)) (AST.PatternTuple p patterns) = do
   if length ts /= length patterns
     then
       let message = "expected tuple with length " ++ show (length ts) ++ ", got " ++ show (length patterns)
-       in Left $ diagnostic Error UNEXPECTED_TUPLE_LENGTH (pointRange p) message
+       in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE (pointRange p) message
     else do
       patterns' <- zipWithM checkType (fmap Type ts) patterns
       Right (AST.PatternTuple (p, t) patterns')
