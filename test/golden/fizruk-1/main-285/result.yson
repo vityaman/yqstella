@@ -1,0 +1,18 @@
+minirun ABI version: 2.45.0
+test/golden/fizruk-1/main-285/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/fizruk-1/main-285/yql.yqls:<main>:18:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/fizruk-1/main-285/yql.yqls:<main>:18:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/fizruk-1/main-285/yql.yqls:<main>:18:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/fizruk-1/main-285/yql.yqls:<main>:15:27: Error: At function: Member
+                	  (let main (lambda '(x) (Member (Apply mk x) 'x)))
+	                          ^
+                    test/golden/fizruk-1/main-285/yql.yqls:<main>:8:6: Error: Expected struct type, but got: Uint64
+                    	    (Member
+	     ^
