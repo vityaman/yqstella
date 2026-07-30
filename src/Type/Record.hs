@@ -14,6 +14,7 @@ import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
+import Type.Expectation (liftType')
 
 annotateDotRecordType ::
   Maybe Type ->
@@ -30,14 +31,13 @@ annotateDotRecordType t p expr field annotateType = do
       -- TODO(vityaman): make commons for records
       let toKV (AST.ARecordFieldType () (AST.StellaIdent k) v) = (k, Type v)
           tmap = Map.fromList $ fmap toKV fields
-
           t' = Map.lookup field tmap
 
       when (null t') $
         let message = "missing record field " ++ field ++ " : " ++ maybe "?" show t
          in tell [diagnostic Error UNEXPECTED_FIELD_ACCESS (pointRange p) message]
 
-      return t'
+      mapM (\x -> liftType' p x t) t'
     Just actual -> do
       let message =
             "type mismatch: expected record with "

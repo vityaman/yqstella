@@ -1,0 +1,4 @@
+test/golden/fizruk-1/main-285/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected {x : Nat, y : Nat}, got Nat
+>   return {
+           ^
