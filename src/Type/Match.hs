@@ -39,7 +39,7 @@ checkType t@(Type (AST.TypeVariant _ fields)) (AST.PatternVariant p (AST.StellaI
       Right entry'
     Nothing ->
       let message = "tag " ++ tag ++ " not found"
-       in Left $ diagnostic Error UNEXPECTED_VARIANT_LABEL (pointRange p) message
+       in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE (pointRange p) message
 
   case (data', maybeType) of
     (AST.NoPatternData p', AST.NoTyping _) ->

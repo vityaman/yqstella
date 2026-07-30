@@ -88,7 +88,7 @@ makeTestCase casePath = do
 
           let areFizrukTypesCorrect' = exitCode == ExitSuccess
 
-          let sideBySide = stderr ++ "\n\n" ++ stdout ++ "\n\nVS\n\n" ++ diagnostic'
+          let sideBySide = stderr ++ "\n" ++ stdout ++ "\n\nVS\n\n" ++ diagnostic'
 
           assertEqual
             ("fizruk vs yqstella status: \n" ++ sideBySide)
