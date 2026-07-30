@@ -1,0 +1,4 @@
+test/golden/fizruk-1/extra-5/input.yqst:6:10: [ERROR_UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA]
+expected 2 parameters for type fn(Nat, Nat) -> Nat, but actually got 3
+>   return fn(x : Nat, y : Nat, z : Nat) { return a }
+           ^
