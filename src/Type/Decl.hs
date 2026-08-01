@@ -45,7 +45,7 @@ withTypeAliases decls context = do
 withDecls :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
 withDecls decls context = do
   context' <- withTypeAliases decls context
-  funs <- withStateTAE (const context') (mapM visitFuns decls)
+  funs <- withStateTAE (const context') (mapM visit decls)
 
   let kpvs = catMaybes funs
 
@@ -67,24 +67,24 @@ withDecls decls context = do
   tell $ fmap toDiagnostic duplicates
   return $ foldr (uncurry Context.withTyped) context' kvs
   where
-    visitFuns :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
-    visitFuns (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
+    visit :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
+    visit (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
       args'' <- mapM toParamSilent paramdecls
       let args' = fmap snd args''
       returntype' <- sanitizeT returntype
       return $ Just (name, [(p, Type.fn args' returntype')])
-    visitFuns (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
+    visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
       tell [notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"]
       return Nothing
-    visitFuns (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
+    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
       tell [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
       return Nothing
-    visitFuns (AST.DeclTypeAlias {}) = do
+    visit (AST.DeclTypeAlias {}) = do
       return Nothing
-    visitFuns (AST.DeclExceptionType p type_) = do
+    visit (AST.DeclExceptionType p type_) = do
       tell [notImplemented p $ "name resolution for DeclExceptionType " ++ show (Type.fromAST type_)]
       return Nothing
-    visitFuns (AST.DeclExceptionVariant p (AST.StellaIdent name) _) = do
+    visit (AST.DeclExceptionVariant p (AST.StellaIdent name) _) = do
       tell [notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name]
       return Nothing
 
