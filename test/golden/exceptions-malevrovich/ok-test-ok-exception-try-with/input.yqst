@@ -1,0 +1,12 @@
+language core;
+extend with #exceptions, #exception-type-declaration;
+
+exception type = Nat
+
+fn safe_div(n : Nat) -> Nat {
+  return try { throw(0) } with { succ(0) }
+}
+
+fn main(n : Nat) -> Nat {
+  return safe_div(n)
+}

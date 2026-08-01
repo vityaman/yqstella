@@ -1,0 +1,4 @@
+test/golden/open-variant-exceptions/visibility/input.yqst:12:18: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label good for <| error_code : Nat |>
+>     return throw(<| good = 0 |>)
+                   ^

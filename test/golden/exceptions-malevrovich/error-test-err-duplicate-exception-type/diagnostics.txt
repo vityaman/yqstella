@@ -1,0 +1,4 @@
+test/golden/exceptions-malevrovich/error-test-err-duplicate-exception-type/input.yqst:5:1: [ERROR_DUPLICATE_EXCEPTION_TYPE]
+exception type redefinition is not supported
+> exception type = Bool
+  ^

@@ -2,6 +2,7 @@
 
 module Type.Decl (withParamDecls, withDecls, toPair, toParamSilent) where
 
+import Control.Monad (unless)
 import Control.Monad.Writer (tell)
 import qualified Data.Map as Map
 import Data.Maybe (catMaybes)
@@ -42,10 +43,10 @@ withTypeAliases decls context = do
   typeAliases <- catMaybes <$> mapM visit decls
   return $ foldr (uncurry Context.withTypeAliased) context typeAliases
 
-withDecls :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
-withDecls decls context = do
+withDecls :: [AST.Decl' Position] -> Bool -> Context -> TypeAnnotationEnv Context
+withDecls decls isTopLevel context = do
   context' <- withTypeAliases decls context
-  funs <- withStateTAE (const context') (mapM visitFuns decls)
+  funs <- withStateTAE (const context') (mapM visit decls)
 
   let kpvs = catMaybes funs
 
@@ -67,40 +68,36 @@ withDecls decls context = do
   tell $ fmap toDiagnostic duplicates
   return $ foldr (uncurry Context.withTyped) context' kvs
   where
-    visitFuns :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
-    visitFuns (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
+    visit :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
+    visit (AST.DeclFun p _ (AST.StellaIdent name) paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
       args'' <- mapM toParamSilent paramdecls
       let args' = fmap snd args''
       returntype' <- sanitizeT returntype
       return $ Just (name, [(p, Type.fn args' returntype')])
-    visitFuns (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
+    visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
       tell [notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"]
       return Nothing
-    visitFuns (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
+    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
       tell [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
       return Nothing
-    visitFuns (AST.DeclTypeAlias {}) = do
+    visit (AST.DeclTypeAlias {}) =
       return Nothing
-    visitFuns (AST.DeclExceptionType p type_) = do
-      tell [notImplemented p $ "name resolution for DeclExceptionType " ++ show (Type.fromAST type_)]
+    visit (AST.DeclExceptionType p _) = do
+      unless isTopLevel $ do
+        let message = "only-top level exception type is allowed"
+        tell [diagnostic Error ILLEGAL_LOCAL_EXCEPTION_TYPE (pointRange p) message]
       return Nothing
-    visitFuns (AST.DeclExceptionVariant p (AST.StellaIdent name) _) = do
-      tell [notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name]
+    visit (AST.DeclExceptionVariant p _ _) = do
+      unless isTopLevel $ do
+        let message = "only-top level exception variant type is allowed"
+        tell [diagnostic Error ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION (pointRange p) message]
       return Nothing
 
--- | 'sanitize' the parameter type for the typing environment. Duplicate
--- record\/variant fields in the written type are diagnosed here. The annotation
--- pass (see 'Type.Annotation', 'toParamSilent') re-shapes the same syntax again
--- without emitting those diagnostics a second time.
 toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
 toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = do
   t' <- sanitizeT t
   return (key, t')
 
--- | Like 'toPair' but does not re-report duplicate record\/variant type fields.
--- Used in 'visitFuns' (param types are later checked with 'toPair' in
--- 'withParamDecls'), in 'Type.Annotation' and 'Type.Application' after the
--- context pass.
 toParamSilent :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
 toParamSilent (AST.AParamDecl _ (AST.StellaIdent key) t) = do
   t' <- sanitizeTSilent t

@@ -9,7 +9,7 @@ import Control.Monad.State
 import Control.Monad.Writer
 import Data.Foldable (find)
 import Diagnostic.Code (Code (..))
-import Diagnostic.Core (Severity (Error), diagnostic, notImplemented)
+import Diagnostic.Core (Diagnostic (range), Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Application (annotateAbstractionType, annotateApplicationType)
@@ -38,7 +38,7 @@ inferType = annotateType Nothing
 
 instance TypeAnnotatable AST.Program' where
   annotateType _ (AST.AProgram p languagedecl extensions decls) = do
-    context' <- get >>= withDecls decls
+    context' <- get >>= withDecls decls {-isTopLevel=-} True
     decls' <- withStateTAE (const context') (mapM inferType decls)
 
     t' <- case find isMain decls' of
@@ -67,7 +67,7 @@ instance TypeAnnotatable AST.Decl' where
   annotateType _ (AST.DeclFun p annotations stellaident paramdecls returntype throwtype decls expr) = do
     unless (null annotations) $ tell [notImplemented p "DeclFun annotations"]
 
-    context' <- get >>= withDecls decls >>= withParamDecls paramdecls
+    context' <- get >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
 
     () <- case throwtype of
       (AST.NoThrowType _) -> pure ()
@@ -106,9 +106,19 @@ instance TypeAnnotatable AST.Decl' where
     return $ stub f
   annotateType _ f@(AST.DeclTypeAlias {}) = do
     return $ stub f
-  annotateType _ f@(AST.DeclExceptionType {}) = do
+  annotateType _ f@(AST.DeclExceptionType p t) = do
+    t' <- sanitizeT t
+    context <- get
+    _ <- case Context.withExceptionType t' context of
+      Right c -> put c
+      Left issue -> tell [issue {range = pointRange p}]
     return $ stub f
-  annotateType _ f@(AST.DeclExceptionVariant {}) = do
+  annotateType _ f@(AST.DeclExceptionVariant p (AST.StellaIdent name) t) = do
+    t' <- sanitizeT t
+    context <- get
+    _ <- case Context.withExceptionVariant name t' context of
+      Right c -> put c
+      Left issue -> tell [issue {range = pointRange p}]
     return $ stub f
 
 instance TypeAnnotatable AST.LocalDecl' where

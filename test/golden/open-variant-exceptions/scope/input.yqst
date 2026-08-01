@@ -1,0 +1,22 @@
+language core;
+
+extend with
+  #exceptions,
+  #open-variant-exceptions,
+  #variants,
+  #nested-function-declarations;
+
+exception variant a : Nat
+
+fn f(n : Nat) -> Nat {
+    return throw(<| a = 0 |>)
+}
+
+fn g(n : Nat) -> Nat {
+    exception variant b : Nat
+    return throw(<| b = 0 |>)
+}
+
+fn main(n : Nat) -> Nat {
+  return f(g(n))
+}

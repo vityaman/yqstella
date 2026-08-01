@@ -1,0 +1,12 @@
+test/golden/exception-type-declaration/redefinition/input.yqst:15:3: [ERROR_ILLEGAL_LOCAL_EXCEPTION_TYPE]
+only-top level exception type is allowed
+>   exception type = Bool
+    ^
+test/golden/exception-type-declaration/redefinition/input.yqst:15:3: [ERROR_DUPLICATE_EXCEPTION_TYPE]
+exception type redefinition is not supported
+>   exception type = Bool
+    ^
+test/golden/exception-type-declaration/redefinition/input.yqst:16:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return throw(false)
+                 ^

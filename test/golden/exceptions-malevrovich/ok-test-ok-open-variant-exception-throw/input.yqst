@@ -1,0 +1,12 @@
+language core;
+extend with #exceptions, #variants, #open-variant-exceptions;
+
+exception variant Failure : Nat
+
+fn fail(n : Nat) -> Bool {
+  return throw(<|Failure=n|>)
+}
+
+fn main(n : Nat) -> Bool {
+  return try { fail(n) } with { false }
+}

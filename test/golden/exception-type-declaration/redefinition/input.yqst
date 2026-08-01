@@ -1,0 +1,21 @@
+language core;
+
+extend with
+  #exceptions,
+  #exception-type-declaration,
+  #nested-function-declarations;
+
+exception type = Nat
+
+fn f(n : Nat) -> Nat {
+  return throw(0)
+}
+
+fn g(n : Nat) -> Nat {
+  exception type = Bool
+  return throw(false)
+}
+
+fn main(n : Nat) -> Nat {
+  return f(g(n))
+}

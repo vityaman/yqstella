@@ -1,6 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
-module Type.Match (annotateLetType, annotateMatchType) where
+module Type.Match (annotateLetType, annotateMatchType, annotateCaseType) where
 
 import Annotation (Annotated (annotation))
 import Control.Monad (unless, void, when, zipWithM)

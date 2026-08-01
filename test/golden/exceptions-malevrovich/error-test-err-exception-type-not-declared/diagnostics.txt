@@ -1,0 +1,4 @@
+test/golden/exceptions-malevrovich/error-test-err-exception-type-not-declared/input.yqst:5:10: [ERROR_EXCEPTION_TYPE_NOT_DECLARED]
+expection type is not declared
+>   return throw(succ(0))
+           ^

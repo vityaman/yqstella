@@ -1,0 +1,4 @@
+test/golden/exception-type-declaration/try-with-absent/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #exceptions not implemented
+> language core;
+  ^

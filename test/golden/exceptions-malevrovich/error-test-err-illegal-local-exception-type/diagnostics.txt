@@ -1,0 +1,8 @@
+test/golden/exceptions-malevrovich/error-test-err-illegal-local-exception-type/input.yqst:5:3: [ERROR_ILLEGAL_LOCAL_EXCEPTION_TYPE]
+only-top level exception type is allowed
+>   exception type = Nat
+    ^
+test/golden/exceptions-malevrovich/error-test-err-illegal-local-exception-type/input.yqst:6:10: [ERROR_EXCEPTION_TYPE_NOT_DECLARED]
+expection type is not declared
+>   return throw(succ(0))
+           ^

@@ -1,0 +1,7 @@
+language core;
+extend with #exceptions, #open-variant-exceptions, #nested-function-declarations;
+
+fn main(n : Nat) -> Nat {
+  exception variant Failure : Nat
+  return n
+}

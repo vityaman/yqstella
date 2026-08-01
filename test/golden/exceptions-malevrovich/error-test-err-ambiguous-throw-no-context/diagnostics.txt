@@ -1,0 +1,4 @@
+test/golden/exceptions-malevrovich/error-test-err-ambiguous-throw-no-context/input.yqst:8:18: [ERROR_AMBIGUOUS_THROW_TYPE]
+type inference for throw is not supported (use type ascriptions)
+>   return let x = throw(n) in x
+                   ^

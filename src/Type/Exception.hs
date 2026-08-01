@@ -2,14 +2,16 @@
 
 module Type.Exception (annotateExceptionExprType) where
 
-import Annotation (Annotated (annotation))
-import Control.Monad.Writer (tell)
-import Diagnostic.Code (Code (AMBIGUOUS_PANIC_TYPE))
-import Diagnostic.Core (Severity (..), diagnostic, notImplemented)
+import Control.Monad (when)
+import Control.Monad.RWS
+import Diagnostic.Code (Code (AMBIGUOUS_PANIC_TYPE, AMBIGUOUS_THROW_TYPE, EXCEPTION_TYPE_NOT_DECLARED))
+import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
+import Type.Context (exceptionType)
 import Type.Core (Type)
-import Type.Env (TypeAnnotationEnv, TypeAnnotator)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
+import Type.Match (annotateCaseType)
 
 annotateExceptionExprType ::
   Maybe Type ->
@@ -22,13 +24,46 @@ annotateExceptionExprType Nothing (AST.Panic p) _ = do
   return (AST.Panic (p, Nothing))
 annotateExceptionExprType t@(Just _) (AST.Panic p) _ = do
   return (AST.Panic (p, t))
-annotateExceptionExprType _ x@(AST.Throw {}) _ = do
-  tell [notImplemented (annotation x) "Throw"]
-  return $ fmap (,Nothing) x
-annotateExceptionExprType _ x@(AST.TryCatch {}) _ = do
-  tell [notImplemented (annotation x) "TryCatch"]
-  return $ fmap (,Nothing) x
-annotateExceptionExprType _ x@(AST.TryWith {}) _ = do
-  tell [notImplemented (annotation x) "TryWith"]
-  return $ fmap (,Nothing) x
+annotateExceptionExprType Nothing (AST.Throw p expr) annotateType = do
+  let message = "type inference for throw is not supported (use type ascriptions)"
+  tell [diagnostic Error AMBIGUOUS_THROW_TYPE (pointRange p) message]
+  expr' <- annotateType Nothing expr
+  return (AST.Throw (p, Nothing) expr')
+annotateExceptionExprType (Just t) (AST.Throw p expr) annotateType = do
+  context <- get
+
+  let exceptionT = exceptionType context
+  when (null exceptionT) $ do
+    let message = "expection type is not declared"
+    tell [diagnostic Error EXCEPTION_TYPE_NOT_DECLARED (pointRange p) message]
+
+  expr' <- annotateType exceptionT expr
+
+  let t' = exceptionT >> typeOf expr' >> Just t
+  return (AST.Throw (p, t') expr')
+annotateExceptionExprType t (AST.TryCatch p try pattern' catch) annotateType = do
+  context <- get
+
+  let exceptionT = exceptionType context
+  when (null exceptionT) $ do
+    let message = "expection type is not declared"
+    tell [diagnostic Error EXCEPTION_TYPE_NOT_DECLARED (pointRange p) message]
+
+  try' <- annotateType t try
+  let t' = typeOf try'
+
+  (pattern'', catch') <- case exceptionT of
+    Just exceptionT' -> do
+      (AST.AMatchCase _ pattern'' catch') <-
+        annotateCaseType t' (AST.AMatchCase p pattern' catch) exceptionT' annotateType
+      return (pattern'', catch')
+    Nothing ->
+      return (fmap (,Nothing) pattern', fmap (,Nothing) catch)
+
+  return $ AST.TryCatch (p, t') try' pattern'' catch'
+annotateExceptionExprType t (AST.TryWith p try catch) annotateType = do
+  try' <- annotateType t try
+  let t' = typeOf try'
+  catch' <- annotateType t' catch
+  return $ AST.TryWith (p, t') try' catch'
 annotateExceptionExprType _ _ _ = error "Unexpected non-exception expression"
