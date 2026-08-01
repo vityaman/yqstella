@@ -9,7 +9,7 @@ import Control.Monad.State
 import Control.Monad.Writer
 import Data.Foldable (find)
 import Diagnostic.Code (Code (..))
-import Diagnostic.Core (Severity (Error), diagnostic, notImplemented)
+import Diagnostic.Core (Diagnostic (range), Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Application (annotateAbstractionType, annotateApplicationType)
@@ -110,7 +110,12 @@ instance TypeAnnotatable AST.Decl' where
     t' <- sanitizeT t
     modify $ Context.withExceptionType t'
     return $ stub f
-  annotateType _ f@(AST.DeclExceptionVariant {}) = do
+  annotateType _ f@(AST.DeclExceptionVariant p (AST.StellaIdent name) t) = do
+    t' <- sanitizeT t
+    context <- get
+    _ <- case Context.withExceptionVariant name t' context of
+      Right c -> put c
+      Left issue -> tell [issue {range = pointRange p}]
     return $ stub f
 
 instance TypeAnnotatable AST.LocalDecl' where

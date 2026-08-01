@@ -4,6 +4,7 @@ module Type.Context
     withTyped,
     withTypeAliased,
     withExceptionType,
+    withExceptionVariant,
     typeOf,
     typeWithAlias,
     exceptionType,
@@ -13,10 +14,11 @@ where
 
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Diagnostic.Code (Code (UNDEFINED_VARIABLE))
+import Diagnostic.Code (Code (ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION, UNDEFINED_VARIABLE))
 import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic)
-import Diagnostic.Position (Position, pointRange)
-import Type.Core (Type)
+import Diagnostic.Position (Position, pointRange, unknown)
+import qualified SyntaxGen.AbsStella as AST
+import Type.Core (Type (..))
 
 newtype Binding = Binding Type
   deriving (Show)
@@ -42,6 +44,23 @@ withTypeAliased key t (Context bindings typeAliases exceptionT) =
 withExceptionType :: Type -> Context -> Context
 withExceptionType t (Context bindings typeAliases _) =
   Context bindings typeAliases (Just t)
+
+withExceptionVariant :: String -> Type -> Context -> Either Diagnostic Context
+withExceptionVariant name (Type t) ctx = do
+  let newbie = AST.AVariantFieldType () (AST.StellaIdent name) (AST.SomeTyping () t)
+
+  alts <- case exceptionType ctx of
+    (Just (Type (AST.TypeVariant () alts'))) -> Right alts'
+    (Just t') -> do
+      let message =
+            "expected variant exception type "
+              ++ ("to add " ++ show newbie ++ ", ")
+              ++ ("got " ++ show t')
+      Left $ diagnostic Error ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION (pointRange unknown) message
+    Nothing -> Right []
+
+  let newtypie = Type (AST.TypeVariant () $ alts ++ [newbie])
+  return $ withExceptionType newtypie ctx
 
 typeOf :: String -> Context -> Maybe Type
 typeOf key ctx = (\(Binding x) -> x) <$> Map.lookup key (contextBindings ctx)
