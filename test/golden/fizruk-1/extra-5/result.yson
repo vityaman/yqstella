@@ -1,2 +1,0 @@
-(NLastGetopt::TUsageException) failed to handle opt --params-file value "test/golden/fizruk-1/extra-5/parameters.yson": (TFileError) (Error 2: No such file or directory) util/system/file.cpp:936: can't open "test/golden/fizruk-1/extra-5/parameters.yson" with mode RdOnly|Seq (0x00000028)
-Try '/usr/local/bin/minirun --help' for more information.
