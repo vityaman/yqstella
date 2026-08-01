@@ -1,0 +1,23 @@
+language core;
+
+exception type = Nat
+
+fn fail(n : Nat) -> Nat {
+  return throw(succ(0))
+}
+
+fn main2(n: Nat) -> Nat {
+   return try {
+     fail(n)
+   } with {
+     false
+   }
+}
+
+fn main(n : Nat) -> Nat {
+  return try {
+    fail(n)
+  } catch {
+    0 => true
+  }
+}
