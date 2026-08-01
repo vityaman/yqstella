@@ -1,0 +1,19 @@
+language core;
+
+extend with #exceptions, #open-variant-exceptions;
+
+exception variant error_code : Nat
+
+fn f(n : Nat) -> Nat {
+    return throw(<| error_code = 0 |>)
+}
+
+fn g(n : Nat) -> Nat {
+    return throw(<| good = 0 |>)
+}
+
+exception variant good : Nat
+
+fn main(n : Nat) -> Nat {
+  return f(g(n))
+}

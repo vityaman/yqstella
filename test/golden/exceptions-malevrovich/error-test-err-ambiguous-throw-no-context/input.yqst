@@ -1,0 +1,9 @@
+language core;
+extend with #exceptions, #exception-type-declaration, #let-bindings;
+
+exception type = Nat
+
+// throw used as a let-binding RHS with no expected type — ambiguous
+fn main(n : Nat) -> Nat {
+  return let x = throw(n) in x
+}

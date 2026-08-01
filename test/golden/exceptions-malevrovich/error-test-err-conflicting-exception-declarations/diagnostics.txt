@@ -1,0 +1,4 @@
+test/golden/exceptions-malevrovich/error-test-err-conflicting-exception-declarations/input.yqst:5:1: [ERROR_CONFLICTING_EXCEPTION_DECLARATIONS]
+cannot mix 'exception type' and 'exception variant' declarations
+> exception variant Failure : Bool
+  ^

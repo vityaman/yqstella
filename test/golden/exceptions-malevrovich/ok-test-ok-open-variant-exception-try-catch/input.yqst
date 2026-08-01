@@ -1,0 +1,13 @@
+language core;
+extend with #exceptions, #variants, #open-variant-exceptions;
+
+exception variant Failure : Nat
+exception variant Overflow : Bool
+
+fn risky(n : Nat) -> Nat {
+  return throw(<|Failure=n|>)
+}
+
+fn main(n : Nat) -> Nat {
+  return try { risky(n) } catch { e => 0 }
+}

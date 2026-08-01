@@ -1,0 +1,8 @@
+test/golden/open-variant-exceptions/scope/input.yqst:16:5: [ERROR_ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION]
+only-top level exception variant type is allowed
+>     exception variant b : Nat
+      ^
+test/golden/open-variant-exceptions/scope/input.yqst:17:18: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label b for <| a : Nat |>
+>     return throw(<| b = 0 |>)
+                   ^

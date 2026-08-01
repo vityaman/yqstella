@@ -2,6 +2,7 @@
 
 module Type.Decl (withParamDecls, withDecls, toPair, toParamSilent) where
 
+import Control.Monad (unless)
 import Control.Monad.Writer (tell)
 import qualified Data.Map as Map
 import Data.Maybe (catMaybes)
@@ -42,8 +43,8 @@ withTypeAliases decls context = do
   typeAliases <- catMaybes <$> mapM visit decls
   return $ foldr (uncurry Context.withTypeAliased) context typeAliases
 
-withDecls :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
-withDecls decls context = do
+withDecls :: [AST.Decl' Position] -> Bool -> Context -> TypeAnnotationEnv Context
+withDecls decls isTopLevel context = do
   context' <- withTypeAliases decls context
   funs <- withStateTAE (const context') (mapM visit decls)
 
@@ -79,7 +80,17 @@ withDecls decls context = do
     visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
       tell [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
       return Nothing
-    visit _ =
+    visit (AST.DeclTypeAlias {}) =
+      return Nothing
+    visit (AST.DeclExceptionType p _) = do
+      unless isTopLevel $ do
+        let message = "only-top level exception type is allowed"
+        tell [diagnostic Error ILLEGAL_LOCAL_EXCEPTION_TYPE (pointRange p) message]
+      return Nothing
+    visit (AST.DeclExceptionVariant p _ _) = do
+      unless isTopLevel $ do
+        let message = "only-top level exception variant type is allowed"
+        tell [diagnostic Error ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION (pointRange p) message]
       return Nothing
 
 toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)

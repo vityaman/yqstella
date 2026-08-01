@@ -1,0 +1,4 @@
+test/golden/exceptions-malevrovich/error-test-err-illegal-local-open-variant-exception/input.yqst:5:3: [ERROR_ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION]
+only-top level exception variant type is allowed
+>   exception variant Failure : Nat
+    ^

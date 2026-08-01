@@ -1,0 +1,13 @@
+language core;
+extend with #exceptions, #exception-type-declaration;
+
+exception type = Nat
+
+// throw has type Bool here (matches the return type, diverges)
+fn fail(n : Nat) -> Bool {
+  return throw(n)
+}
+
+fn main(n : Nat) -> Bool {
+  return fail(n)
+}

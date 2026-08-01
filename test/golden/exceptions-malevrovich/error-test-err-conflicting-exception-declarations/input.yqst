@@ -1,0 +1,9 @@
+language core;
+extend with #exceptions, #exception-type-declaration, #open-variant-exceptions;
+
+exception type = Nat
+exception variant Failure : Bool
+
+fn main(n : Nat) -> Nat {
+  return n
+}

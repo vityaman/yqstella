@@ -1,0 +1,4 @@
+test/golden/exceptions-malevrovich/error-test-err-duplicate-exception-variant/input.yqst:5:1: [ERROR_DUPLICATE_EXCEPTION_VARIANT]
+exception variant conflicts with Failure : Nat
+> exception variant Failure : Bool
+  ^

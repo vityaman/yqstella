@@ -1,0 +1,4 @@
+test/golden/exceptions-malevrovich/error-test-err-try-with-branch-type-mismatch/input.yqst:7:27: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return try { n } with { false }
+                            ^

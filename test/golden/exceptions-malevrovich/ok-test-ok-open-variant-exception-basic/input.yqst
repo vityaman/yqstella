@@ -1,0 +1,9 @@
+language core;
+extend with #exceptions, #open-variant-exceptions;
+
+exception variant Failure : Nat
+exception variant Overflow : Bool
+
+fn main(n : Nat) -> Nat {
+  return try { n } with { n }
+}
