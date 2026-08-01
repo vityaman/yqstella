@@ -48,8 +48,13 @@ annotateAbstractionType t p paramdecls expr annotateType = do
       let actualLen = length actual
           expectedLen = length expected
       when (actualLen /= expectedLen) $ do
-        let message = "expected " ++ show expectedLen ++ " parameters for type " ++ show t'
-                    ++ ", but actually got " ++ show actualLen
+        let message =
+              "expected "
+                ++ show expectedLen
+                ++ " parameters for type "
+                ++ show t'
+                ++ ", but actually got "
+                ++ show actualLen
         tell [diagnostic Error UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA (pointRange p) message]
         return ()
 
