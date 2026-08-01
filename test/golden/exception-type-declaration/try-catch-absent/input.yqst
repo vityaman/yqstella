@@ -1,0 +1,11 @@
+language core;
+
+extend with #exceptions;
+
+fn fail(n : Nat) -> Nat {
+  return n
+}
+
+fn main(n : Nat) -> Nat {
+  return try { fail(n) } catch { _ => 0 }
+}
