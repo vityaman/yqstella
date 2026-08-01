@@ -1,0 +1,11 @@
+language core;
+
+extend with
+    #let-patterns,
+    #let-bindings,
+    #fixpoint-combinator,
+    #multiparameter-functions;
+
+fn main(n : fn(Nat, Nat) -> Nat) -> Nat {
+  return let a = fix(n) in a
+}

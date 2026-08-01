@@ -330,6 +330,12 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- inferType expr
     t' <- case typeOf expr' of
       Just (Type (AST.TypeFun () [arg] ret)) | arg == ret -> return $ Just (Type ret)
+      Just t@(Type (AST.TypeFun () [_] _)) -> do
+        tell [mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p "T -> T" (show t)]
+        return Nothing
+      Just t@(Type (AST.TypeFun () _ _)) -> do
+        tell [mismatchSS INCORRECT_NUMBER_OF_ARGUMENTS p "T -> T" (show t)]
+        return Nothing
       Just t -> do
         tell [mismatchSS NOT_A_FUNCTION p "T -> T" (show t)]
         return Nothing
