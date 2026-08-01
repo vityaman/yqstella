@@ -408,7 +408,7 @@ normalizeP (AST.PatternList p []) =
   AST.PatternList p []
 normalizeP (AST.PatternList p patterns) =
   let patterns' = fmap normalizeP patterns
-   in foldl (AST.PatternCons p) (AST.PatternList p []) patterns'
+   in foldr (AST.PatternCons p) (AST.PatternList p []) patterns'
 normalizeP (AST.PatternCons p pattern1 pattern2) =
   let pattern1' = normalizeP pattern1
       pattern2' = normalizeP pattern2
