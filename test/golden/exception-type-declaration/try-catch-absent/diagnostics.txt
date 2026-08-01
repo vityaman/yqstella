@@ -1,0 +1,4 @@
+test/golden/exception-type-declaration/try-catch-absent/input.yqst:10:10: [FATAL_NOT_IMPLEMENTED]
+TryCatch not implemented
+>   return try { fail(n) } catch { _ => 0 }
+           ^

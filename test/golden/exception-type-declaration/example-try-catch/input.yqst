@@ -1,17 +1,20 @@
 language core;
 
-extend with #exceptions, #exception-type-declaration;
+extend with
+  #exceptions,
+  #exception-type-declaration,
+  #structural-patterns;
 
 exception type = Nat
 
-fn fail(n : Nat) -> Bool {
+fn fail(n : Nat) -> Nat {
   return throw(succ(0))
 }
 
-fn main(n : Nat) -> Bool {
+fn main(n : Nat) -> Nat {
   return try {
     fail(n)
   } catch {
-    0 => true
+    0 => 0
   }
 }

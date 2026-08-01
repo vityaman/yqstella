@@ -1,0 +1,8 @@
+test/golden/exception-type-declaration/example-try-with/input.yqst:5:1: [FATAL_NOT_IMPLEMENTED]
+name resolution for DeclExceptionType Nat not implemented
+> exception type = Nat
+  ^
+test/golden/exception-type-declaration/example-try-with/input.yqst:8:10: [FATAL_NOT_IMPLEMENTED]
+Throw not implemented
+>   return throw(succ(0))
+           ^

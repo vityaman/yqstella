@@ -6,11 +6,11 @@ fn fail(n : Nat) -> Nat {
   return throw(succ(0))
 }
 
-fn main2(n: Nat) -> Nat {
+fn main2(n : Nat) -> Nat {
    return try {
      fail(n)
    } with {
-     false
+     0
    }
 }
 
@@ -18,6 +18,6 @@ fn main(n : Nat) -> Nat {
   return try {
     fail(n)
   } catch {
-    0 => true
+    0 => 0
   }
 }

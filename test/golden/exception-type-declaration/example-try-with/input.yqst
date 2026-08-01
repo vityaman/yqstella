@@ -4,10 +4,10 @@ extend with #exceptions, #exception-type-declaration;
 
 exception type = Nat
 
-fn fail(n : Nat) -> Bool {
+fn fail(n : Nat) -> Nat {
   return throw(succ(0))
 }
 
-fn main(n : Nat) -> Bool {
-  return try { fail(n) } with { false }
+fn main(n : Nat) -> Nat {
+  return try { fail(n) } with { 0 }
 }

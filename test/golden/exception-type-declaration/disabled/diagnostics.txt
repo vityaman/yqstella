@@ -1,0 +1,32 @@
+test/golden/exception-type-declaration/disabled/input.yqst:3:1: [ERROR_BAD_EXTENSION]
+disabled extension usage: #exception-type-declaration
+> exception type = Nat
+  ^
+test/golden/exception-type-declaration/disabled/input.yqst:6:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #exceptions
+>   return throw(succ(0))
+           ^
+test/golden/exception-type-declaration/disabled/input.yqst:10:11: [ERROR_BAD_EXTENSION]
+disabled extension usage: #exceptions
+>    return try {
+            ^
+test/golden/exception-type-declaration/disabled/input.yqst:18:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #exceptions
+>   return try {
+           ^
+test/golden/exception-type-declaration/disabled/input.yqst:21:5: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>     0 => 0
+      ^
+test/golden/exception-type-declaration/disabled/input.yqst:3:1: [FATAL_NOT_IMPLEMENTED]
+name resolution for DeclExceptionType Nat not implemented
+> exception type = Nat
+  ^
+test/golden/exception-type-declaration/disabled/input.yqst:6:10: [FATAL_NOT_IMPLEMENTED]
+Throw not implemented
+>   return throw(succ(0))
+           ^
+test/golden/exception-type-declaration/disabled/input.yqst:18:10: [FATAL_NOT_IMPLEMENTED]
+TryCatch not implemented
+>   return try {
+           ^

@@ -9,7 +9,7 @@ import Diagnostic.Core (Severity (..), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type)
-import Type.Env (TypeAnnotationEnv, TypeAnnotator)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
 
 annotateExceptionExprType ::
   Maybe Type ->
@@ -28,7 +28,9 @@ annotateExceptionExprType _ x@(AST.Throw {}) _ = do
 annotateExceptionExprType _ x@(AST.TryCatch {}) _ = do
   tell [notImplemented (annotation x) "TryCatch"]
   return $ fmap (,Nothing) x
-annotateExceptionExprType _ x@(AST.TryWith {}) _ = do
-  tell [notImplemented (annotation x) "TryWith"]
-  return $ fmap (,Nothing) x
+annotateExceptionExprType t (AST.TryWith p try catch) annotateType = do
+  try' <- annotateType t try
+  let t' = typeOf try'
+  catch' <- annotateType t' catch
+  return $ AST.TryWith (p, t') try' catch'
 annotateExceptionExprType _ _ _ = error "Unexpected non-exception expression"
