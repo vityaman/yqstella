@@ -106,7 +106,9 @@ instance TypeAnnotatable AST.Decl' where
     return $ stub f
   annotateType _ f@(AST.DeclTypeAlias {}) = do
     return $ stub f
-  annotateType _ f@(AST.DeclExceptionType {}) = do
+  annotateType _ f@(AST.DeclExceptionType _ t) = do
+    t' <- sanitizeT t
+    modify $ Context.withExceptionType t'
     return $ stub f
   annotateType _ f@(AST.DeclExceptionVariant {}) = do
     return $ stub f

@@ -4,12 +4,15 @@ module Type.Exception (annotateExceptionExprType) where
 
 import Annotation (Annotated (annotation))
 import Control.Monad.Writer (tell)
-import Diagnostic.Code (Code (AMBIGUOUS_PANIC_TYPE))
+import Diagnostic.Code (Code (AMBIGUOUS_PANIC_TYPE, AMBIGUOUS_THROW_TYPE, EXCEPTION_TYPE_NOT_DECLARED))
 import Diagnostic.Core (Severity (..), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type)
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
+import Control.Monad.RWS
+import Type.Context (exceptionType)
+import Control.Monad (when)
 
 annotateExceptionExprType ::
   Maybe Type ->
@@ -22,9 +25,23 @@ annotateExceptionExprType Nothing (AST.Panic p) _ = do
   return (AST.Panic (p, Nothing))
 annotateExceptionExprType t@(Just _) (AST.Panic p) _ = do
   return (AST.Panic (p, t))
-annotateExceptionExprType _ x@(AST.Throw {}) _ = do
-  tell [notImplemented (annotation x) "Throw"]
-  return $ fmap (,Nothing) x
+annotateExceptionExprType Nothing (AST.Throw p expr) annotateType = do
+  let message = "type inference for throw is not supported (use type ascriptions)"
+  tell [diagnostic Error AMBIGUOUS_THROW_TYPE (pointRange p) message]
+  expr' <- annotateType Nothing expr
+  return (AST.Throw (p, Nothing) expr')
+annotateExceptionExprType (Just t) (AST.Throw p expr) annotateType = do
+  context <- get
+
+  let exceptionT = exceptionType context
+  when (null exceptionT) $ do
+    let message = "expection type is not declared"
+    tell [diagnostic Error EXCEPTION_TYPE_NOT_DECLARED (pointRange p) message]
+
+  expr' <- annotateType exceptionT expr
+
+  let t' = exceptionT >> typeOf expr' >> Just t
+  return (AST.Throw (p, t') expr')
 annotateExceptionExprType _ x@(AST.TryCatch {}) _ = do
   tell [notImplemented (annotation x) "TryCatch"]
   return $ fmap (,Nothing) x

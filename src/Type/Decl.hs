@@ -79,13 +79,7 @@ withDecls decls context = do
     visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
       tell [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
       return Nothing
-    visit (AST.DeclTypeAlias {}) = do
-      return Nothing
-    visit (AST.DeclExceptionType p type_) = do
-      tell [notImplemented p $ "name resolution for DeclExceptionType " ++ show (Type.fromAST type_)]
-      return Nothing
-    visit (AST.DeclExceptionVariant p (AST.StellaIdent name) _) = do
-      tell [notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name]
+    visit _ =
       return Nothing
 
 toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
