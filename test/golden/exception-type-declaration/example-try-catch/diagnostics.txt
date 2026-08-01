@@ -1,11 +1,3 @@
-test/golden/exception-type-declaration/example-try-catch/input.yqst:8:1: [FATAL_NOT_IMPLEMENTED]
-name resolution for DeclExceptionType Nat not implemented
-> exception type = Nat
-  ^
-test/golden/exception-type-declaration/example-try-catch/input.yqst:11:10: [FATAL_NOT_IMPLEMENTED]
-Throw not implemented
->   return throw(succ(0))
-           ^
 test/golden/exception-type-declaration/example-try-catch/input.yqst:15:10: [FATAL_NOT_IMPLEMENTED]
 TryCatch not implemented
 >   return try {

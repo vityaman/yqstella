@@ -1,0 +1,4 @@
+test/golden/exception-type-declaration/throw-absent/input.yqst:6:10: [ERROR_EXCEPTION_TYPE_NOT_DECLARED]
+expection type is not declared
+>   return throw(0)
+           ^

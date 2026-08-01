@@ -3,7 +3,6 @@
 module Type.Exception (annotateExceptionExprType) where
 
 import Annotation (Annotated (annotation))
-import Control.Monad.Writer (tell)
 import Diagnostic.Code (Code (AMBIGUOUS_PANIC_TYPE, AMBIGUOUS_THROW_TYPE, EXCEPTION_TYPE_NOT_DECLARED))
 import Diagnostic.Core (Severity (..), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
