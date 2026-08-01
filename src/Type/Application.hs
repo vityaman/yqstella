@@ -5,7 +5,7 @@ module Type.Application (annotateAbstractionType, annotateApplicationType) where
 import Annotation (Annotated (annotation))
 import Control.Applicative (Alternative ((<|>)))
 import qualified Control.Arrow as Data.Bifunctor
-import Control.Monad (guard, zipWithM)
+import Control.Monad (guard, when, zipWithM)
 import Control.Monad.State (get)
 import Control.Monad.Writer
 import Data.Maybe (fromMaybe, mapMaybe)
@@ -44,6 +44,19 @@ annotateAbstractionType t p paramdecls expr annotateType = do
             guard $ actual' /= expected'
             let m = "(" ++ name ++ " : " ++ show actual' ++ ")"
             return $ mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p' (show expected') m
+
+      let actualLen = length actual
+          expectedLen = length expected
+      when (actualLen /= expectedLen) $ do
+        let message =
+              "expected "
+                ++ show expectedLen
+                ++ " parameters for type "
+                ++ show t'
+                ++ ", but actually got "
+                ++ show actualLen
+        tell [diagnostic Error UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA (pointRange p) message]
+        return ()
 
       tell $ mapMaybe toDiagnostic (zip actual expected)
 
@@ -92,14 +105,17 @@ annotateApplicationType t p f xs annotateType = do
 
       return (xs', returntype'')
     Just actual -> do
+      let message = "type mismatch: expected a function, got " ++ show actual
+       in tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
+
       xs' <- mapM (annotateType Nothing) xs
 
       let unknown = Type.fromAST' AST.TypeAuto
           expectedArgTypes = fmap (fromMaybe unknown . typeOf) xs'
           expected = Type.fn expectedArgTypes unknown
 
-      let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
-      tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
+      let message = "note: expected " ++ show expected
+       in tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
 
       return (xs', Nothing)
     Nothing -> do

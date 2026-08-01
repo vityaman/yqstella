@@ -1,0 +1,14 @@
+language core;
+
+extend with #variants;
+
+fn g(x : <| x : Nat, f : fn(Nat) -> Nat |>) -> Nat {
+  return match x {
+      <| x1 = n |> => n
+    | <| f  = f |> => f(0)
+  }
+}
+
+fn main(x : Nat) -> Nat {
+  return g(<| f = fn(n : Nat) { return 0 } |>)
+}

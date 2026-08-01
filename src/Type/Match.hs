@@ -26,11 +26,17 @@ import Type.Expectation (commonType)
 import Type.UsefulClause
 
 checkType :: Type -> AST.Pattern' Position -> Either Diagnostic (AST.Pattern' (Position, Type))
-checkType _ (AST.PatternCastAs p _ _) =
+checkType t p = do
+  p' <- checkType' t p
+  () <- checkBindings p'
+  return p'
+
+checkType' :: Type -> AST.Pattern' Position -> Either Diagnostic (AST.Pattern' (Position, Type))
+checkType' _ (AST.PatternCastAs p _ _) =
   Left $ notImplemented p "PatternCastAs Matching"
-checkType _ (AST.PatternAsc p _ _) =
+checkType' _ (AST.PatternAsc p _ _) =
   Left $ notImplemented p "PatternAsc Matching"
-checkType t@(Type (AST.TypeVariant _ fields)) (AST.PatternVariant p (AST.StellaIdent tag) data') = do
+checkType' t@(Type (AST.TypeVariant _ fields)) (AST.PatternVariant p (AST.StellaIdent tag) data') = do
   let tag'' (AST.AVariantFieldType _ (AST.StellaIdent tag') _) = tag'
       entry = find (\x -> tag'' x == tag) fields
 
@@ -39,7 +45,7 @@ checkType t@(Type (AST.TypeVariant _ fields)) (AST.PatternVariant p (AST.StellaI
       Right entry'
     Nothing ->
       let message = "tag " ++ tag ++ " not found"
-       in Left $ diagnostic Error UNEXPECTED_VARIANT_LABEL (pointRange p) message
+       in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE (pointRange p) message
 
   case (data', maybeType) of
     (AST.NoPatternData p', AST.NoTyping _) ->
@@ -50,7 +56,7 @@ checkType t@(Type (AST.TypeVariant _ fields)) (AST.PatternVariant p (AST.StellaI
             (AST.NoPatternData (p', Type.fromAST' AST.TypeUnit))
         )
     (AST.SomePatternData p' pattern', AST.SomeTyping _ t') -> do
-      pattern'' <- checkType (Type t') pattern'
+      pattern'' <- checkType' (Type t') pattern'
       let t'' = snd $ annotation pattern''
       Right
         ( AST.PatternVariant
@@ -64,21 +70,21 @@ checkType t@(Type (AST.TypeVariant _ fields)) (AST.PatternVariant p (AST.StellaI
     (AST.SomePatternData p' _, AST.NoTyping _) ->
       let message = "unexpected non nullary pattern"
        in Left $ diagnostic Error UNEXPECTED_NON_NULLARY_VARIANT_PATTERN (pointRange p') message
-checkType t@(Type (AST.TypeSum _ inl _)) (AST.PatternInl p pattern') = do
-  pattern'' <- checkType (Type inl) pattern'
+checkType' t@(Type (AST.TypeSum _ inl _)) (AST.PatternInl p pattern') = do
+  pattern'' <- checkType' (Type inl) pattern'
   Right (AST.PatternInl (p, t) pattern'')
-checkType t@(Type (AST.TypeSum _ _ inr)) (AST.PatternInr p pattern') = do
-  pattern'' <- checkType (Type inr) pattern'
+checkType' t@(Type (AST.TypeSum _ _ inr)) (AST.PatternInr p pattern') = do
+  pattern'' <- checkType' (Type inr) pattern'
   Right (AST.PatternInr (p, t) pattern'')
-checkType t@(Type (AST.TypeTuple _ ts)) (AST.PatternTuple p patterns) = do
+checkType' t@(Type (AST.TypeTuple _ ts)) (AST.PatternTuple p patterns) = do
   if length ts /= length patterns
     then
       let message = "expected tuple with length " ++ show (length ts) ++ ", got " ++ show (length patterns)
-       in Left $ diagnostic Error UNEXPECTED_TUPLE_LENGTH (pointRange p) message
+       in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE (pointRange p) message
     else do
-      patterns' <- zipWithM checkType (fmap Type ts) patterns
+      patterns' <- zipWithM checkType' (fmap Type ts) patterns
       Right (AST.PatternTuple (p, t) patterns')
-checkType t@(Type (AST.TypeRecord _ ts)) (AST.PatternRecord p fs) = do
+checkType' t@(Type (AST.TypeRecord _ ts)) (AST.PatternRecord p fs) = do
   let expected = Map.fromList [(k, Type v) | AST.ARecordFieldType _ (AST.StellaIdent k) v <- ts]
 
       name (AST.ALabelledPattern _ (AST.StellaIdent n) _) = n
@@ -90,44 +96,44 @@ checkType t@(Type (AST.TypeRecord _ ts)) (AST.PatternRecord p fs) = do
       Left $ diagnostic Error DUPLICATE_RECORD_PATTERN_FIELDS (pointRange p'') ("duplicate field: " ++ n)
     [] -> pure ()
 
-  let unexpected = Map.keys $ Map.difference patternByName (void expected)
+  let unexpected = Map.keys $ Map.difference (void expected) patternByName
   unless (null unexpected) $
-    let message = "unexpected record fields: " ++ intercalate ", " unexpected
-     in Left $ diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p) message
+    let message = "missing record fields: " ++ intercalate ", " unexpected
+     in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE (pointRange p) message
 
   let annotateType (AST.ALabelledPattern p'' n@(AST.StellaIdent fld) pattern') =
         case Map.lookup fld expected of
           Nothing -> do
-            let message = "missing record field: " ++ fld
-            Left $ diagnostic Error MISSING_RECORD_FIELDS (pointRange p'') message
+            let message = "unexpected record field: " ++ fld
+            Left $ diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p'') message
           Just t'' -> do
-            pattern'' <- checkType t'' pattern'
+            pattern'' <- checkType' t'' pattern'
             let t' = snd $ annotation pattern''
             Right (AST.ALabelledPattern (p'', t') n pattern'')
 
   fs' <- traverse annotateType uniq
   Right (AST.PatternRecord (p, t) fs')
-checkType t@(Type (AST.TypeList _ itemT)) (AST.PatternList p patterns') = do
-  patterns'' <- mapM (checkType $ Type itemT) patterns'
+checkType' t@(Type (AST.TypeList _ itemT)) (AST.PatternList p patterns') = do
+  patterns'' <- mapM (checkType' $ Type itemT) patterns'
   Right (AST.PatternList (p, t) patterns'')
-checkType t@(Type (AST.TypeList _ itemT)) (AST.PatternCons p head' tail') = do
-  head'' <- checkType (Type itemT) head'
-  tail'' <- checkType t tail'
+checkType' t@(Type (AST.TypeList _ itemT)) (AST.PatternCons p head' tail') = do
+  head'' <- checkType' (Type itemT) head'
+  tail'' <- checkType' t tail'
   Right (AST.PatternCons (p, t) head'' tail'')
-checkType t@(Type (AST.TypeBool _)) (AST.PatternFalse p) =
+checkType' t@(Type (AST.TypeBool _)) (AST.PatternFalse p) =
   Right (AST.PatternFalse (p, t))
-checkType t@(Type (AST.TypeBool _)) (AST.PatternTrue p) =
+checkType' t@(Type (AST.TypeBool _)) (AST.PatternTrue p) =
   Right (AST.PatternTrue (p, t))
-checkType t@(Type (AST.TypeUnit _)) (AST.PatternUnit p) =
+checkType' t@(Type (AST.TypeUnit _)) (AST.PatternUnit p) =
   Right (AST.PatternUnit (p, t))
-checkType t@(Type (AST.TypeNat _)) (AST.PatternInt p n) =
+checkType' t@(Type (AST.TypeNat _)) (AST.PatternInt p n) =
   Right (AST.PatternInt (p, t) n)
-checkType t@(Type (AST.TypeNat _)) (AST.PatternSucc p pattern') = do
-  pattern'' <- checkType t pattern'
+checkType' t@(Type (AST.TypeNat _)) (AST.PatternSucc p pattern') = do
+  pattern'' <- checkType' t pattern'
   Right (AST.PatternSucc (p, t) pattern'')
-checkType t (AST.PatternVar p (AST.StellaIdent name)) =
+checkType' t (AST.PatternVar p (AST.StellaIdent name)) =
   Right (AST.PatternVar (p, t) (AST.StellaIdent name))
-checkType t p =
+checkType' t p =
   let position = pointRange $ annotation p
       message = "unexpected pattern for type " ++ show t
    in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE position message
@@ -145,40 +151,54 @@ checkIrrefutable p = do
   let message = "expected irrefutable pattern"
   Left $ diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange $ annotation p) message
 
+checkBindings :: AST.Pattern' (Position, Type) -> Either Diagnostic ()
+checkBindings p =
+  if null dups
+    then Right ()
+    else
+      let position = pointRange $ fst $ annotation p
+          message = "duplicate bindings: " ++ intercalate ", " (Map.keys dups)
+       in Left $ diagnostic Error DUPLICATE_LET_BINDING position message
+  where
+    dups = Map.filter (\keys -> length keys > 1) $ Map.fromListWith (++) [(k, [v]) | (k, v) <- bindings' p]
+
 bindings :: AST.Pattern' (Position, Type) -> Map String Type
-bindings (AST.PatternVariant (_, Type (AST.TypeVariant _ fields)) (AST.StellaIdent tag) data') =
+bindings = Map.fromList . bindings'
+
+bindings' :: AST.Pattern' (Position, Type) -> [(String, Type)]
+bindings' (AST.PatternVariant (_, Type (AST.TypeVariant _ fields)) (AST.StellaIdent tag) data') =
   let tag'' (AST.AVariantFieldType _ (AST.StellaIdent tag') _) = tag'
       entry = fromMaybe (error $ "tag " ++ tag ++ " not found") $ find (\x -> tag'' x == tag) fields
    in case (data', entry) of
-        (AST.NoPatternData _, AST.AVariantFieldType _ _ (AST.NoTyping _)) -> Map.empty
-        (AST.SomePatternData _ pattern', AST.AVariantFieldType _ _ (AST.SomeTyping _ _)) -> bindings pattern'
+        (AST.NoPatternData _, AST.AVariantFieldType _ _ (AST.NoTyping _)) -> []
+        (AST.SomePatternData _ pattern', AST.AVariantFieldType _ _ (AST.SomeTyping _ _)) -> bindings' pattern'
         _ -> error "unexpected pattern"
-bindings (AST.PatternInl _ pattern') =
-  bindings pattern'
-bindings (AST.PatternInr _ pattern') =
-  bindings pattern'
-bindings (AST.PatternTuple _ patterns) =
-  Map.unions (map bindings patterns)
-bindings (AST.PatternRecord _ fs) =
-  Map.unions [bindings p | AST.ALabelledPattern _ _ p <- fs]
-bindings (AST.PatternList _ patterns) =
-  Map.unions (map bindings patterns)
-bindings (AST.PatternCons _ h t) =
-  bindings h `Map.union` bindings t
-bindings (AST.PatternFalse _) =
-  Map.empty
-bindings (AST.PatternTrue _) =
-  Map.empty
-bindings (AST.PatternUnit _) =
-  Map.empty
-bindings (AST.PatternInt _ _) =
-  Map.empty
-bindings (AST.PatternSucc _ pattern') =
-  bindings pattern'
-bindings (AST.PatternVar (_, t) (AST.StellaIdent name)) =
-  Map.singleton name t
-bindings p =
-  error $ "bindings: unexpected pattern " ++ show p
+bindings' (AST.PatternInl _ pattern') =
+  bindings' pattern'
+bindings' (AST.PatternInr _ pattern') =
+  bindings' pattern'
+bindings' (AST.PatternTuple _ patterns) =
+  concatMap bindings' patterns
+bindings' (AST.PatternRecord _ fs) =
+  concat [bindings' p | AST.ALabelledPattern _ _ p <- fs]
+bindings' (AST.PatternList _ patterns) =
+  concatMap bindings' patterns
+bindings' (AST.PatternCons _ h t) =
+  bindings' h ++ bindings' t
+bindings' (AST.PatternFalse _) =
+  []
+bindings' (AST.PatternTrue _) =
+  []
+bindings' (AST.PatternUnit _) =
+  []
+bindings' (AST.PatternInt _ _) =
+  []
+bindings' (AST.PatternSucc _ pattern') =
+  bindings' pattern'
+bindings' (AST.PatternVar (_, t) (AST.StellaIdent name)) =
+  [(name, t)]
+bindings' p =
+  error $ "bindings': unexpected pattern " ++ show p
 
 annotateLetType ::
   Maybe Type ->
@@ -210,9 +230,9 @@ annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType =
 
   let t' = typeOf inExpr''
   return $ AST.Let (p, t') [AST.APatternBinding (p', t) pattern'' expr'] inExpr''
-annotateLetType _ p bindings' inExpr _ = do
+annotateLetType _ p bindings'' inExpr _ = do
   tell [notImplemented p "LetManyBindings"]
-  return $ fmap (,Nothing) (AST.Let p bindings' inExpr)
+  return $ fmap (,Nothing) (AST.Let p bindings'' inExpr)
 
 annotateMatchType ::
   Maybe Type ->
@@ -388,7 +408,7 @@ normalizeP (AST.PatternList p []) =
   AST.PatternList p []
 normalizeP (AST.PatternList p patterns) =
   let patterns' = fmap normalizeP patterns
-   in foldl (AST.PatternCons p) (AST.PatternList p []) patterns'
+   in foldr (AST.PatternCons p) (AST.PatternList p []) patterns'
 normalizeP (AST.PatternCons p pattern1 pattern2) =
   let pattern1' = normalizeP pattern1
       pattern2' = normalizeP pattern2

@@ -1,0 +1,4 @@
+test/golden/fizruk-1/extra-100/input.yqst:10:18: [ERROR_INCORRECT_NUMBER_OF_ARGUMENTS]
+type mismatch: expected T -> T, got fn(Nat, Nat) -> Nat
+>   return let a = fix(n) in a
+                   ^

@@ -1,0 +1,4 @@
+test/golden/fizruk-1/main-346/input.yqst:7:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag x1 not found
+>       <| x1 = n |> => n
+        ^

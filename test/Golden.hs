@@ -77,7 +77,7 @@ makeTestCase casePath = do
 
   let nikolai =
         testCase "Nikolai Kudasov" $ do
-          (exitCode, stdout, _) <-
+          (exitCode, stdout, stderr) <-
             readProcessWithExitCode "docker" ["run", "-i", "fizruk/stella", "typecheck"] source
 
           let yqStellaCodes = parseErrorCodes diagnostic'
@@ -88,7 +88,7 @@ makeTestCase casePath = do
 
           let areFizrukTypesCorrect' = exitCode == ExitSuccess
 
-          let sideBySide = stdout ++ "\n\nVS\n\n" ++ diagnostic'
+          let sideBySide = stderr ++ "\n" ++ stdout ++ "\n\nVS\n\n" ++ diagnostic'
 
           assertEqual
             ("fizruk vs yqstella status: \n" ++ sideBySide)

@@ -1,0 +1,4 @@
+test/golden/fizruk-1/main-391/input.yqst:6:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+type mismatch: expected tuple with size at least 2, got {Nat}
+>   return {0}.2
+           ^

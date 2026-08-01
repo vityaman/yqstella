@@ -1,0 +1,35 @@
+language core;
+
+extend with
+  #structural-patterns,
+  #lists;
+
+fn f(input : [Nat]) -> Nat {
+ return match input {
+    []                                  => 0
+   | cons(a, cons(0, []))               => 0
+   | cons(a, []                       ) => 0
+   | cons(a, cons(     b,  cons(c, d))) => 0
+   | cons(a, cons(succ(b),          c)) => 0
+  }
+}
+
+fn g(input : [Nat]) -> Nat {
+ return match input {
+    []                                  => 0
+   | cons(a, [0])                       => 0
+   | cons(a, []                       ) => 0
+   | cons(a, cons(     b,  cons(c, d))) => 0
+   | cons(a, cons(succ(b),          c)) => 0
+  }
+}
+
+fn main(input : Nat) -> Nat {
+ return match [input] {
+    []                                  => 0
+   | [ a, 0]                            => 0
+   | cons(a, []                       ) => 0
+   | cons(a, cons(     b,  cons(c, d))) => 0
+   | cons(a, cons(succ(b),          c)) => 0
+  }
+}

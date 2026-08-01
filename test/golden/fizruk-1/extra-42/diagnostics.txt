@@ -1,0 +1,4 @@
+test/golden/fizruk-1/extra-42/input.yqst:7:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+expected tuple with length 3, got 2
+>     {0, 0} => 0
+      ^

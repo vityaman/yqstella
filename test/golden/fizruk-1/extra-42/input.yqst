@@ -1,0 +1,9 @@
+language core;
+
+extend with #structural-patterns, #tuples;
+
+fn main(n : {Nat, Nat, Nat}) -> Nat {
+  return match n {
+    {0, 0} => 0
+  }
+}

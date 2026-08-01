@@ -1,0 +1,16 @@
+test/golden/fizruk-1/main-161/input.yqst:10:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got Nat
+>   return f(fn (x : Bool) { return if x then n else succ(n) })(0)
+           ^
+test/golden/fizruk-1/main-161/input.yqst:10:45: [ERROR_UNDEFINED_VARIABLE]
+undefined variable n
+>   return f(fn (x : Bool) { return if x then n else succ(n) })(0)
+                                              ^
+test/golden/fizruk-1/main-161/input.yqst:10:57: [ERROR_UNDEFINED_VARIABLE]
+undefined variable n
+>   return f(fn (x : Bool) { return if x then n else succ(n) })(0)
+                                                          ^
+test/golden/fizruk-1/main-161/input.yqst:10:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(fn(Bool) -> Nat) -> auto
+>   return f(fn (x : Bool) { return if x then n else succ(n) })(0)
+           ^

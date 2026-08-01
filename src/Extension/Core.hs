@@ -29,6 +29,7 @@ data Extension
   | RationalTypes
   | ComplexNumberTypes
   | TypeAscriptions
+  | PatternAscriptions
   | TypeAliases
   | UnitType
   | Pairs
@@ -50,6 +51,7 @@ data Extension
   | TypeCast
   | UniversalTypes
   | FixpointCombinator
+  | LetRecBindings
   | GeneralRecursion
   deriving (Eq, Ord, Show)
 
@@ -83,6 +85,7 @@ extensionNameMap =
       (ComplexNumberTypes, "#complex-number-types"),
       -- Simple Types
       (TypeAscriptions, "#type-ascriptions"),
+      (PatternAscriptions, "#pattern-ascriptions"),
       (TypeAliases, "#type-aliases"),
       (UnitType, "#unit-type"),
       (Pairs, "#pairs"),
@@ -108,6 +111,7 @@ extensionNameMap =
       (UniversalTypes, "#universal-types"),
       -- Recursion
       (FixpointCombinator, "#fixpoint-combinator"),
+      (LetRecBindings, "#letrec-bindings"),
       (GeneralRecursion, "#general-recursion")
     ]
 
@@ -127,4 +131,5 @@ extensionFromName name =
 closure :: Extension -> [Extension]
 closure Tuples = [Tuples, Pairs]
 closure CurriedMultiparameterFunctions = [CurriedMultiparameterFunctions, MultiparameterFunctions]
+closure LetRecBindings = [LetRecBindings, LetBindings, FixpointCombinator]
 closure x = [x]

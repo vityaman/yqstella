@@ -1,0 +1,4 @@
+test/golden/fizruk-1/extra-61/input.yqst:8:9: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+missing record fields: a
+>         {b = 0} => true
+          ^

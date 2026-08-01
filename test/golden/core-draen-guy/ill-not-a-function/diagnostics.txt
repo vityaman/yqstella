@@ -1,4 +1,8 @@
 test/golden/core-draen-guy/ill-not-a-function/input.yqst:15:5: [ERROR_NOT_A_FUNCTION]
-type mismatch: expected fn(Nat) -> auto, got Nat
+type mismatch: expected a function, got Nat
+>    (if Nat::iszero(n)
+      ^
+test/golden/core-draen-guy/ill-not-a-function/input.yqst:15:5: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
 >    (if Nat::iszero(n)
       ^

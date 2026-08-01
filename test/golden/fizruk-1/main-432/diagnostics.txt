@@ -1,0 +1,4 @@
+test/golden/fizruk-1/main-432/input.yqst:8:18: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected T -> T, got Nat
+>   return let a = fix(0) in a
+                   ^
