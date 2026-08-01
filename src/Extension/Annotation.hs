@@ -305,10 +305,11 @@ instance ExtensionsAnnotatable AST.Expr' where
       patternbindings' = fmap annotateExtensions patternbindings
       expr' = annotateExtensions expr
   annotateExtensions (AST.LetRec p patternbindings expr) =
-    AST.LetRec (p, Set.fromList [Extension.LetBindings, Extension.FixpointCombinator]) patternbindings' expr'
+    AST.LetRec (p, Set.fromList p') patternbindings' expr'
     where
       patternbindings' = fmap annotateExtensions patternbindings
       expr' = annotateExtensions expr
+      p' = [Extension.LetBindings, Extension.LetRecBindings, Extension.FixpointCombinator]
   annotateExtensions (AST.TypeAbstraction p stellaidents expr) =
     AST.TypeAbstraction (p, Set.empty) stellaidents expr'
     where
