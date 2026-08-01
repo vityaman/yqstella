@@ -29,6 +29,7 @@ data Extension
   | RationalTypes
   | ComplexNumberTypes
   | TypeAscriptions
+  | PatternAscriptions
   | TypeAliases
   | UnitType
   | Pairs
@@ -84,6 +85,7 @@ extensionNameMap =
       (ComplexNumberTypes, "#complex-number-types"),
       -- Simple Types
       (TypeAscriptions, "#type-ascriptions"),
+      (PatternAscriptions, "#pattern-ascriptions"),
       (TypeAliases, "#type-aliases"),
       (UnitType, "#unit-type"),
       (Pairs, "#pairs"),

@@ -1,0 +1,4 @@
+test/golden/fizruk-1/extra-94/input.yqst:10:14: [ERROR_DUPLICATE_LET_BINDING]
+duplicate bindings: a
+>   return let {a, a} = {0, 0} in 0
+               ^

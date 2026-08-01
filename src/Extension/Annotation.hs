@@ -198,7 +198,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
       pattern_' = annotateExtensions pattern_
       type_' = annotateExtensions type_
   annotateExtensions (AST.PatternAsc p pattern_ type_) =
-    AST.PatternAsc (p, Set.empty) pattern_' type_'
+    AST.PatternAsc (p, Set.fromList [Extension.PatternAscriptions]) pattern_' type_'
     where
       pattern_' = annotateExtensions pattern_
       type_' = annotateExtensions type_
