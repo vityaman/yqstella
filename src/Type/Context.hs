@@ -15,12 +15,12 @@ where
 import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Diagnostic.Code (Code (CONFLICTING_EXCEPTION_DECLARATIONS, DUPLICATE_EXCEPTION_VARIANT, ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION, UNDEFINED_VARIABLE, DUPLICATE_EXCEPTION_TYPE))
+import Diagnostic.Code (Code (CONFLICTING_EXCEPTION_DECLARATIONS, DUPLICATE_EXCEPTION_TYPE, DUPLICATE_EXCEPTION_VARIANT, ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION, UNDEFINED_VARIABLE))
 import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange, unknown)
+import Syntax.PrettyPrint
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (..))
-import Syntax.PrettyPrint
 
 newtype Binding = Binding Type
   deriving (Show)
