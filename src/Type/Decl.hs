@@ -88,19 +88,11 @@ withDecls decls context = do
       tell [notImplemented p $ "name resolution for DeclExceptionVariant " ++ show name]
       return Nothing
 
--- | 'sanitize' the parameter type for the typing environment. Duplicate
--- record\/variant fields in the written type are diagnosed here. The annotation
--- pass (see 'Type.Annotation', 'toParamSilent') re-shapes the same syntax again
--- without emitting those diagnostics a second time.
 toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
 toPair (AST.AParamDecl _ (AST.StellaIdent key) t) = do
   t' <- sanitizeT t
   return (key, t')
 
--- | Like 'toPair' but does not re-report duplicate record\/variant type fields.
--- Used in 'visitFuns' (param types are later checked with 'toPair' in
--- 'withParamDecls'), in 'Type.Annotation' and 'Type.Application' after the
--- context pass.
 toParamSilent :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)
 toParamSilent (AST.AParamDecl _ (AST.StellaIdent key) t) = do
   t' <- sanitizeTSilent t
