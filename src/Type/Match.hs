@@ -90,16 +90,16 @@ checkType t@(Type (AST.TypeRecord _ ts)) (AST.PatternRecord p fs) = do
       Left $ diagnostic Error DUPLICATE_RECORD_PATTERN_FIELDS (pointRange p'') ("duplicate field: " ++ n)
     [] -> pure ()
 
-  let unexpected = Map.keys $ Map.difference patternByName (void expected)
+  let unexpected = Map.keys $ Map.difference (void expected) patternByName
   unless (null unexpected) $
-    let message = "unexpected record fields: " ++ intercalate ", " unexpected
-     in Left $ diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p) message
+    let message = "missing record fields: " ++ intercalate ", " unexpected
+     in Left $ diagnostic Error UNEXPECTED_PATTERN_FOR_TYPE (pointRange p) message
 
   let annotateType (AST.ALabelledPattern p'' n@(AST.StellaIdent fld) pattern') =
         case Map.lookup fld expected of
           Nothing -> do
-            let message = "missing record field: " ++ fld
-            Left $ diagnostic Error MISSING_RECORD_FIELDS (pointRange p'') message
+            let message = "unexpected record field: " ++ fld
+            Left $ diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p'') message
           Just t'' -> do
             pattern'' <- checkType t'' pattern'
             let t' = snd $ annotation pattern''
