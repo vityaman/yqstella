@@ -1,4 +1,4 @@
-test/golden/exception-type-declaration/try-catch-absent/input.yqst:10:10: [FATAL_NOT_IMPLEMENTED]
-TryCatch not implemented
+test/golden/exception-type-declaration/try-catch-absent/input.yqst:10:10: [ERROR_EXCEPTION_TYPE_NOT_DECLARED]
+expection type is not declared
 >   return try { fail(n) } catch { _ => 0 }
            ^
