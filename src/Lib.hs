@@ -14,10 +14,11 @@ where
 
 import Control.Monad.Writer
 import qualified Data.Array as Array
+import qualified Data.Set as Set
 import Diagnostic.Core (Diagnostic (severity), Diagnostics, isFailure, withSourcePreview)
 import qualified Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position)
-import Extension.Activation (activateExtensions)
+import Extension.Activation (activateExtensions, enabledExtensions)
 import qualified Syntax.Lexer as Lexer
 import qualified Syntax.Parser as Parser
 import qualified SyntaxGen.AbsStella as AST
@@ -45,12 +46,14 @@ build (Source path' source) =
         tokens' <- Lexer.scan source
         parseTree' <- Parser.parse tokens'
 
-        (_, ediagnostics) <- listen (maybe (pure ()) activateExtensions parseTree')
+        extensions <- maybe (pure Set.empty) enabledExtensions parseTree'
+
+        (_, ediagnostics) <- listen (maybe (pure ()) (activateExtensions extensions) parseTree')
         let areExtensionsCorrect = not (any (isFailure . severity) ediagnostics)
 
         (areTypesCorrect', program') <- case parseTree' of
           Just parseTree'' -> do
-            (areTypesCorrect', program') <- checkTypes parseTree''
+            (areTypesCorrect', program') <- checkTypes extensions parseTree''
             return (areTypesCorrect', Just program')
           Nothing ->
             return (False, Nothing)

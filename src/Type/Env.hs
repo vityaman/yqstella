@@ -2,6 +2,7 @@ module Type.Env
   ( TypeAnnotationEnv,
     TypeAnnotator,
     withStateTAE,
+    isAvailable,
     positionOf,
     typeOf,
   )
@@ -12,7 +13,9 @@ import Control.Monad.State
 import Control.Monad.Trans.Writer
 import Diagnostic.Core (Diagnostics)
 import Diagnostic.Position (Position)
+import Extension.Core (Extension)
 import Type.Context (Context)
+import qualified Type.Context as Context
 import Type.Core (Type)
 
 type TypeAnnotationEnv a = WriterT Diagnostics (State Context) a
@@ -26,6 +29,11 @@ withStateTAE f m = do
   result <- m
   put old
   return result
+
+isAvailable :: Extension -> TypeAnnotationEnv Bool
+isAvailable e = do
+  context <- get
+  return $ Context.isAvailable context e
 
 positionOf :: (Annotated f) => f (Position, Maybe Type) -> Position
 positionOf = fst . annotation

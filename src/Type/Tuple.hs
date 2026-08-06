@@ -9,7 +9,7 @@ import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
-import Type.Expectation (liftType)
+import Type.Lift (liftType)
 
 annotateDotTupleType ::
   Maybe Type ->

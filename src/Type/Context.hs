@@ -8,6 +8,7 @@ module Type.Context
     typeOf,
     typeWithAlias,
     exceptionType,
+    isAvailable,
     unknownName,
   )
 where
@@ -15,9 +16,11 @@ where
 import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import Diagnostic.Code (Code (CONFLICTING_EXCEPTION_DECLARATIONS, DUPLICATE_EXCEPTION_TYPE, DUPLICATE_EXCEPTION_VARIANT, ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION, UNDEFINED_VARIABLE))
 import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange, unknown)
+import Extension.Core (Extension, Extensions)
 import Syntax.PrettyPrint
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (..))
@@ -32,17 +35,19 @@ data Context = Context
   { contextBindings :: Map String Binding,
     contextTypeAliases :: Map String Type,
     contextExceptionType :: Maybe Type,
-    contextExceptionTypeMode :: ExceptionTypeMode
+    contextExceptionTypeMode :: ExceptionTypeMode,
+    contextExtensions :: Extensions
   }
   deriving (Show)
 
-empty :: Context
-empty =
+empty :: Extensions -> Context
+empty extensions =
   Context
     { contextBindings = Map.empty,
       contextTypeAliases = Map.empty,
       contextExceptionType = Nothing,
-      contextExceptionTypeMode = Unknown
+      contextExceptionTypeMode = Unknown,
+      contextExtensions = extensions
     }
 
 withTyped :: String -> Type -> Context -> Context
@@ -97,6 +102,9 @@ typeWithAlias key ctx = Map.lookup key (contextTypeAliases ctx)
 
 exceptionType :: Context -> Maybe Type
 exceptionType = contextExceptionType
+
+isAvailable :: Context -> Extension -> Bool
+isAvailable Context {contextExtensions = es} e = Set.member e es
 
 unknownName :: Position -> String -> Diagnostic
 unknownName position name =

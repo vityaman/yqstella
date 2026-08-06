@@ -2,8 +2,8 @@ module Type.Expectation
   ( TypeKind (..),
     sanitizeT,
     sanitizeTSilent,
-    liftType,
-    liftType',
+    liftEqType,
+    liftEqType',
     listItemType,
     commonType,
     mismatch,
@@ -74,15 +74,15 @@ sanitizeT' _ (AST.TypeVar _ (AST.StellaIdent name)) = do
 sanitizeT' _ t = pure $ Type $ void t
 
 -- TODO: make it return Maybe Type
-liftType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
-liftType p lifting = liftType' p (Type $ lifting ())
+liftEqType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
+liftEqType p lifting = liftEqType' p (Type $ lifting ())
 
-liftType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
-liftType' p lifting (Just checked) = do
+liftEqType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
+liftEqType' p lifting (Just checked) = do
   when (lifting /= checked) $
     tell [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
   return lifting
-liftType' _ lifting Nothing =
+liftEqType' _ lifting Nothing =
   pure lifting
 
 listItemType :: Position -> TypeKind -> Maybe Type -> TypeAnnotationEnv (Maybe Type)

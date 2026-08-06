@@ -14,10 +14,8 @@ import Extension.Core (Extensions, extensionFromName, extensionName)
 import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 
-activateExtensions :: AST.Program' Position -> Writer Diagnostics ()
-activateExtensions program = do
-  enabled <- enabledExtensions program
-
+activateExtensions :: Extensions -> AST.Program' Position -> Writer Diagnostics ()
+activateExtensions enabled program = do
   tell $ do
     (position, extensions) <- toList $ annotateExtensions program
     let disabled = Set.difference extensions enabled

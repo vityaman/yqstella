@@ -6,7 +6,7 @@ import Diagnostic.Position (Position)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type)
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
-import Type.Expectation (liftType)
+import Type.Lift (liftType)
 
 annotateTT2T ::
   (Annotated f, Annotated g) =>
