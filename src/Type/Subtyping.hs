@@ -26,8 +26,8 @@ liftSubType' _ lifting Nothing =
 
 subsumes :: Type -> Type -> Either Diagnostic ()
 subsumes lhs rhs | lhs == rhs = Right ()
-subsumes (Type (AST.TypeRecord () lhs)) (Type (AST.TypeRecord () rhs)) =
-  mapM_ (`subsumesF` rhs) lhs
+subsumes lhsT'@(Type (AST.TypeRecord () lhs)) rhsT'@(Type (AST.TypeRecord () rhs)) =
+  mapM_ (`subsumesF` lhs) rhs
   where
     nameOf' (AST.ARecordFieldType () (AST.StellaIdent x) _) = x
     typeOf' (AST.ARecordFieldType () _ t) = t
@@ -36,7 +36,9 @@ subsumes (Type (AST.TypeRecord () lhs)) (Type (AST.TypeRecord () rhs)) =
     subsumesF (AST.ARecordFieldType () (AST.StellaIdent rhsName) rhsT) lhs' =
       case find (\lhsF -> rhsName == nameOf' lhsF) lhs' of
         Nothing ->
-          let message = "(subsumes) missing record field: " ++ rhsName
+          let message =
+                ("(subsumes) missing record field: " ++ rhsName ++ ", ")
+                  ++ ("checking " ++ show lhsT' ++ " <: " ++ show rhsT')
            in Left $ diagnostic Error UNEXPECTED_SUBTYPE (pointRange unknown) message
         Just lhsF ->
           let lhsT = typeOf' lhsF

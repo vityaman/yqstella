@@ -1,0 +1,4 @@
+test/golden/structural-subtyping/example-struct-disabled/input.yqst:11:12: [ERROR_UNEXPECTED_RECORD_FIELDS]
+unexpected record fields: 
+>   return f({x = n, y = n});
+             ^

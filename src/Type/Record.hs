@@ -13,8 +13,9 @@ import Diagnostic.Position (Position, pointRange)
 import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, isAvailable)
 import Type.Lift (liftType')
+import qualified Extension.Core as Extension
 
 annotateDotRecordType ::
   Maybe Type ->
@@ -111,13 +112,15 @@ annotateRecordType t p bindings annotateType = do
         let message = "missing record fields: " ++ intercalate ", " missing
          in tell [diagnostic Error MISSING_RECORD_FIELDS (pointRange p) message]
 
+      isSubtyping <- isAvailable Extension.StructuralSubtyping
+
       let unexpected = Map.keys $ Map.difference actual expected
-      unless (null unexpected) $
+      unless (isSubtyping || null unexpected) $
         let message = "unexpected record fields: " ++ intercalate ", " missing
          in tell [diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p) message]
 
       return $
-        if null missing && null unexpected
+        if null missing && (isSubtyping || null unexpected)
           then Just expected
           else Nothing
     (Nothing, Just t') ->
