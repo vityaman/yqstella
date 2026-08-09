@@ -1,0 +1,4 @@
+test/golden/type-cast/example-disabled/input.yqst:8:11: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-cast
+>   return (r cast as { y : Nat }).y
+            ^

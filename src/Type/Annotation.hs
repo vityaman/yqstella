@@ -178,9 +178,11 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- checkType type'' expr
     t' <- liftType' p type'' t
     return (AST.TypeAsc (p, Just t') expr' (stub type_))
-  annotateType _ x@(AST.TypeCast {}) = do
-    tell [notImplemented (annotation x) "TypeCast"]
-    return $ stub x
+  annotateType t (AST.TypeCast p expr type_) = do
+    type'' <- sanitizeT type_
+    expr' <- inferType expr
+    t' <- liftType' p type'' t
+    return (AST.TypeCast (p, Just t') expr' (stub type_))
   annotateType t (AST.Abstraction p paramdecls expr) =
     annotateAbstractionType t p paramdecls expr annotateType
   annotateType t (AST.Variant p (AST.StellaIdent tag) expr) = do

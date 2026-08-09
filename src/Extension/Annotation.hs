@@ -350,7 +350,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr' = annotateExtensions expr
       type_' = annotateExtensions type_
   annotateExtensions (AST.TypeCast p expr type_) =
-    AST.TypeCast (p, Set.empty) expr' type_'
+    AST.TypeCast (p, Set.singleton Extension.TypeCast) expr' type_'
     where
       expr' = annotateExtensions expr
       type_' = annotateExtensions type_
