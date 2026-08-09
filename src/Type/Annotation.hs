@@ -25,6 +25,7 @@ import Type.Lift (liftType, liftType')
 import Type.Match (annotateLetType, annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
 import Type.Reference (annotateRefExprType)
+import Type.Sum (annotateSumExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
 
@@ -292,36 +293,10 @@ instance TypeAnnotatable AST.Expr' where
     annotateExceptionExprType t x annotateType
   annotateType t x@(AST.TryCastAs {}) = do
     annotateExceptionExprType t x annotateType
-  annotateType Nothing (AST.Inl p expr) = do
-    expr' <- inferType expr -- TODO: make a function for each diagnostic
-    let message = "type inference for sum types is not supported (use type ascriptions)"
-     in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
-    return (AST.Inl (p, Nothing) expr')
-  annotateType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inl p expr) = do
-    expr' <- checkType (Type inl) expr
-    let t' = (\(Type x) -> Type (AST.TypeSum () x inr)) <$> typeOf expr'
-    return (AST.Inl (p, t') expr')
-  annotateType (Just t) (AST.Inl p expr) = do
-    expr' <- inferType expr
-    let expr't = maybe "?" show $ typeOf expr'
-        message = "expected " ++ show t ++ ", but got inl(" ++ expr't ++ ")"
-     in tell [diagnostic Error UNEXPECTED_INJECTION (pointRange p) message]
-    return (AST.Inl (p, Nothing) expr')
-  annotateType Nothing (AST.Inr p expr) = do
-    expr' <- inferType expr
-    let message = "type inference for sum types is not supported (use type ascriptions)"
-     in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
-    return (AST.Inr (p, Nothing) expr')
-  annotateType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inr p expr) = do
-    expr' <- checkType (Type inr) expr
-    let t' = (\(Type x) -> Type (AST.TypeSum () inl x)) <$> typeOf expr'
-    return (AST.Inr (p, t') expr')
-  annotateType (Just t) (AST.Inr p expr) = do
-    expr' <- inferType expr
-    let expr't = maybe "?" show $ typeOf expr'
-        message = "expected " ++ show t ++ ", but got inr(" ++ expr't ++ ")"
-     in tell [diagnostic Error UNEXPECTED_INJECTION (pointRange p) message]
-    return (AST.Inr (p, Nothing) expr')
+  annotateType t x@(AST.Inl {}) = do
+    annotateSumExprType t x annotateType
+  annotateType t x@(AST.Inr {}) = do
+    annotateSumExprType t x annotateType
   annotateType t (AST.Succ p expr) = do
     expr' <- checkType (Type.fromAST' AST.TypeNat) expr
     t' <- liftType p AST.TypeNat t

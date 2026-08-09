@@ -48,6 +48,7 @@ data Extension
   | StructuralSubtyping
   | TopType
   | BottomType
+  | AmbiguousTypeAsBottom
   | TypeCast
   | TryCastAs
   | UniversalTypes
@@ -107,6 +108,7 @@ extensionNameMap =
       (StructuralSubtyping, "#structural-subtyping"),
       (TopType, "#top-type"),
       (BottomType, "#bottom-type"),
+      (AmbiguousTypeAsBottom, "#ambiguous-type-as-bottom"),
       (TypeCast, "#type-cast"),
       (TryCastAs, "#try-cast-as"),
       -- Universal Types
@@ -136,4 +138,5 @@ closure CurriedMultiparameterFunctions = [CurriedMultiparameterFunctions, Multip
 closure LetRecBindings = [LetRecBindings, LetBindings, FixpointCombinator]
 closure OpenVariantExceptions = [OpenVariantExceptions, Variants]
 closure TryCastAs = [TryCastAs, Exceptions]
+closure AmbiguousTypeAsBottom = [AmbiguousTypeAsBottom, BottomType]
 closure x = [x]
