@@ -1,0 +1,19 @@
+language core;
+
+extend with
+  #records,
+  #structural-subtyping,
+  #structural-patterns,
+  #try-cast-as;
+
+fn f(r : { x : Nat }) -> Nat {
+  return try { r } cast as { y : Nat } {
+    { y = n } => n
+  } with {
+    0
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return f({ x = n, y = n})
+}

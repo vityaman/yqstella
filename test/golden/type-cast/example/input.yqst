@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #records,
+  #structural-subtyping,
+  #type-cast;
+
+fn f(r : { x : Nat }) -> Nat {
+  return (r cast as { y : Nat }).y
+}
+
+fn main(n : Nat) -> Nat {
+  return f({ x = n, y = n})
+}

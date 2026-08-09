@@ -1,0 +1,7 @@
+language core;
+extend with #type-cast;
+
+// inner expression is ill-typed (succ applied to Bool) — should fail
+fn main(n : Nat) -> Nat {
+  return (succ(true) cast as Nat)
+}

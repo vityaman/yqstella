@@ -350,7 +350,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr' = annotateExtensions expr
       type_' = annotateExtensions type_
   annotateExtensions (AST.TypeCast p expr type_) =
-    AST.TypeCast (p, Set.empty) expr' type_'
+    AST.TypeCast (p, Set.singleton Extension.TypeCast) expr' type_'
     where
       expr' = annotateExtensions expr
       type_' = annotateExtensions type_
@@ -482,7 +482,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr1' = annotateExtensions expr1
       expr2' = annotateExtensions expr2
   annotateExtensions (AST.TryCastAs p expr1 type_ pattern_ expr2 expr3) =
-    AST.TryCastAs (p, Set.fromList [Extension.TypeCast, Extension.Exceptions]) expr1' type_' pattern_' expr2' expr3'
+    AST.TryCastAs (p, Set.fromList [Extension.TryCastAs, Extension.Exceptions]) expr1' type_' pattern_' expr2' expr3'
     where
       expr1' = annotateExtensions expr1
       type_' = annotateExtensions type_

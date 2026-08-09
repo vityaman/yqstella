@@ -1,0 +1,4 @@
+test/golden/try-cast-as-malevrovich/branch-mismatch/input.yqst:6:50: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+(subsumes) type mismatch: expected Bool, got Nat
+>   return try { n } cast as Nat { x => x } with { false }
+                                                   ^

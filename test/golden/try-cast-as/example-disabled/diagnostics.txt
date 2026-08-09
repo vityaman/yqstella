@@ -1,0 +1,4 @@
+test/golden/try-cast-as/example-disabled/input.yqst:10:5: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>     { y = n } => n
+      ^

@@ -1,0 +1,7 @@
+language core;
+extend with #type-cast;
+
+// cast gives Bool, but function returns Nat — type mismatch on the result
+fn main(n : Nat) -> Nat {
+  return (n cast as Bool)
+}

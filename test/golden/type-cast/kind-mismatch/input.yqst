@@ -1,0 +1,18 @@
+language core;
+
+extend with
+  #records,
+  #variants,
+  #structural-subtyping,
+  #type-cast;
+
+fn f(r : { x : Nat }) -> Nat {
+  return match (r cast as <| x : Nat, y : Nat |>) {
+      <| x = n |> => n
+    | <| y = n |> => n
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return f({ x = n, y = n})
+}

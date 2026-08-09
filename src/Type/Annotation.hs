@@ -178,9 +178,11 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- checkType type'' expr
     t' <- liftType' p type'' t
     return (AST.TypeAsc (p, Just t') expr' (stub type_))
-  annotateType _ x@(AST.TypeCast {}) = do
-    tell [notImplemented (annotation x) "TypeCast"]
-    return $ stub x
+  annotateType t (AST.TypeCast p expr type_) = do
+    type'' <- sanitizeT type_
+    expr' <- inferType expr
+    t' <- liftType' p type'' t
+    return (AST.TypeCast (p, Just t') expr' (stub type_))
   annotateType t (AST.Abstraction p paramdecls expr) =
     annotateAbstractionType t p paramdecls expr annotateType
   annotateType t (AST.Variant p (AST.StellaIdent tag) expr) = do
@@ -288,9 +290,8 @@ instance TypeAnnotatable AST.Expr' where
     annotateExceptionExprType t x annotateType
   annotateType t x@(AST.TryWith {}) = do
     annotateExceptionExprType t x annotateType
-  annotateType _ x@(AST.TryCastAs {}) = do
-    tell [notImplemented (annotation x) "TryCastAs"]
-    return $ stub x
+  annotateType t x@(AST.TryCastAs {}) = do
+    annotateExceptionExprType t x annotateType
   annotateType Nothing (AST.Inl p expr) = do
     expr' <- inferType expr -- TODO: make a function for each diagnostic
     let message = "type inference for sum types is not supported (use type ascriptions)"

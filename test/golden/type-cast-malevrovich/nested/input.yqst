@@ -1,0 +1,7 @@
+language core;
+extend with #type-cast;
+
+// nested cast: inner cast gives Bool, outer cast gives Nat
+fn main(n : Nat) -> Nat {
+  return ((n cast as Bool) cast as Nat)
+}

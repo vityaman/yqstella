@@ -1,0 +1,4 @@
+test/golden/type-cast-malevrovich/nested/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #type-cast not implemented
+> language core;
+  ^

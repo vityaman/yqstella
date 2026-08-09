@@ -1,0 +1,4 @@
+test/golden/type-cast-malevrovich/inner-type-error/input.yqst:6:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return (succ(true) cast as Nat)
+                 ^
