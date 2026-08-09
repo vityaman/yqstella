@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #top-type,
+  #type-cast,
+  #structural-subtyping;
+
+fn inc(r : Top) -> Nat {
+  return succ(r cast as Nat)
+}
+
+fn main(n : Nat) -> Nat {
+  return inc(n);
+}

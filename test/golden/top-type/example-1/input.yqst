@@ -1,0 +1,13 @@
+language core;
+
+extend with
+  #top-type,
+  #structural-subtyping;
+
+fn zero(r : Top) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return zero(n)
+}

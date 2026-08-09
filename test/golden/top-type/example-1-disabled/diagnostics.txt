@@ -1,0 +1,4 @@
+test/golden/top-type/example-1-disabled/input.yqst:6:13: [ERROR_BAD_EXTENSION]
+disabled extension usage: #top-type
+> fn zero(r : Top) -> Nat {
+              ^
