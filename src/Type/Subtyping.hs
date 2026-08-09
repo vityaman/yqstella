@@ -3,7 +3,7 @@ module Type.Subtyping (liftSubType, liftSubType') where
 import Control.Monad (when, zipWithM_)
 import Control.Monad.Writer (tell)
 import Data.Foldable (find)
-import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE))
+import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_NULLARY_LABEL))
 import Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position, pointRange, unknown)
 import Syntax.PrettyPrint (displayAST)
@@ -86,8 +86,8 @@ subsumes lhsT'@(Type (AST.TypeVariant () lhs)) rhsT'@(Type (AST.TypeVariant () r
                 (lhsT'', rhsT'') ->
                   let message' =
                         ("(subsumes) variant field " ++ show rhsName ++ " type mismatch: ")
-                          ++ (displayAST lhsT'' ++ " vs " ++ displayAST rhsT'')
-                   in Left $ diagnostic Error UNEXPECTED_SUBTYPE (pointRange unknown) message'
+                          ++ ("'" ++ displayAST lhsT'' ++ "' vs '" ++ displayAST rhsT'' ++ "'")
+                   in Left $ diagnostic Error UNEXPECTED_TYPE_FOR_NULLARY_LABEL (pointRange unknown) message'
 subsumes (Type (AST.TypeList () lhs)) (Type (AST.TypeList () rhs)) =
   subsumes (Type lhs) (Type rhs)
 subsumes lhs rhs =
