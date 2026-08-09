@@ -290,9 +290,8 @@ instance TypeAnnotatable AST.Expr' where
     annotateExceptionExprType t x annotateType
   annotateType t x@(AST.TryWith {}) = do
     annotateExceptionExprType t x annotateType
-  annotateType _ x@(AST.TryCastAs {}) = do
-    tell [notImplemented (annotation x) "TryCastAs"]
-    return $ stub x
+  annotateType t x@(AST.TryCastAs {}) = do
+    annotateExceptionExprType t x annotateType
   annotateType Nothing (AST.Inl p expr) = do
     expr' <- inferType expr -- TODO: make a function for each diagnostic
     let message = "type inference for sum types is not supported (use type ascriptions)"

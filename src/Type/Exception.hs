@@ -2,6 +2,7 @@
 
 module Type.Exception (annotateExceptionExprType) where
 
+import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (when)
 import Control.Monad.RWS
 import Diagnostic.Code (Code (AMBIGUOUS_PANIC_TYPE, AMBIGUOUS_THROW_TYPE, EXCEPTION_TYPE_NOT_DECLARED))
@@ -11,6 +12,7 @@ import qualified SyntaxGen.AbsStella as AST
 import Type.Context (exceptionType)
 import Type.Core (Type)
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
+import Type.Expectation (sanitizeT)
 import Type.Match (annotateCaseType)
 
 annotateExceptionExprType ::
@@ -66,4 +68,16 @@ annotateExceptionExprType t (AST.TryWith p try catch) annotateType = do
   let t' = typeOf try'
   catch' <- annotateType t' catch
   return $ AST.TryWith (p, t') try' catch'
+annotateExceptionExprType t (AST.TryCastAs p try type_ pattern' ok' with) annotateType = do
+  try' <- annotateType Nothing try
+
+  type' <- sanitizeT type_
+
+  (AST.AMatchCase _ pattern'' ok'') <-
+    annotateCaseType t (AST.AMatchCase p pattern' ok') type' annotateType
+
+  with' <- annotateType (t <|> typeOf ok'') with
+
+  let t' = t >> typeOf ok'' >> typeOf with'
+  return $ AST.TryCastAs (p, t') try' (fmap (,Nothing) type_) pattern'' ok'' with'
 annotateExceptionExprType _ _ _ = error "Unexpected non-exception expression"

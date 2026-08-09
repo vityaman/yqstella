@@ -1,0 +1,6 @@
+language core;
+extend with #type-cast, #top-type, #structural-subtyping, #try-cast-as;
+
+fn main(n : Nat) -> Nat {
+  return try { n } cast as Nat { x => x } with { 0 }
+}

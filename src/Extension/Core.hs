@@ -49,6 +49,7 @@ data Extension
   | TopType
   | BottomType
   | TypeCast
+  | TryCastAs
   | UniversalTypes
   | FixpointCombinator
   | LetRecBindings
@@ -107,6 +108,7 @@ extensionNameMap =
       (TopType, "#top-type"),
       (BottomType, "#bottom-type"),
       (TypeCast, "#type-cast"),
+      (TryCastAs, "#try-cast-as"),
       -- Universal Types
       (UniversalTypes, "#universal-types"),
       -- Recursion
@@ -133,4 +135,5 @@ closure Tuples = [Tuples, Pairs]
 closure CurriedMultiparameterFunctions = [CurriedMultiparameterFunctions, MultiparameterFunctions]
 closure LetRecBindings = [LetRecBindings, LetBindings, FixpointCombinator]
 closure OpenVariantExceptions = [OpenVariantExceptions, Variants]
+closure TryCastAs = [TryCastAs, Exceptions]
 closure x = [x]

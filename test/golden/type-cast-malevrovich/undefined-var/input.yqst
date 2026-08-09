@@ -1,0 +1,7 @@
+language core;
+extend with #type-cast;
+
+// inner expression has an undefined variable — should fail with ERROR_UNDEFINED_VARIABLE
+fn main(n : Nat) -> Nat {
+  return (undefined_var cast as Nat)
+}

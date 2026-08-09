@@ -1,5 +1,7 @@
 {
     "search.exclude": {
-        "**/*.yqls": true,
+        "**/test/golden/**/*.yqls": true,
+        "**/test/golden/**/*.yqst": true,
+        "**/test/golden/**/*.yson": true,
     }
 }

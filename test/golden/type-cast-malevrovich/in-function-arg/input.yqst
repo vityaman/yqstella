@@ -1,0 +1,11 @@
+language core;
+extend with #type-cast;
+
+fn double(n : Nat) -> Nat {
+  return Nat::rec(n, 0, fn(k : Nat) { return fn(acc : Nat) { return succ(succ(acc)) } })
+}
+
+// cast result used as argument to a function
+fn main(b : Bool) -> Nat {
+  return double(b cast as Nat)
+}

@@ -1,0 +1,4 @@
+test/golden/type-cast-malevrovich/undefined-var/input.yqst:6:11: [ERROR_UNDEFINED_VARIABLE]
+undefined variable undefined_var
+>   return (undefined_var cast as Nat)
+            ^
