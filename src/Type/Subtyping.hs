@@ -3,7 +3,7 @@ module Type.Subtyping (liftSubType, liftSubType') where
 import Control.Monad (when, zipWithM_)
 import Control.Monad.Writer (tell)
 import Data.Foldable (find)
-import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION))
+import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE))
 import Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position, pointRange, unknown)
 import Syntax.PrettyPrint (displayAST)
@@ -40,8 +40,11 @@ subsumes (Type (AST.TypeFun () lhsArgs lhsRet)) (Type (AST.TypeFun () rhsArgs rh
   -- TODO(103): improve diagnostics message
   zipWithM_ subsumes (Type <$> rhsArgs) (Type <$> lhsArgs)
   subsumes (Type lhsRet) (Type rhsRet)
--- FIXME(103): Implement Sum
--- FIXME(103): Implement Tuple
+subsumes (Type (AST.TypeSum () lhsL lhsR)) (Type (AST.TypeSum () rhsL rhsR)) = do
+  subsumes (Type lhsL) (Type rhsL)
+  subsumes (Type lhsR) (Type rhsR)
+subsumes (Type (AST.TypeTuple () lhs)) (Type (AST.TypeTuple () rhs)) =
+  zipWithM_ subsumes (Type <$> lhs) (Type <$> rhs)
 subsumes lhsT'@(Type (AST.TypeRecord () lhs)) rhsT'@(Type (AST.TypeRecord () rhs)) =
   mapM_ (`subsumesF` lhs) rhs
   where
@@ -85,7 +88,8 @@ subsumes lhsT'@(Type (AST.TypeVariant () lhs)) rhsT'@(Type (AST.TypeVariant () r
                         ("(subsumes) variant field " ++ show rhsName ++ " type mismatch: ")
                           ++ (displayAST lhsT'' ++ " vs " ++ displayAST rhsT'')
                    in Left $ diagnostic Error UNEXPECTED_SUBTYPE (pointRange unknown) message'
--- FIXME(103): Implement List
+subsumes (Type (AST.TypeList () lhs)) (Type (AST.TypeList () rhs)) =
+  subsumes (Type lhs) (Type rhs)
 subsumes lhs rhs =
   let d = mismatch UNEXPECTED_SUBTYPE unknown lhs rhs
    in Left d {message = "(subsumes) " ++ message d}
