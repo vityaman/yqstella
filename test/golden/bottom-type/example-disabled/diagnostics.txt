@@ -1,0 +1,4 @@
+test/golden/bottom-type/example-disabled/input.yqst:7:18: [ERROR_BAD_EXTENSION]
+disabled extension usage: #bottom-type
+> fn f(r : Nat) -> Bot {
+                   ^
