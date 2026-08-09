@@ -1,0 +1,6 @@
+language core;
+extend with #ambiguous-type-as-bottom, #lists, #bottom-type, #let-bindings;
+
+fn main(n : Nat) -> [Bot] {
+  return let x = [] in x
+}

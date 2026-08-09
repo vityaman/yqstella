@@ -1,0 +1,6 @@
+language core;
+extend with #ambiguous-type-as-bottom, #sum-types, #bottom-type, #let-bindings;
+
+fn main(n : Nat) -> Nat + Bot {
+  return let x = inl(n) in x
+}

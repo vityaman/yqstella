@@ -11,13 +11,14 @@ import Data.Foldable (find)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic (range), Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
+import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import Type.Application (annotateAbstractionType, annotateApplicationType)
 import qualified Type.Context as Context
-import Type.Core (Type (Type))
+import Type.Core (Type (Type), list)
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withDecls, withParamDecls)
-import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, isAvailable, typeOf, withStateTAE)
 import Type.Exception (annotateExceptionExprType)
 import Type.Expectation (TypeKind (Expected, Inferred), listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
@@ -195,9 +196,11 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Match p expr cases) =
     annotateMatchType t p expr cases annotateType
   annotateType Nothing (AST.List p []) = do
-    let message = "type inference for empty lists is not supported (use type ascriptions)"
-    tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
-    return (AST.List (p, Nothing) [])
+    isBottom <- isAvailable Extension.AmbiguousTypeAsBottom
+    unless isBottom $ do
+      let message = "type inference for empty lists is not supported (use type ascriptions)"
+      tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
+    return (AST.List (p, Just $ list $ Type.fromAST' AST.TypeBottom) [])
   annotateType (Just t) (AST.List p []) = do
     itemT <- listItemType p Expected (Just t)
     return (AST.List (p, itemT >> Just t) [])

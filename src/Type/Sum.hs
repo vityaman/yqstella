@@ -1,7 +1,6 @@
 module Type.Sum (annotateSumExprType) where
 
 import Control.Monad (unless)
-import Control.Monad.State (get)
 import Control.Monad.Writer (tell)
 import Diagnostic.Code (Code (AMBIGUOUS_SUM_TYPE, UNEXPECTED_INJECTION))
 import Diagnostic.Core (Severity (Error), diagnostic)
@@ -23,7 +22,11 @@ annotateSumExprType Nothing (AST.Inl p expr) annotateType = do
   unless isBottom $
     let message = "type inference for sum types is not supported (use type ascriptions)"
      in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
-  return (AST.Inl (p, Just $ Type.fromAST' AST.TypeBottom) expr')
+
+  let inlT = typeOf expr'
+      inrT = Just $ Type.fromAST' AST.TypeBottom
+      t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
+  return (AST.Inl (p, t') expr')
 annotateSumExprType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inl p expr) annotateType = do
   expr' <- annotateType (Just (Type inl)) expr
   let t' = (\(Type x) -> Type (AST.TypeSum () x inr)) <$> typeOf expr'
@@ -40,7 +43,11 @@ annotateSumExprType Nothing (AST.Inr p expr) annotateType = do
   unless isBottom $
     let message = "type inference for sum types is not supported (use type ascriptions)"
      in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
-  return (AST.Inr (p, Just $ Type.fromAST' AST.TypeBottom) expr')
+
+  let inlT = Just $ Type.fromAST' AST.TypeBottom
+      inrT = typeOf expr'
+      t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
+  return (AST.Inr (p, t') expr')
 annotateSumExprType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inr p expr) annotateType = do
   expr' <- annotateType (Just (Type inr)) expr
   let t' = (\(Type x) -> Type (AST.TypeSum () inl x)) <$> typeOf expr'

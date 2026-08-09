@@ -1,4 +1,4 @@
-test/golden/ambiguous-type-as-bottom/example/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
-YQL translation unsupported: Extension #structural-subtyping not implemented
-> language core;
-  ^
+test/golden/ambiguous-type-as-bottom/example/input.yqst:9:10: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Bot + Nat, got Bool + Nat
+>   return (fn (x : Nat) {
+           ^

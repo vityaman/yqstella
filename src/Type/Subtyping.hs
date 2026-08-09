@@ -40,6 +40,8 @@ subsumes (Type (AST.TypeFun () lhsArgs lhsRet)) (Type (AST.TypeFun () rhsArgs rh
   -- TODO(103): improve diagnostics message
   zipWithM_ subsumes (Type <$> rhsArgs) (Type <$> lhsArgs)
   subsumes (Type lhsRet) (Type rhsRet)
+-- FIXME(103): Implement Sum
+-- FIXME(103): Implement Tuple
 subsumes lhsT'@(Type (AST.TypeRecord () lhs)) rhsT'@(Type (AST.TypeRecord () rhs)) =
   mapM_ (`subsumesF` lhs) rhs
   where
@@ -83,6 +85,7 @@ subsumes lhsT'@(Type (AST.TypeVariant () lhs)) rhsT'@(Type (AST.TypeVariant () r
                         ("(subsumes) variant field " ++ show rhsName ++ " type mismatch: ")
                           ++ (displayAST lhsT'' ++ " vs " ++ displayAST rhsT'')
                    in Left $ diagnostic Error UNEXPECTED_SUBTYPE (pointRange unknown) message'
+-- FIXME(103): Implement List
 subsumes lhs rhs =
   let d = mismatch UNEXPECTED_SUBTYPE unknown lhs rhs
    in Left d {message = "(subsumes) " ++ message d}

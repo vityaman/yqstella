@@ -2,3 +2,7 @@ test/golden/ambiguous-type-as-bottom/example-disabled/input.yqst:9:12: [ERROR_AM
 type inference for sum types is not supported (use type ascriptions)
 >     return inr(x)
              ^
+test/golden/ambiguous-type-as-bottom/example-disabled/input.yqst:8:10: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Bot + Nat, got Bool + Nat
+>   return (fn (x : Nat) {
+           ^
