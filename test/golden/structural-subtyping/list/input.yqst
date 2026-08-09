@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #records,
+  #lists,
+  #structural-subtyping;
+
+fn f(r : [{x : Nat}]) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return f([{ x = 0, y = 0 }])
+}

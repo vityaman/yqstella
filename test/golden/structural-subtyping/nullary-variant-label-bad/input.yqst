@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #variants,
+  #nullary-variant-labels,
+  #structural-subtyping,
+  #unit-type;
+
+fn f(x : <| a, b, c : Nat |>) -> Nat {
+  return 0
+}
+
+fn main(x : <| a, b : Unit |>) -> Nat {
+  return f(x)
+}

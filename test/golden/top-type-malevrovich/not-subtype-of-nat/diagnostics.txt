@@ -1,0 +1,4 @@
+test/golden/top-type-malevrovich/not-subtype-of-nat/input.yqst:9:20: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Top, got Nat
+>   return takes_nat(x)
+                     ^

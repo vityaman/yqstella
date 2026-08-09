@@ -1,0 +1,4 @@
+test/golden/structural-subtyping/nullary-variant-label-bad/input.yqst:14:12: [ERROR_UNEXPECTED_TYPE_FOR_NULLARY_LABEL]
+(subsumes) variant field "b" type mismatch: '' vs ': Unit'
+>   return f(x)
+             ^

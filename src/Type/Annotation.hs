@@ -11,13 +11,14 @@ import Data.Foldable (find)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic (range), Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
+import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import Type.Application (annotateAbstractionType, annotateApplicationType)
 import qualified Type.Context as Context
-import Type.Core (Type (Type))
+import Type.Core (Type (Type), list)
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withDecls, withParamDecls)
-import Type.Env (TypeAnnotationEnv, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, isAvailable, typeOf, withStateTAE)
 import Type.Exception (annotateExceptionExprType)
 import Type.Expectation (TypeKind (Expected, Inferred), listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
@@ -25,6 +26,7 @@ import Type.Lift (liftType, liftType')
 import Type.Match (annotateLetType, annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
 import Type.Reference (annotateRefExprType)
+import Type.Sum (annotateSumExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
 
@@ -194,9 +196,13 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Match p expr cases) =
     annotateMatchType t p expr cases annotateType
   annotateType Nothing (AST.List p []) = do
-    let message = "type inference for empty lists is not supported (use type ascriptions)"
-    tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
-    return (AST.List (p, Nothing) [])
+    isBottom <- isAvailable Extension.AmbiguousTypeAsBottom
+    unless isBottom $ do
+      let message = "type inference for empty lists is not supported (use type ascriptions)"
+      tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
+
+    let t = if isBottom then Just $ list $ Type.fromAST' AST.TypeBottom else Nothing
+    return (AST.List (p, t) [])
   annotateType (Just t) (AST.List p []) = do
     itemT <- listItemType p Expected (Just t)
     return (AST.List (p, itemT >> Just t) [])
@@ -292,36 +298,10 @@ instance TypeAnnotatable AST.Expr' where
     annotateExceptionExprType t x annotateType
   annotateType t x@(AST.TryCastAs {}) = do
     annotateExceptionExprType t x annotateType
-  annotateType Nothing (AST.Inl p expr) = do
-    expr' <- inferType expr -- TODO: make a function for each diagnostic
-    let message = "type inference for sum types is not supported (use type ascriptions)"
-     in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
-    return (AST.Inl (p, Nothing) expr')
-  annotateType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inl p expr) = do
-    expr' <- checkType (Type inl) expr
-    let t' = (\(Type x) -> Type (AST.TypeSum () x inr)) <$> typeOf expr'
-    return (AST.Inl (p, t') expr')
-  annotateType (Just t) (AST.Inl p expr) = do
-    expr' <- inferType expr
-    let expr't = maybe "?" show $ typeOf expr'
-        message = "expected " ++ show t ++ ", but got inl(" ++ expr't ++ ")"
-     in tell [diagnostic Error UNEXPECTED_INJECTION (pointRange p) message]
-    return (AST.Inl (p, Nothing) expr')
-  annotateType Nothing (AST.Inr p expr) = do
-    expr' <- inferType expr
-    let message = "type inference for sum types is not supported (use type ascriptions)"
-     in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
-    return (AST.Inr (p, Nothing) expr')
-  annotateType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inr p expr) = do
-    expr' <- checkType (Type inr) expr
-    let t' = (\(Type x) -> Type (AST.TypeSum () inl x)) <$> typeOf expr'
-    return (AST.Inr (p, t') expr')
-  annotateType (Just t) (AST.Inr p expr) = do
-    expr' <- inferType expr
-    let expr't = maybe "?" show $ typeOf expr'
-        message = "expected " ++ show t ++ ", but got inr(" ++ expr't ++ ")"
-     in tell [diagnostic Error UNEXPECTED_INJECTION (pointRange p) message]
-    return (AST.Inr (p, Nothing) expr')
+  annotateType t x@(AST.Inl {}) = do
+    annotateSumExprType t x annotateType
+  annotateType t x@(AST.Inr {}) = do
+    annotateSumExprType t x annotateType
   annotateType t (AST.Succ p expr) = do
     expr' <- checkType (Type.fromAST' AST.TypeNat) expr
     t' <- liftType p AST.TypeNat t

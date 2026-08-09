@@ -1,0 +1,4 @@
+test/golden/ambiguous-type-as-bottom-malevrovich/panic/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #bottom-type not implemented
+> language core;
+  ^

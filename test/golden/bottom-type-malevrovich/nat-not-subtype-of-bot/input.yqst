@@ -1,0 +1,10 @@
+language core;
+extend with #bottom-type, #structural-subtyping;
+
+fn takes_bot(n : Bot) -> Bot {
+  return n
+}
+
+fn main(n : Nat) -> Bot {
+  return takes_bot(n)
+}

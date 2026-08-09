@@ -1,0 +1,4 @@
+test/golden/ambiguous-type-as-bottom/example-disabled/input.yqst:9:12: [ERROR_AMBIGUOUS_SUM_TYPE]
+type inference for sum types is not supported (use type ascriptions)
+>     return inr(x)
+             ^

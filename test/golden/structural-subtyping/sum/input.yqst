@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #type-ascriptions,
+  #records,
+  #sum-types,
+  #structural-subtyping;
+
+fn f(r : { x : Nat } + { x : Nat } ) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return f(inl({ x = 0, y = 0 }) as ({ x : Nat, y : Nat } + { x : Nat }))
+}

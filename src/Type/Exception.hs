@@ -3,15 +3,17 @@
 module Type.Exception (annotateExceptionExprType) where
 
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (when)
+import Control.Monad (unless, when)
 import Control.Monad.RWS
 import Diagnostic.Code (Code (AMBIGUOUS_PANIC_TYPE, AMBIGUOUS_THROW_TYPE, EXCEPTION_TYPE_NOT_DECLARED))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
+import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import Type.Context (exceptionType)
 import Type.Core (Type)
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
+import qualified Type.Core as Type
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, isAvailable, typeOf)
 import Type.Expectation (sanitizeT)
 import Type.Match (annotateCaseType)
 
@@ -21,9 +23,13 @@ annotateExceptionExprType ::
   TypeAnnotator AST.Expr' ->
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateExceptionExprType Nothing (AST.Panic p) _ = do
-  let message = "type inference for panic is not supported (use type ascriptions)"
-  tell [diagnostic Error AMBIGUOUS_PANIC_TYPE (pointRange p) message]
-  return (AST.Panic (p, Nothing))
+  isBottom <- isAvailable Extension.AmbiguousTypeAsBottom
+  unless isBottom $ do
+    let message = "type inference for panic is not supported (use type ascriptions)"
+    tell [diagnostic Error AMBIGUOUS_PANIC_TYPE (pointRange p) message]
+
+  let t = if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
+  return (AST.Panic (p, t))
 annotateExceptionExprType t@(Just _) (AST.Panic p) _ = do
   return (AST.Panic (p, t))
 annotateExceptionExprType Nothing (AST.Throw p expr) annotateType = do

@@ -1,0 +1,13 @@
+language core;
+
+extend with
+  #panic,
+  #structural-subtyping;
+
+fn f(r : Nat) -> Bot {
+  return panic!
+}
+
+fn main(n : Nat) -> Nat {
+  return f(n);
+}

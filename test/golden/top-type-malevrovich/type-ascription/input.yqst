@@ -1,0 +1,6 @@
+language core;
+extend with #top-type, #type-ascriptions;
+
+fn main(n : Top) -> Top {
+  return n
+}

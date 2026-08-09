@@ -1,0 +1,10 @@
+language core;
+extend with #top-type, #structural-subtyping;
+
+fn takes_top(x : Top) -> Top {
+  return x
+}
+
+fn main(n : Bool) -> Top {
+  return takes_top(n)
+}

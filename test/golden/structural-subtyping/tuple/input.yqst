@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #records,
+  #tuples,
+  #structural-subtyping;
+
+fn f(r : { { x : Nat }, { x : Nat } }) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return f({{ x = 0, y = 0 }, { x = 0 }})
+}
