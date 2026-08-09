@@ -24,7 +24,7 @@ annotateSumExprType Nothing (AST.Inl p expr) annotateType = do
      in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
 
   let inlT = typeOf expr'
-      inrT = Just $ Type.fromAST' AST.TypeBottom
+      inrT = if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
       t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
   return (AST.Inl (p, t') expr')
 annotateSumExprType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inl p expr) annotateType = do
@@ -44,7 +44,7 @@ annotateSumExprType Nothing (AST.Inr p expr) annotateType = do
     let message = "type inference for sum types is not supported (use type ascriptions)"
      in tell [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
 
-  let inlT = Just $ Type.fromAST' AST.TypeBottom
+  let inlT = if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
       inrT = typeOf expr'
       t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
   return (AST.Inr (p, t') expr')

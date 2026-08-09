@@ -3,7 +3,7 @@ module Type.Subtyping (liftSubType, liftSubType') where
 import Control.Monad (when, zipWithM_)
 import Control.Monad.Writer (tell)
 import Data.Foldable (find)
-import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_NULLARY_LABEL))
+import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION, UNEXPECTED_TYPE_FOR_NULLARY_LABEL))
 import Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position, pointRange, unknown)
 import Syntax.PrettyPrint (displayAST)
@@ -29,12 +29,18 @@ liftSubType' _ lifting Nothing =
 subsumes :: Type -> Type -> Either Diagnostic ()
 subsumes lhs rhs | lhs == rhs = Right ()
 subsumes _ (Type (AST.TypeTop ())) = Right ()
+subsumes lhs@(Type (AST.TypeTop ())) rhs =
+  let d = mismatch UNEXPECTED_SUBTYPE unknown lhs rhs
+   in Left d {message = "(subsumes) " ++ message d}
 subsumes (Type (AST.TypeBottom ())) _ = Right ()
+subsumes lhs rhs@(Type (AST.TypeBottom ())) =
+  let d = mismatch UNEXPECTED_SUBTYPE unknown lhs rhs
+   in Left d {message = "(subsumes) " ++ message d}
 subsumes (Type (AST.TypeFun () lhsArgs lhsRet)) (Type (AST.TypeFun () rhsArgs rhsRet)) = do
   let lhsArgsLen = length lhsArgs
       rhsArgsLen = length rhsArgs
   when (lhsArgsLen /= rhsArgsLen) $
-    let message' = "expected " ++ show lhsArgs ++ " arguments, got " ++ show rhsArgsLen
+    let message' = "(subsumes) expected " ++ show lhsArgs ++ " arguments, got " ++ show rhsArgsLen
      in Left $ diagnostic Error INCORRECT_NUMBER_OF_ARGUMENTS (pointRange unknown) message'
 
   -- TODO(103): improve diagnostics message
@@ -91,5 +97,5 @@ subsumes lhsT'@(Type (AST.TypeVariant () lhs)) rhsT'@(Type (AST.TypeVariant () r
 subsumes (Type (AST.TypeList () lhs)) (Type (AST.TypeList () rhs)) =
   subsumes (Type lhs) (Type rhs)
 subsumes lhs rhs =
-  let d = mismatch UNEXPECTED_SUBTYPE unknown lhs rhs
+  let d = mismatch UNEXPECTED_TYPE_FOR_EXPRESSION unknown lhs rhs
    in Left d {message = "(subsumes) " ++ message d}

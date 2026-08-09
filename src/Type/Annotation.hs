@@ -200,7 +200,9 @@ instance TypeAnnotatable AST.Expr' where
     unless isBottom $ do
       let message = "type inference for empty lists is not supported (use type ascriptions)"
       tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
-    return (AST.List (p, Just $ list $ Type.fromAST' AST.TypeBottom) [])
+
+    let t = if isBottom then Just $ list $ Type.fromAST' AST.TypeBottom else Nothing
+    return (AST.List (p, t) [])
   annotateType (Just t) (AST.List p []) = do
     itemT <- listItemType p Expected (Just t)
     return (AST.List (p, itemT >> Just t) [])

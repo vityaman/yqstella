@@ -27,7 +27,9 @@ annotateExceptionExprType Nothing (AST.Panic p) _ = do
   unless isBottom $ do
     let message = "type inference for panic is not supported (use type ascriptions)"
     tell [diagnostic Error AMBIGUOUS_PANIC_TYPE (pointRange p) message]
-  return (AST.Panic (p, Just $ Type.fromAST' AST.TypeBottom))
+
+  let t = if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
+  return (AST.Panic (p, t))
 annotateExceptionExprType t@(Just _) (AST.Panic p) _ = do
   return (AST.Panic (p, t))
 annotateExceptionExprType Nothing (AST.Throw p expr) annotateType = do
