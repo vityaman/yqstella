@@ -138,4 +138,5 @@ closure CurriedMultiparameterFunctions = [CurriedMultiparameterFunctions, Multip
 closure LetRecBindings = [LetRecBindings, LetBindings, FixpointCombinator]
 closure OpenVariantExceptions = [OpenVariantExceptions, Variants]
 closure TryCastAs = [TryCastAs, Exceptions]
+closure AmbiguousTypeAsBottom = [AmbiguousTypeAsBottom, BottomType]
 closure x = [x]
