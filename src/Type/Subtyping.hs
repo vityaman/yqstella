@@ -3,7 +3,7 @@ module Type.Subtyping (liftSubType, liftSubType') where
 import Control.Monad (when, zipWithM_)
 import Control.Monad.Writer (tell)
 import Data.Foldable (find)
-import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION, MISSING_RECORD_FIELDS))
+import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION))
 import Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position, pointRange, unknown)
 import Syntax.PrettyPrint (displayAST)
