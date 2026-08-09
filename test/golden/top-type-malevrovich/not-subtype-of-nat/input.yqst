@@ -1,0 +1,10 @@
+language core;
+extend with #top-type, #structural-subtyping;
+
+fn takes_nat(n : Nat) -> Nat {
+  return n
+}
+
+fn main(x : Top) -> Nat {
+  return takes_nat(x)
+}

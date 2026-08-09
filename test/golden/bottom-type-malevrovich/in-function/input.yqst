@@ -1,0 +1,6 @@
+language core;
+extend with #bottom-type, #type-ascriptions;
+
+fn main(n : Bot) -> Bot {
+  return n
+}

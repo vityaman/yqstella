@@ -84,5 +84,5 @@ subsumes lhsT'@(Type (AST.TypeVariant () lhs)) rhsT'@(Type (AST.TypeVariant () r
                           ++ (displayAST lhsT'' ++ " vs " ++ displayAST rhsT'')
                    in Left $ diagnostic Error UNEXPECTED_SUBTYPE (pointRange unknown) message'
 subsumes lhs rhs =
-  let d = mismatch UNEXPECTED_TYPE_FOR_EXPRESSION unknown lhs rhs
+  let d = mismatch UNEXPECTED_SUBTYPE unknown lhs rhs
    in Left d {message = "(subsumes) " ++ message d}
