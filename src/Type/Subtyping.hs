@@ -28,6 +28,8 @@ liftSubType' _ lifting Nothing =
 
 subsumes :: Type -> Type -> Either Diagnostic ()
 subsumes lhs rhs | lhs == rhs = Right ()
+subsumes _ (Type (AST.TypeTop ())) = Right ()
+subsumes (Type (AST.TypeBottom ())) _ = Right ()
 subsumes (Type (AST.TypeFun () lhsArgs lhsRet)) (Type (AST.TypeFun () rhsArgs rhsRet)) = do
   let lhsArgsLen = length lhsArgs
       rhsArgsLen = length rhsArgs
