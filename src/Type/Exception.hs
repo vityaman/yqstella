@@ -12,10 +12,10 @@ import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import Type.Context (exceptionType)
 import Type.Core (Type)
+import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, isAvailable, typeOf)
 import Type.Expectation (sanitizeT)
 import Type.Match (annotateCaseType)
-import qualified Type.Core as Type
 
 annotateExceptionExprType ::
   Maybe Type ->
