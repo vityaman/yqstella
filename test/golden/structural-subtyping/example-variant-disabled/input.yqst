@@ -1,0 +1,21 @@
+language core;
+
+extend with
+  #variants,
+  #unit-type,
+  #panic;
+
+fn inc(r : <| value : Nat, failure : Unit |>) -> Nat {
+  return match r {
+      <| value = n |> => succ(n)
+    | <| failure = _ |> => panic!
+  }
+}
+
+fn just(n : Nat) -> <| value : Nat |> {
+  return <| value = n |>
+}
+
+fn main(n : Nat) -> Nat {
+  return inc(just(n));
+}

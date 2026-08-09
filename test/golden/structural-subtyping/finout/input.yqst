@@ -1,0 +1,53 @@
+language core;
+
+extend with
+  #records,
+  #structural-subtyping;
+
+fn f(r : {x : Nat}) -> {x : Nat} {
+  return r
+}
+
+fn f0(n : Nat) -> Nat {
+  return f({x = n}).x
+}
+
+fn f1(n : Nat) -> Nat {
+  return f({x = n, y = n}).x
+}
+
+fn f2(n : Nat) -> Nat {
+  return f({y = n, x = n}).x
+}
+
+fn g(r : {x : Nat, y : Nat}) -> {x : Nat} {
+  return r
+}
+
+fn g0(n : Nat) -> Nat {
+  return g({x = n, y = n}).x
+}
+
+fn g1(n : Nat) -> Nat {
+  return g({y = n, x = n}).x
+}
+
+fn g2(n : Nat) -> Nat {
+  return g({x = n, y = n, z = n}).x
+}
+
+fn h(r : {y : Nat, x : Nat}) -> {x : Nat} {
+  return r
+}
+
+fn h0(n : Nat) -> Nat {
+  return h({x = n, y = n}).x
+}
+
+fn h1(n : Nat) -> Nat {
+  return h({y = n, x = n}).x
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

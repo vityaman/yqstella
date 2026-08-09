@@ -17,7 +17,8 @@ import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withParamDecls)
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
-import Type.Expectation (mismatch, mismatchSS)
+import Type.Expectation (mismatchSS)
+import Type.Lift (liftType')
 
 annotateAbstractionType ::
   Maybe Type ->
@@ -123,9 +124,10 @@ annotateApplicationType t p f xs annotateType = do
       return (xs', Nothing)
 
   _ <- case (t, type') of
-    (Just expected, Just actual)
-      | expected /= actual ->
-          tell [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p expected actual]
-    _ -> return ()
+    (Just expected, Just actual) -> do
+      _ <- liftType' p actual (Just expected)
+      return ()
+    _ ->
+      return ()
 
   return $ AST.Application (p, t <|> type') f' xs'

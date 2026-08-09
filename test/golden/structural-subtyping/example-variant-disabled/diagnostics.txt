@@ -1,0 +1,4 @@
+test/golden/structural-subtyping/example-variant-disabled/input.yqst:20:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected <| value : Nat, failure : Unit |>, got <| value : Nat |>
+>   return inc(just(n));
+               ^

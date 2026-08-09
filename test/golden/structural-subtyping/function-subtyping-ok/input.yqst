@@ -1,0 +1,82 @@
+language core;
+
+extend with
+  #multiparameter-functions,
+  #records,
+  #structural-subtyping;
+
+fn f1(r : { x : Nat }) -> { x : Nat } {
+  return { x = 0 }
+}
+
+fn f2(r : { x : Nat }) -> { x : Nat, y : Nat } {
+  return { x = 0, y = 0 }
+}
+
+fn f3(r : { x : Nat, y : Nat }) -> { x : Nat } {
+  return { x = 0 }
+}
+
+fn f4(r : { x : Nat, y : Nat }) -> { x : Nat, y : Nat } {
+  return { x = 0, y = 0 }
+}
+
+fn g1(f : fn ({ x : Nat }) -> { x : Nat }) -> Nat {
+  return 0
+}
+
+fn g2(f : fn ({ x : Nat }) -> { x : Nat, y : Nat }) -> Nat {
+  return 0
+}
+
+fn g3(f : fn ({ x : Nat, y : Nat }) -> { x : Nat }) -> Nat {
+  return 0
+}
+
+fn g4(f : fn ({ x : Nat, y : Nat }) -> { x : Nat, y : Nat }) -> Nat {
+  return 0
+}
+
+fn sink(
+  n : Nat,
+  g1f1 : Nat,
+  g1f2 : Nat,
+  // g1f3 : Nat,
+  // g1f4 : Nat,
+  // g2f1 : Nat,
+  g2f2 : Nat,
+  // g2f3 : Nat,
+  // g2f4 : Nat,
+  g3f1 : Nat,
+  g3f2 : Nat,
+  g3f3 : Nat,
+  g3f4 : Nat,
+  // g4f1 : Nat,
+  g4f2 : Nat,
+  // g4f3 : Nat,
+  g4f4 : Nat,
+) -> Nat {
+  return n
+}
+
+fn main(n : Nat) -> Nat {
+  return sink(
+    n,
+       g1(f1), // ok
+       g1(f2), // ok
+    // g1(f3), // err
+    // g1(f4), // err
+    // g2(f1), // err
+       g2(f2), // ok
+    // g2(f3), // err
+    // g2(f4), // err
+       g3(f1), // ok
+       g3(f2), // ok
+       g3(f3), // ok
+       g3(f4), // ok
+    // g4(f1), // err
+       g4(f2), // ok
+    // g4(f3), // err
+       g4(f4), // ok
+  )
+}

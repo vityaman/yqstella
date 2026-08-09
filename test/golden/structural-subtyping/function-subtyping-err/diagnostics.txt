@@ -1,0 +1,28 @@
+test/golden/structural-subtyping/function-subtyping-err/input.yqst:67:8: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: y, checking {x : Nat} <: {x : Nat, y : Nat}
+>     g1(f3), // err
+         ^
+test/golden/structural-subtyping/function-subtyping-err/input.yqst:68:8: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: y, checking {x : Nat} <: {x : Nat, y : Nat}
+>     g1(f4), // err
+         ^
+test/golden/structural-subtyping/function-subtyping-err/input.yqst:69:8: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: y, checking {x : Nat} <: {x : Nat, y : Nat}
+>     g2(f1), // err
+         ^
+test/golden/structural-subtyping/function-subtyping-err/input.yqst:71:8: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: y, checking {x : Nat} <: {x : Nat, y : Nat}
+>     g2(f3), // err
+         ^
+test/golden/structural-subtyping/function-subtyping-err/input.yqst:72:8: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: y, checking {x : Nat} <: {x : Nat, y : Nat}
+>     g2(f4), // err
+         ^
+test/golden/structural-subtyping/function-subtyping-err/input.yqst:77:8: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: y, checking {x : Nat} <: {x : Nat, y : Nat}
+>     g4(f1), // err
+         ^
+test/golden/structural-subtyping/function-subtyping-err/input.yqst:79:8: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: y, checking {x : Nat} <: {x : Nat, y : Nat}
+>     g4(f3), // err
+         ^
