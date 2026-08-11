@@ -66,16 +66,16 @@ There are following questions under this project:
 | `#lists`                            | ✅ `READY`     |
 | `#type-ascriptions`                 | ✅ `READY`     |
 | `#pattern-ascriptions`              | ⏳ `TBD`       |
-| `#sequencing`                       | ⏳ `TBD`       |
-| `#references`                       | ⏳ `TBD`       |
-| `#exception-type-declaration`       | ⏳ `TBD`       |
-| `#open-variant-exceptions`          | ⏳ `TBD`       |
-| `#exceptions`                       | ⏳ `TBD`       |
-| `#panic`                            | ⏳ `TBD`       |
-| `#structural-subtyping`             | ⏳ `TBD`       |
-| `#top-type`                         | ⏳ `TBD`       |
-| `#bottom-type`                      | ⏳ `TBD`       |
-| `#type-cast`                        | ⏳ `TBD`       |
+| `#sequencing`                       | 🧪 `TYPECHECK` |
+| `#references`                       | 🧪 `TYPECHECK` |
+| `#exception-type-declaration`       | 🧪 `TYPECHECK` |
+| `#open-variant-exceptions`          | 🧪 `TYPECHECK` |
+| `#exceptions`                       | 🧪 `TYPECHECK` |
+| `#panic`                            | ✅ `READY`     |
+| `#structural-subtyping`             | 🧪 `TYPECHECK` |
+| `#top-type`                         | 🧪 `TYPECHECK` |
+| `#bottom-type`                      | 🧪 `TYPECHECK` |
+| `#type-cast`                        | 🧪 `TYPECHECK` |
 | `#universal-types`                  | ⏳ `TBD`       |
 | `#general-recursion`                | ⏳ `TBD`       |
 
