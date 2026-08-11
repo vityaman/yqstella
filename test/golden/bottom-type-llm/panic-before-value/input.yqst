@@ -1,0 +1,11 @@
+language core;
+
+extend with
+  #bottom-type,
+  #panic,
+  #sequencing,
+  #unit-type;
+
+fn main(n : Nat) -> Nat {
+  return panic!; n
+}

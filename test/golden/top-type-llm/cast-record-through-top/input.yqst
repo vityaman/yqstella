@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #records,
+  #structural-subtyping,
+  #top-type,
+  #type-cast;
+
+fn field(value : Top) -> Nat {
+  return (value cast as { x : Nat }).x
+}
+
+fn main(n : Nat) -> Nat {
+  return field({ x = n, y = succ(n) })
+}

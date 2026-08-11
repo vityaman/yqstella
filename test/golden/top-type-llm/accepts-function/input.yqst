@@ -1,0 +1,13 @@
+language core;
+
+extend with
+  #top-type,
+  #structural-subtyping;
+
+fn ignore(value : Top) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return ignore(fn (x : Nat) { return succ(x) })
+}

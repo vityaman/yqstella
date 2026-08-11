@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #records,
+  #structural-subtyping,
+  #top-type,
+  #type-cast;
+
+fn read_x(record : { x : Nat }) -> Nat {
+  return record.x
+}
+
+fn main(n : Nat) -> Nat {
+  return read_x(({ x = n, y = succ(n) } cast as Top) cast as { x : Nat })
+}

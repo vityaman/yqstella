@@ -57,6 +57,9 @@ annotateTupleType t p exprs annotateType = do
     Just (Type (AST.TypeTuple _ ts)) | length ts == length exprs -> do
       exprs' <- zipWithM annotateType (fmap (Just . Type) ts) exprs
       return (exprs', True)
+    Just (Type (AST.TypeTop ())) -> do
+      exprs' <- mapM (annotateType Nothing) exprs
+      return (exprs', True)
     Just expected -> do
       exprs' <- mapM (annotateType Nothing) exprs
 

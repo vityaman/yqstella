@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #top-type,
+  #references,
+  #structural-subtyping;
+
+fn ignore(value : Top) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return ignore(new(n))
+}

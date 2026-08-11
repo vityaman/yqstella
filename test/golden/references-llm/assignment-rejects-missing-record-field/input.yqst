@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #let-bindings,
+  #records,
+  #references,
+  #sequencing,
+  #structural-subtyping,
+  #unit-type;
+
+fn main(n : Nat) -> Nat {
+  return let cell = new({ x = n, y = succ(n) }) in
+    cell := { x = n };
+    (*cell).y
+}

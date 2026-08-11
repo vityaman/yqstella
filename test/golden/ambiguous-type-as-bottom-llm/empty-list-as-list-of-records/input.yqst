@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #ambiguous-type-as-bottom,
+  #lists,
+  #records,
+  #structural-subtyping;
+
+fn consume(xs : [{ x : Nat }]) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return consume([])
+}
