@@ -38,45 +38,40 @@ jobs:
           restore-keys: ${{ runner.os }}-stack-
 
       - name: Install HPack
-        run: stack install hpack
+        run: make install-hpack
 
       - name: Install BNFC
-        run: |
-          stack install BNFC
-          stack install alex
-          stack install happy
+        run: make install-bnfc
 
       - name: Generate SyntaxGen Module
-        run: ./syntax/stella/codegen.bash
+        run: make generate-syntaxgen-module
 
       - name: Generate Yson.SyntaxGen Module
-        run: ./syntax/yson/codegen.bash
+        run: make generate-yson-syntaxgen-module
 
       - name: Generate Cabal File
-        run: hpack
+        run: make generate-cabal-file
 
       - name: Build Dependencies
-        run: stack build --only-dependencies
+        run: make build-dependencies
 
       - name: Build Project
-        run: stack build
+        run: make build-project
 
       - name: Test
-        run: stack test
+        run: make test
 
       - name: Install Ormolu
-        run: stack install ormolu
+        run: make install-ormolu
 
       - name: Check Haskell Formatting
-        run: |
-          stack exec ormolu -- --mode check $(find . -path './src/*.hs' -not -path './src/*SyntaxGen/*')
-          stack exec ormolu -- --mode check $(find . -path './test/*.hs')
+        run: make check-haskell-formatting
 
       - name: Install HLint
-        run: stack install hlint
+        run: make install-hlint
 
       - name: Check Haskell Style
-        run: stack exec hlint -- .
+        run: make check-haskell-style
 
       - name: Copy Binary
         run: cp "$(stack path --local-install-root)/bin/yqstella" "$RUNNER_TEMP/yqstella"

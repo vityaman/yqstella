@@ -105,9 +105,9 @@ Here is a mapping from YQStella to YQL types:
 ## Getting Started
 
 See the [Haskell GitHub Workflow](./.github/workflows/haskell.yml)
-for the instructions how to build the CLI tool. Also note, that in
-case you are the Fizruk, consider checking `--help` option and
-pay attention to `--fizruk` flag that made especially for a
+for the instructions how to build the CLI tool or just run `make fizruk`.
+Also note, that in case you are the Fizruk, consider checking `--help`
+option and pay attention to `--fizruk` flag that made especially for a
 difftesting.
 
 A tiny VSCode extension with a syntax highlighting is also available,
