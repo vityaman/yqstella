@@ -1,0 +1,4 @@
+test/golden/references-llm/assignment-rejects-missing-record-field/input.yqst:13:13: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: y
+>     cell := { x = n };
+              ^

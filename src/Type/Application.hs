@@ -65,6 +65,8 @@ annotateAbstractionType t p paramdecls expr annotateType = do
       expr' <- withStateTAE (const context') (annotateType (Just $ Type returntype) expr)
 
       return (Just t', expr')
+    Just (Type (AST.TypeTop ())) ->
+      infer' expr
     Just t'' -> do
       (t', expr') <- infer' expr
       tell [mismatchSS UNEXPECTED_LAMBDA p (show t'') (maybe "lambda" show t')]

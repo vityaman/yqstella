@@ -207,7 +207,10 @@ instance TypeAnnotatable AST.Expr' where
     itemT <- listItemType p Expected (Just t)
     return (AST.List (p, itemT >> Just t) [])
   annotateType t (AST.List p (x : xs)) = do
-    itemT <- listItemType p Expected t
+    let expectedListType = case t of
+          Just (Type (AST.TypeTop ())) -> Nothing
+          _ -> t
+    itemT <- listItemType p Expected expectedListType
 
     x' <- annotateType itemT x
     let t' = fmap Type.list (itemT <|> typeOf x')

@@ -1,0 +1,17 @@
+language core;
+
+extend with
+  #exceptions,
+  #exception-type-declaration,
+  #records,
+  #structural-subtyping;
+
+exception type = { code : Nat }
+
+fn fail(n : Nat) -> Nat {
+  return throw({ code = n, detail = succ(n) })
+}
+
+fn main(n : Nat) -> Nat {
+  return try { fail(n) } catch { error => error.code }
+}

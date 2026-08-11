@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #ambiguous-type-as-bottom,
+  #structural-subtyping,
+  #sum-types,
+  #top-type;
+
+fn ignore(value : Top) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return ignore(inl(n))
+}

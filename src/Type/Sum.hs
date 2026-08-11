@@ -27,6 +27,8 @@ annotateSumExprType Nothing (AST.Inl p expr) annotateType = do
       inrT = if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
       t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
   return (AST.Inl (p, t') expr')
+annotateSumExprType (Just (Type (AST.TypeTop ()))) (AST.Inl p expr) annotateType =
+  annotateSumExprType Nothing (AST.Inl p expr) annotateType
 annotateSumExprType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inl p expr) annotateType = do
   expr' <- annotateType (Just (Type inl)) expr
   let t' = (\(Type x) -> Type (AST.TypeSum () x inr)) <$> typeOf expr'
@@ -48,6 +50,8 @@ annotateSumExprType Nothing (AST.Inr p expr) annotateType = do
       inrT = typeOf expr'
       t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
   return (AST.Inr (p, t') expr')
+annotateSumExprType (Just (Type (AST.TypeTop ()))) (AST.Inr p expr) annotateType =
+  annotateSumExprType Nothing (AST.Inr p expr) annotateType
 annotateSumExprType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inr p expr) annotateType = do
   expr' <- annotateType (Just (Type inr)) expr
   let t' = (\(Type x) -> Type (AST.TypeSum () inl x)) <$> typeOf expr'
