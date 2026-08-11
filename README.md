@@ -78,6 +78,7 @@ There are following questions under this project:
 | `#ambiguous-type-as-bottom`         | 🧪 `TYPECHECK` |
 | `#type-cast`                        | 🧪 `TYPECHECK` |
 | `#try-cast-as`                      | 🧪 `TYPECHECK` |
+| `##type-cast-patterns`              | ⏳ `TBD`       |
 | `#universal-types`                  | ⏳ `TBD`       |
 | `#general-recursion`                | ⏳ `TBD`       |
 
