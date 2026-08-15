@@ -44,7 +44,7 @@ There are following questions under this project:
 | `#let-bindings`                     | ✅ `READY`     |
 | `#let-patterns`                     | ✅ `READY`     |
 | `#let-many-bindings`                | ⏳ `TBD`       |
-| `#letrec-bindings`                  | ⏳ `TBD`       |
+| `#letrec-bindings`                  | 🚫 `WONT`      |
 | `#fixpoint-combinator`              | 🧪 `TYPECHECK` |
 | `#nested-function-declarations`     | ✅ `READY`     |
 | `#type-aliases`                     | ✅ `READY`     |
@@ -65,7 +65,7 @@ There are following questions under this project:
 | `#nullary-variant-labels`           | ✅ `READY`     |
 | `#lists`                            | ✅ `READY`     |
 | `#type-ascriptions`                 | ✅ `READY`     |
-| `#pattern-ascriptions`              | ⏳ `TBD`       |
+| `#pattern-ascriptions`              | 🚫 `WONT`      |
 | `#sequencing`                       | 🧪 `TYPECHECK` |
 | `#references`                       | 🧪 `TYPECHECK` |
 | `#exception-type-declaration`       | 🧪 `TYPECHECK` |
@@ -78,9 +78,10 @@ There are following questions under this project:
 | `#ambiguous-type-as-bottom`         | 🧪 `TYPECHECK` |
 | `#type-cast`                        | 🧪 `TYPECHECK` |
 | `#try-cast-as`                      | 🧪 `TYPECHECK` |
-| `#type-cast-patterns`               | ⏳ `TBD`       |
+| `#type-cast-patterns`               | 🚫 `WONT`      |
+| `#type-reconstruction`              | ⏳ `TBD`       |
 | `#universal-types`                  | ⏳ `TBD`       |
-| `#general-recursion`                | ⏳ `TBD`       |
+| `#general-recursion`                | 🚫 `WONT`      |
 
 ## YQL Correspondence
 
