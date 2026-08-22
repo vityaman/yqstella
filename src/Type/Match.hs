@@ -17,13 +17,13 @@ import Diagnostic.Position (Position, pointRange)
 import Misc.Duplicate (sepUniqDupBy)
 import Syntax.PrettyPrint (displayAST)
 import qualified SyntaxGen.AbsStella as AST
+import Type.Context (withName)
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf, withStateTAE)
 import Type.Expectation (commonType)
 import Type.UsefulClause
-import Type.Context (withName)
 
 checkType :: Type -> AST.Pattern' Position -> Either Diagnostic (AST.Pattern' (Position, Type))
 checkType t p = do

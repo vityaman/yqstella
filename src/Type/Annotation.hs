@@ -13,6 +13,7 @@ import Diagnostic.Position (Position, pointRange)
 import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import Type.Application (annotateAbstractionType, annotateApplicationType)
+import Type.Context (withName)
 import qualified Type.Context as Context
 import Type.Core (Type (Type), list)
 import qualified Type.Core as Type
@@ -28,7 +29,6 @@ import Type.Reference (annotateRefExprType)
 import Type.Sum (annotateSumExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
-import Type.Context (withName)
 
 class TypeAnnotatable f where
   annotateType :: Maybe Type -> f Position -> TypeAnnotationEnv (f (Position, Maybe Type))

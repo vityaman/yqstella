@@ -9,12 +9,22 @@ import qualified SyntaxGen.AbsStella as AST
 import Type.Annotation (inferType)
 import qualified Type.Context as Context
 import Type.Core (Type)
+import qualified Type.Substitution as Substitution
+import Type.Unification (unify)
 
 checkTypes :: Extensions -> AST.Program' Position -> Writer Diagnostics (Bool, AST.Program' (Position, Maybe Type))
 checkTypes extensions program = do
-  let (program', (diagnostics, _)) = (run . inferType) program (Context.empty extensions)
+  let (program', (diagnostics, constraints)) = (run . inferType) program (Context.empty extensions)
       run = evalState . runWriterT
-      areTypesCorrect = not (any (isFailure . severity) diagnostics)
+      areInferredTypesCorrect = not (any (isFailure . severity) diagnostics)
 
   tell diagnostics
-  return (areTypesCorrect, program')
+
+  if not areInferredTypesCorrect
+    then return (False, program')
+    else case unify constraints of
+      Left diagnostic -> do
+        tell [diagnostic]
+        return (False, program')
+      Right substitution ->
+        return (True, Substitution.applyProgram substitution program')
