@@ -12,11 +12,12 @@ import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Constraint as Constraint
 import Type.Context (withName)
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withParamDecls)
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, positionOf, tellC, tellD, typeOf, withStateTAE)
 import Type.Expectation (ensureEqParamType, mismatchSS)
 import Type.Lift (liftType')
 
@@ -82,7 +83,16 @@ annotateApplicationType ::
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateApplicationType t p f xs annotateType = do
   f' <- annotateType Nothing f
-  let (f'position, f't) = annotation f'
+  let f'position = positionOf f'
+
+  f't <- case typeOf f' of
+    Just variable@(Type (AST.TypeVar () _)) -> do
+      argTypes <- fmap Type.toAST <$> mapM (const freshTypeVar) [1 .. length xs]
+      returnType <- Type.toAST <$> freshTypeVar
+      let fType = Type (AST.TypeFun () argTypes returnType)
+      tellC [Constraint.Eq p variable fType]
+      return $ Just fType
+    x -> return x
 
   (xs', type') <- case f't of
     Just (Type (AST.TypeFun _ argTypes returntype)) -> do
