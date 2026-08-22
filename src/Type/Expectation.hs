@@ -149,6 +149,10 @@ ensureEqType _ _ lifting Nothing =
 listItemType :: Position -> TypeKind -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
 listItemType _ _ (Just (Type (AST.TypeList () t))) =
   return $ Just $ Type t
+listItemType p _ (Just variable@(Type (AST.TypeVar () _))) = do
+  (Type item) <- freshTypeVar
+  tellC [Constraint.Eq p variable (Type (AST.TypeList () item))]
+  return $ Just $ Type item
 listItemType p Inferred (Just t) = do
   let message = "expected list, got " ++ show t
   tellD [diagnostic Error NOT_A_LIST (pointRange p) message]
