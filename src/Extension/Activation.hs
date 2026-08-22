@@ -3,14 +3,14 @@ module Extension.Activation (activateExtensions, enabledExtensions) where
 import Control.Monad (guard)
 import Control.Monad.Writer (MonadWriter (tell), Writer)
 import Data.Either (lefts, rights)
-import Data.Foldable (toList)
+import Data.Foldable (find, toList)
 import Data.List (intercalate)
 import qualified Data.Set as Set
-import Diagnostic.Code (Code (BAD_EXTENSION))
-import Diagnostic.Core (Diagnostics, Severity (Error), diagnostic)
-import Diagnostic.Position (Position, pointRange)
+import Diagnostic.Code (Code (BAD_EXTENSION, NOT_IMPLEMENTED))
+import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Error), diagnostic)
+import Diagnostic.Position (Position, pointRange, unknown)
 import Extension.Annotation (annotateExtensions)
-import Extension.Core (Extensions, extensionFromName, extensionName)
+import Extension.Core (Extension, Extensions, areConflicting, extensionFromName, extensionName)
 import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 
@@ -40,4 +40,17 @@ enabledExtensions (AST.AProgram _ _ extensions _) = do
       extensions' = Set.fromList $ concatMap Extension.closure (rights names')
 
   tell diagnostics'
+
+  case checkNoConflicting (toList extensions') of
+    Left diagnostic' -> tell [diagnostic']
+    Right () -> return ()
+
   return extensions'
+
+checkNoConflicting :: [Extension] -> Either Diagnostic ()
+checkNoConflicting es = case find (uncurry areConflicting) [(a, b) | a <- es, b <- es] of
+  Just (a, b) ->
+    let message = "conflicting extensions " ++ show a ++ " and " ++ show b
+     in Left $ diagnostic Error NOT_IMPLEMENTED (pointRange unknown) message
+  Nothing ->
+    return ()

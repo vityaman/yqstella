@@ -1,4 +1,12 @@
-module Extension.Core (Extension (..), Extensions, extensionName, extensionFromName, closure) where
+module Extension.Core
+  ( Extension (..),
+    Extensions,
+    extensionName,
+    extensionFromName,
+    closure,
+    areConflicting,
+  )
+where
 
 import Data.Bimap (Bimap)
 import qualified Data.Bimap as Bimap
@@ -141,4 +149,13 @@ closure LetRecBindings = [LetRecBindings, LetBindings, FixpointCombinator]
 closure OpenVariantExceptions = [OpenVariantExceptions, Variants]
 closure TryCastAs = [TryCastAs, Exceptions]
 closure AmbiguousTypeAsBottom = [AmbiguousTypeAsBottom, BottomType]
+closure UniversalTypes = [TypeReconstruction]
 closure x = [x]
+
+areConflicting :: Extension -> Extension -> Bool
+-- TODO: support unification for complex structures
+areConflicting TypeReconstruction Tuples = True
+areConflicting TypeReconstruction Records = True
+areConflicting TypeReconstruction Variants = True
+areConflicting TypeReconstruction StructuralSubtyping = True
+areConflicting _ _ = False

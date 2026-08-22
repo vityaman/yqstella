@@ -5,9 +5,10 @@ import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Constraint as Constraint
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, tellC, tellD, typeOf)
 import Type.Lift (liftType)
 
 annotateDotTupleType ::
@@ -36,6 +37,18 @@ annotateDotTupleType t p expr index annotateType = do
       let actual = ts !! fromInteger (index - 1)
       t' <- liftType p (const actual) t
       return $ Just t'
+    Just variable@(Type (AST.TypeVar () _))
+      | index == 1 || index == 2 -> do
+          (Type lhsT) <- freshTypeVar
+          (Type rhsT) <- freshTypeVar
+          tellC [Constraint.Eq p variable (Type $ AST.TypeTuple () [lhsT, rhsT])]
+          if index == 1
+            then return $ Just $ Type lhsT
+            else return $ Just $ Type rhsT
+      | otherwise -> do
+          let message = "tuple type reconstruction is not yet implemented"
+          tellD [diagnostic Error NOT_IMPLEMENTED (pointRange p) message]
+          return Nothing
     Just actual -> do
       let message = "type mismatch: expected tuple, got " ++ show actual
       tellD [diagnostic Error NOT_A_TUPLE (pointRange p) message]

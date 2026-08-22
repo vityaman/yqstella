@@ -14,6 +14,12 @@ unify :: Constraints -> Either Diagnostic Substitution
 unify [] =
   return Substitution.empty
 unify (Eq _ s t : cs) | s == t = unify cs
+unify (Eq p (Type (AST.TypeSum () lhsS rhsS)) (Type (AST.TypeSum () lhsT rhsT)) : cs) = do
+  let cs' = [Eq p (Type lhsS) (Type lhsT), Eq p (Type rhsS) (Type rhsT)]
+  unify $ cs' ++ cs
+unify (Eq p (Type (AST.TypeTuple () ss)) (Type (AST.TypeTuple () ts)) : cs) = do
+  let cs' = [Eq p (Type s) (Type t) | (s, t) <- zip ss ts]
+  unify $ cs' ++ cs
 unify (Eq p (Type (AST.TypeVar () (AST.StellaIdent x))) t : cs)
   | not $ x `Set.member` fv t = do
       subst <- unify (fmap (Substitution.applyConstraint $ Substitution.singleton x t) cs)
