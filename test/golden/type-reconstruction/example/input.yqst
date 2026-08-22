@@ -1,0 +1,25 @@
+language core;
+
+extend with #type-reconstruction;
+
+fn Nat::add(n : auto) -> fn(auto) -> auto {
+  return fn(m : auto) {
+    return Nat::rec(n, m, fn(i : auto) {
+      return fn(r : auto) {
+        return if r then r else r; // r := r + 1
+      };
+    });
+  };
+}
+
+fn square(n : auto) -> auto {
+  return Nat::rec(n, 0, fn(i : auto) {
+    return fn(r : auto) {
+      return Nat::add(i)( Nat::add(i)( succ( r )));
+    };
+  });
+}
+
+fn main(n : auto) -> auto {
+  return square(n);
+}

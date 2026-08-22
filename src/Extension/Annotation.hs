@@ -103,7 +103,7 @@ instance ExtensionsAnnotatable AST.ThrowType' where
 
 instance ExtensionsAnnotatable AST.Type' where
   annotateExtensions (AST.TypeAuto p) =
-    AST.TypeAuto (p, Set.empty)
+    AST.TypeAuto (p, Set.singleton Extension.TypeReconstruction)
   annotateExtensions (AST.TypeFun p types type_) =
     AST.TypeFun (p, Set.empty) types' type_'
     where

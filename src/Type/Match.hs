@@ -23,6 +23,7 @@ import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf, withStateTAE)
 import Type.Expectation (commonType)
 import Type.UsefulClause
+import Type.Context (withName)
 
 checkType :: Type -> AST.Pattern' Position -> Either Diagnostic (AST.Pattern' (Position, Type))
 checkType t p = do
@@ -219,7 +220,7 @@ annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType =
         (Right pattern'') -> do
           context <- get
           let context' = foldr (uncurry Context.withTyped) context (Map.toList $ bindings pattern'')
-          inExpr' <- withStateTAE (const context') (annotateType t inExpr)
+          inExpr' <- withStateTAE (withName ("let at " ++ show p) . const context') (annotateType t inExpr)
           return (fmap (Data.Bifunctor.second Just) pattern'', inExpr')
         (Left d) -> do
           tellD [d]

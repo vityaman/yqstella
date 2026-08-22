@@ -26,6 +26,12 @@ liftSubType' _ lifting Nothing =
   return lifting
 
 subsumes :: Type -> Type -> Either Diagnostic ()
+subsumes (Type (AST.TypeAuto ())) _ =
+  let message' = "(subsumes) type constraints are not supported yet"
+   in Left $ diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange unknown) message'
+subsumes _ (Type (AST.TypeAuto ())) =
+  let message' = "(subsumes) type constraints are not supported yet"
+   in Left $ diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange unknown) message'
 subsumes lhs rhs | lhs == rhs = Right ()
 subsumes _ (Type (AST.TypeTop ())) = Right ()
 subsumes lhs@(Type (AST.TypeTop ())) rhs =

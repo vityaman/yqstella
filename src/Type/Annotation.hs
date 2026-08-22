@@ -28,6 +28,7 @@ import Type.Reference (annotateRefExprType)
 import Type.Sum (annotateSumExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
 import Type.Variant (variantExprTyping, variantFieldTyping)
+import Type.Context (withName)
 
 class TypeAnnotatable f where
   annotateType :: Maybe Type -> f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
@@ -40,7 +41,7 @@ inferType = annotateType Nothing
 
 instance TypeAnnotatable AST.Program' where
   annotateType _ (AST.AProgram p languagedecl extensions decls) = do
-    context' <- get >>= withDecls decls {-isTopLevel=-} True
+    context' <- gets (withName "unit") >>= withDecls decls {-isTopLevel=-} True
     decls' <- withStateTAE (const context') (mapM inferType decls)
 
     t' <- case find isMain decls' of
@@ -66,10 +67,10 @@ instance TypeAnnotatable AST.Program' where
       isMain _ = False
 
 instance TypeAnnotatable AST.Decl' where
-  annotateType _ (AST.DeclFun p annotations stellaident paramdecls returntype throwtype decls expr) = do
+  annotateType _ (AST.DeclFun p annotations (AST.StellaIdent fname) paramdecls returntype throwtype decls expr) = do
     unless (null annotations) $ tellD [notImplemented p "DeclFun annotations"]
 
-    context' <- get >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
+    context' <- gets (withName fname) >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
 
     () <- case throwtype of
       (AST.NoThrowType _) -> pure ()
@@ -97,7 +98,7 @@ instance TypeAnnotatable AST.Decl' where
       ( AST.DeclFun
           (p, t')
           (stubL annotations)
-          stellaident
+          (AST.StellaIdent fname)
           paramdecls'
           (stub returntype)
           (stub throwtype)

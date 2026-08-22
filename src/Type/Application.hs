@@ -6,12 +6,13 @@ import Annotation (Annotated (annotation))
 import Control.Applicative (Alternative ((<|>)))
 import qualified Control.Arrow as Data.Bifunctor
 import Control.Monad (guard, when, zipWithM)
-import Control.Monad.State (get)
+import Control.Monad.State (gets)
 import Data.Maybe (fromMaybe, mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
+import Type.Context (withName)
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withParamDecls)
@@ -28,7 +29,7 @@ annotateAbstractionType ::
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateAbstractionType t p paramdecls expr annotateType = do
   let infer' expr'' = do
-        context' <- get >>= withParamDecls paramdecls
+        context' <- gets (withName ("abstraction at " ++ show p)) >>= withParamDecls paramdecls
         expr' <- withStateTAE (const context') (annotateType Nothing expr'')
         argtypes <- Type.fn . fmap snd <$> mapM toParamSilent paramdecls
         return (fmap argtypes (typeOf expr'), expr')
@@ -41,6 +42,7 @@ annotateAbstractionType t p paramdecls expr annotateType = do
           expected = fmap Type argtypes
 
       let toDiagnostic ((p', (name, actual')), expected') = do
+            -- FIXME: it might not work with subtyping
             guard $ actual' /= expected'
             let m = "(" ++ name ++ " : " ++ show actual' ++ ")"
             return $ mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p' (show expected') m
@@ -60,7 +62,7 @@ annotateAbstractionType t p paramdecls expr annotateType = do
 
       tellD $ mapMaybe toDiagnostic (zip actual expected)
 
-      context' <- get >>= withParamDecls paramdecls
+      context' <- gets (withName ("abstraction at " ++ show p)) >>= withParamDecls paramdecls
       expr' <- withStateTAE (const context') (annotateType (Just $ Type returntype) expr)
 
       return (Just t', expr')

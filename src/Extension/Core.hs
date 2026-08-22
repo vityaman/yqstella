@@ -51,6 +51,7 @@ data Extension
   | AmbiguousTypeAsBottom
   | TypeCast
   | TryCastAs
+  | TypeReconstruction
   | UniversalTypes
   | FixpointCombinator
   | LetRecBindings
@@ -112,6 +113,7 @@ extensionNameMap =
       (TypeCast, "#type-cast"),
       (TryCastAs, "#try-cast-as"),
       -- Universal Types
+      (TypeReconstruction, "#type-reconstruction"),
       (UniversalTypes, "#universal-types"),
       -- Recursion
       (FixpointCombinator, "#fixpoint-combinator"),
