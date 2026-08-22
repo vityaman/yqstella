@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/error-test-err-type-mismatch-succ-bool/input.yqst:5:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return succ(false)
+                ^

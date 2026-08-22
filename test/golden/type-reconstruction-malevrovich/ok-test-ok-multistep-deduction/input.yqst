@@ -1,0 +1,15 @@
+language core;
+
+extend with 
+#type-reconstruction, #lists;
+
+fn id(n : auto) -> auto {
+  return n;
+}
+
+fn main(n : auto) -> auto {
+  return if id(false) then 
+            if id(n) then [n]
+            else []
+         else []
+}

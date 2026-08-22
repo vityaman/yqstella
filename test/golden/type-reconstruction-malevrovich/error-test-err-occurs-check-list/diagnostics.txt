@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/error-test-err-occurs-check-list/input.yqst:5:10: [ERROR_UNEXPECTED_LIST]
+expected TypeVar(unit |> 2), got list
+>   return cons(x, x)
+           ^

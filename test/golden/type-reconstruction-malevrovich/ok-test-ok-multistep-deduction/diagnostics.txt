@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/ok-test-ok-multistep-deduction/input.yqst:12:27: [ERROR_UNEXPECTED_LIST]
+expected TypeVar(unit |> 5), got list
+>             if id(n) then [n]
+                            ^

@@ -1,0 +1,8 @@
+test/golden/type-reconstruction-malevrovich/ok-test-ok-pair-deduction/input.yqst:12:13: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got TypeVar(unit |> 2)
+>   return if n.1 then n.2 else check_type(n)
+              ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-pair-deduction/input.yqst:12:22: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got TypeVar(unit |> 2)
+>   return if n.1 then n.2 else check_type(n)
+                       ^

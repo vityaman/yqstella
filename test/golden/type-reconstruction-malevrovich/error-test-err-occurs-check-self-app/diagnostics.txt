@@ -1,0 +1,8 @@
+test/golden/type-reconstruction-malevrovich/error-test-err-occurs-check-self-app/input.yqst:5:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got TypeVar(unit |> 1)
+>   return f(f)
+           ^
+test/golden/type-reconstruction-malevrovich/error-test-err-occurs-check-self-app/input.yqst:5:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(TypeVar(unit |> 1)) -> auto
+>   return f(f)
+           ^

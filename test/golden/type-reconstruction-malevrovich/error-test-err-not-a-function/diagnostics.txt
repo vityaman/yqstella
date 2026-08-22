@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/error-test-err-not-a-function/input.yqst:9:29: [ERROR_NOT_A_LIST]
+expected list, got TypeVar(unit |> 1)
+>             then List::head(n)(0) 
+                              ^

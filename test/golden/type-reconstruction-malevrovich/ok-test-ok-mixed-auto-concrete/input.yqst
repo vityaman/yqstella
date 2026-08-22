@@ -1,0 +1,14 @@
+language core;
+extend with #type-reconstruction;
+
+fn double(n : auto) -> Nat {
+  return Nat::rec(n, 0, fn(i : auto) {
+    return fn(r : auto) {
+      return succ(succ(r))
+    }
+  })
+}
+
+fn main(n : auto) -> auto {
+  return double(n)
+}

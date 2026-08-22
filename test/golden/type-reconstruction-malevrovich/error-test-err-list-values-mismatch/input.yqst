@@ -1,0 +1,9 @@
+language core;
+
+extend with
+  #type-reconstruction,
+  #lists;
+  
+fn main(n : auto) -> Nat {
+  return if List::head(List::head(n)) then List::head(List::head(n)) else 0;
+}

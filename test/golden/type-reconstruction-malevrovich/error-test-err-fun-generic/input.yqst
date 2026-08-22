@@ -1,0 +1,12 @@
+language core;
+
+extend with 
+#type-reconstruction;
+
+fn id(n : auto) -> auto {
+  return n;
+}
+
+fn main(n : Nat) -> auto {
+  return if id(false) then id(0) else id(succ(0));
+}
