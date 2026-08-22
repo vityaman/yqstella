@@ -5,9 +5,9 @@ module Type.Application (annotateAbstractionType, annotateApplicationType) where
 import Annotation (Annotated (annotation))
 import Control.Applicative (Alternative ((<|>)))
 import qualified Control.Arrow as Data.Bifunctor
-import Control.Monad (guard, when, zipWithM)
+import Control.Monad (when, zipWithM)
 import Control.Monad.State (gets)
-import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Maybe (fromMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
@@ -17,7 +17,7 @@ import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withParamDecls)
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf, withStateTAE)
-import Type.Expectation (mismatchSS)
+import Type.Expectation (ensureEqParamType, mismatchSS)
 import Type.Lift (liftType')
 
 annotateAbstractionType ::
@@ -41,12 +41,6 @@ annotateAbstractionType t p paramdecls expr annotateType = do
       let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls'
           expected = fmap Type argtypes
 
-      let toDiagnostic ((p', (name, actual')), expected') = do
-            -- FIXME: it might not work with subtyping
-            guard $ actual' /= expected'
-            let m = "(" ++ name ++ " : " ++ show actual' ++ ")"
-            return $ mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p' (show expected') m
-
       let actualLen = length actual
           expectedLen = length expected
       when (actualLen /= expectedLen) $ do
@@ -60,7 +54,9 @@ annotateAbstractionType t p paramdecls expr annotateType = do
         tellD [diagnostic Error UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA (pointRange p) message]
         return ()
 
-      tellD $ mapMaybe toDiagnostic (zip actual expected)
+      let ensureParameterType ((p', (name, actual')), expected') =
+            ensureEqParamType p' name actual' expected'
+      mapM_ ensureParameterType (zip actual expected)
 
       context' <- gets (withName ("abstraction at " ++ show p)) >>= withParamDecls paramdecls
       expr' <- withStateTAE (const context') (annotateType (Just $ Type returntype) expr)

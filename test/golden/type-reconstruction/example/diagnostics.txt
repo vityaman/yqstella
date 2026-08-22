@@ -1,28 +1,4 @@
-test/golden/type-reconstruction/example/input.yqst:6:13: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
-type mismatch: expected TypeVar(unit |> 2), got (m : TypeVar(unit |> Nat::add |> 1))
->   return fn(m : auto) {
-              ^
-test/golden/type-reconstruction/example/input.yqst:7:30: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
-type mismatch: expected Nat, got (i : TypeVar(unit |> Nat::add |> abstraction at 6:10 |> 2))
->     return Nat::rec(n, m, fn(i : auto) {
-                               ^
-test/golden/type-reconstruction/example/input.yqst:8:17: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
-type mismatch: expected TypeVar(unit |> Nat::add |> 2), got (r : TypeVar(unit |> Nat::add |> abstraction at 6:10 |> abstraction at 7:27 |> 3))
->       return fn(r : auto) {
-                  ^
-test/golden/type-reconstruction/example/input.yqst:16:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-type mismatch: expected TypeVar(unit |> 6), got Nat
->   return Nat::rec(n, 0, fn(i : auto) {
-                       ^
-test/golden/type-reconstruction/example/input.yqst:16:28: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
-type mismatch: expected Nat, got (i : TypeVar(unit |> square |> 5))
->   return Nat::rec(n, 0, fn(i : auto) {
-                             ^
-test/golden/type-reconstruction/example/input.yqst:17:15: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
-type mismatch: expected Nat, got (r : TypeVar(unit |> square |> abstraction at 16:25 |> 6))
->     return fn(r : auto) {
-                ^
-test/golden/type-reconstruction/example/input.yqst:18:40: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-type mismatch: expected TypeVar(unit |> 2), got Nat
->       return Nat::add(i)( Nat::add(i)( succ( r )));
-                                         ^
+test/golden/type-reconstruction/example/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #type-reconstruction not implemented
+> language core;
+  ^

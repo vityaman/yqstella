@@ -4,6 +4,7 @@ module Type.Expectation
     sanitizeTSilent,
     liftEqType,
     liftEqType',
+    ensureEqParamType,
     listItemType,
     commonType,
     mismatch,
@@ -113,22 +114,36 @@ liftEqType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEn
 liftEqType p lifting = liftEqType' p (Type $ lifting ())
 
 liftEqType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
-liftEqType' p lifting (Just (Type (AST.TypeAuto ()))) = do
+liftEqType' p = ensureEqType p (mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p)
+
+ensureEqParamType :: Position -> String -> Type -> Type -> TypeAnnotationEnv ()
+ensureEqParamType p name actual expected =
+  void $ ensureEqType p toDiagnostic actual (Just expected)
+  where
+    toDiagnostic expected' actual' =
+      let parameter = "(" ++ name ++ " : " ++ show actual' ++ ")"
+       in mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p (show expected') parameter
+
+ensureEqType :: Position -> (Type -> Type -> Diagnostic) -> Type -> Maybe Type -> TypeAnnotationEnv Type
+ensureEqType p _ lifting (Just (Type (AST.TypeAuto ()))) = do
   let message = "unexpected checked auto type, must be a type var"
   tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) message]
   return lifting
-liftEqType' p lifting@(Type (AST.TypeAuto ())) _ = do
+ensureEqType p _ lifting@(Type (AST.TypeAuto ())) _ = do
   let message = "unexpected lifting auto type, must be a type var"
   tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) message]
   return lifting
-liftEqType' p variable@(Type (AST.TypeVar () _)) (Just checked) = do
+ensureEqType p _ variable@(Type (AST.TypeVar () _)) (Just checked) = do
   tellC [Constraint.Eq p variable checked]
   return variable
-liftEqType' p lifting (Just checked) = do
-  when (lifting /= checked) $
-    tellD [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
+ensureEqType p _ lifting (Just variable@(Type (AST.TypeVar () _))) = do
+  tellC [Constraint.Eq p lifting variable]
   return lifting
-liftEqType' _ lifting Nothing =
+ensureEqType _ toDiagnostic lifting (Just checked) = do
+  when (lifting /= checked) $
+    tellD [toDiagnostic checked lifting]
+  return lifting
+ensureEqType _ _ lifting Nothing =
   pure lifting
 
 listItemType :: Position -> TypeKind -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
