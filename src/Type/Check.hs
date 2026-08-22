@@ -12,7 +12,7 @@ import Type.Core (Type)
 
 checkTypes :: Extensions -> AST.Program' Position -> Writer Diagnostics (Bool, AST.Program' (Position, Maybe Type))
 checkTypes extensions program = do
-  let (program', diagnostics) = (run . inferType) program (Context.empty extensions)
+  let (program', (diagnostics, _)) = (run . inferType) program (Context.empty extensions)
       run = evalState . runWriterT
       areTypesCorrect = not (any (isFailure . severity) diagnostics)
 

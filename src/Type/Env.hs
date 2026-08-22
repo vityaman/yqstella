@@ -5,6 +5,8 @@ module Type.Env
     isAvailable,
     positionOf,
     typeOf,
+    tellD,
+    tellC,
   )
 where
 
@@ -18,7 +20,7 @@ import Type.Context (Context)
 import qualified Type.Context as Context
 import Type.Core (Type)
 
-type TypeAnnotationEnv a = WriterT Diagnostics (State Context) a
+type TypeAnnotationEnv a = WriterT (Diagnostics, [()]) (State Context) a
 
 type TypeAnnotator f = Maybe Type -> f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
 
@@ -40,3 +42,9 @@ positionOf = fst . annotation
 
 typeOf :: (Annotated f) => f (Position, Maybe Type) -> Maybe Type
 typeOf = snd . annotation
+
+tellD :: Diagnostics -> TypeAnnotationEnv ()
+tellD ds = tell (ds, mempty)
+
+tellC :: [()] -> TypeAnnotationEnv ()
+tellC cs = tell (mempty, cs)

@@ -5,7 +5,6 @@ module Type.Match (annotateLetType, annotateMatchType, annotateCaseType) where
 import Annotation (Annotated (annotation))
 import Control.Monad (unless, void, when, zipWithM)
 import Control.Monad.State
-import Control.Monad.Writer (tell)
 import qualified Data.Bifunctor
 import Data.Foldable (find)
 import Data.List (intercalate)
@@ -21,7 +20,7 @@ import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf, withStateTAE)
 import Type.Expectation (commonType)
 import Type.UsefulClause
 
@@ -211,7 +210,7 @@ annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType =
   expr' <- annotateType Nothing expr
 
   _ <- case checkIrrefutable pattern' of
-    Left d -> void (tell [d])
+    Left d -> void (tellD [d])
     Right () -> pure ()
 
   (pattern'', inExpr'') <- case typeOf expr' of
@@ -223,7 +222,7 @@ annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType =
           inExpr' <- withStateTAE (const context') (annotateType t inExpr)
           return (fmap (Data.Bifunctor.second Just) pattern'', inExpr')
         (Left d) -> do
-          tell [d]
+          tellD [d]
           return (fmap (,Nothing) pattern', fmap (,Nothing) inExpr)
     Nothing ->
       return (fmap (,Nothing) pattern', fmap (,Nothing) inExpr)
@@ -231,7 +230,7 @@ annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType =
   let t' = typeOf inExpr''
   return $ AST.Let (p, t') [AST.APatternBinding (p', t) pattern'' expr'] inExpr''
 annotateLetType _ p bindings'' inExpr _ = do
-  tell [notImplemented p "LetManyBindings"]
+  tellD [notImplemented p "LetManyBindings"]
   return $ fmap (,Nothing) (AST.Let p bindings'' inExpr)
 
 annotateMatchType ::
@@ -244,7 +243,7 @@ annotateMatchType ::
 annotateMatchType _ p expr [] annotateType = do
   expr' <- annotateType Nothing expr
   let message = "expected at least one match case"
-   in tell [diagnostic Error ILLEGAL_EMPTY_MATCHING (pointRange p) message]
+   in tellD [diagnostic Error ILLEGAL_EMPTY_MATCHING (pointRange p) message]
   return (AST.Match (p, Nothing) expr' [])
 annotateMatchType t p expr cases annotateType = do
   expr' <- annotateType Nothing expr
@@ -260,7 +259,7 @@ annotateMatchType t p expr cases annotateType = do
     case usefulClause patterns' (fromMaybe (error "expected type in match expression") expr't) of
       Just clause ->
         let message = "non-exchaustive pattern-matching, useful clause: " ++ displayAST clause
-         in tell [diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message]
+         in tellD [diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message]
       Nothing -> pure ()
 
   t' <- commonType p (fmap annotation cases')
@@ -280,7 +279,7 @@ annotateCaseType t (AST.AMatchCase p pattern' expr) patterntype annotateType = d
       expr' <- withStateTAE (const context') (annotateType t expr)
       return (fmap (Data.Bifunctor.second Just) pattern'', expr')
     Left e -> do
-      tell [e]
+      tellD [e]
       return (fmap (,Nothing) pattern', fmap (,Nothing) expr)
   let t' = typeOf expr'
   return (AST.AMatchCase (p, t') pattern'' expr')

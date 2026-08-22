@@ -1,14 +1,13 @@
 module Type.Tuple (annotateDotTupleType, annotateTupleType) where
 
 import Control.Monad (zipWithM)
-import Control.Monad.Writer
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf)
 import Type.Lift (liftType)
 
 annotateDotTupleType ::
@@ -24,14 +23,14 @@ annotateDotTupleType t p expr index annotateType = do
   t' <- case typeOf expr' of
     _ | index == 0 -> do
       let message = "tuple index should be positive, got 0"
-      tell [diagnostic Error TUPLE_INDEX_OUT_OF_BOUNDS (pointRange p) message]
+      tellD [diagnostic Error TUPLE_INDEX_OUT_OF_BOUNDS (pointRange p) message]
       return Nothing
     Just actual@(Type (AST.TypeTuple _ ts)) | length ts < fromInteger index -> do
       let message =
             "type mismatch: expected tuple "
               ++ ("with size at least " ++ show index)
               ++ (", got " ++ show actual)
-      tell [diagnostic Error TUPLE_INDEX_OUT_OF_BOUNDS (pointRange p) message]
+      tellD [diagnostic Error TUPLE_INDEX_OUT_OF_BOUNDS (pointRange p) message]
       return Nothing
     Just (Type (AST.TypeTuple _ ts)) -> do
       let actual = ts !! fromInteger (index - 1)
@@ -39,7 +38,7 @@ annotateDotTupleType t p expr index annotateType = do
       return $ Just t'
     Just actual -> do
       let message = "type mismatch: expected tuple, got " ++ show actual
-      tell [diagnostic Error NOT_A_TUPLE (pointRange p) message]
+      tellD [diagnostic Error NOT_A_TUPLE (pointRange p) message]
       return Nothing
     Nothing ->
       return Nothing
@@ -72,7 +71,7 @@ annotateTupleType t p exprs annotateType = do
           actual = Type.fromAST $ AST.TypeTuple () actualTypes
 
       let message = "type mismatch: expected " ++ show expected ++ ", got " ++ show actual
-      tell [diagnostic Error code (pointRange p) message]
+      tellD [diagnostic Error code (pointRange p) message]
 
       return (exprs', False)
     Nothing -> do

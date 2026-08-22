@@ -7,7 +7,6 @@ import Control.Applicative (Alternative ((<|>)))
 import qualified Control.Arrow as Data.Bifunctor
 import Control.Monad (guard, when, zipWithM)
 import Control.Monad.State (get)
-import Control.Monad.Writer
 import Data.Maybe (fromMaybe, mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
@@ -16,7 +15,7 @@ import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toParamSilent, withParamDecls)
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf, withStateTAE)
 import Type.Expectation (mismatchSS)
 import Type.Lift (liftType')
 
@@ -56,10 +55,10 @@ annotateAbstractionType t p paramdecls expr annotateType = do
                 ++ show t'
                 ++ ", but actually got "
                 ++ show actualLen
-        tell [diagnostic Error UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA (pointRange p) message]
+        tellD [diagnostic Error UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA (pointRange p) message]
         return ()
 
-      tell $ mapMaybe toDiagnostic (zip actual expected)
+      tellD $ mapMaybe toDiagnostic (zip actual expected)
 
       context' <- get >>= withParamDecls paramdecls
       expr' <- withStateTAE (const context') (annotateType (Just $ Type returntype) expr)
@@ -69,7 +68,7 @@ annotateAbstractionType t p paramdecls expr annotateType = do
       infer' expr
     Just t'' -> do
       (t', expr') <- infer' expr
-      tell [mismatchSS UNEXPECTED_LAMBDA p (show t'') (maybe "lambda" show t')]
+      tellD [mismatchSS UNEXPECTED_LAMBDA p (show t'') (maybe "lambda" show t')]
       return (t', expr')
     Nothing ->
       infer' expr
@@ -101,7 +100,7 @@ annotateApplicationType t p f xs annotateType = do
         if expectedLen /= actualLen
           then do
             let message = "expected " ++ show expectedLen ++ " arguments, got " ++ show actualLen
-            tell [diagnostic Error INCORRECT_NUMBER_OF_ARGUMENTS (pointRange p) message]
+            tellD [diagnostic Error INCORRECT_NUMBER_OF_ARGUMENTS (pointRange p) message]
             return Nothing
           else
             return $ Just returntype'
@@ -109,7 +108,7 @@ annotateApplicationType t p f xs annotateType = do
       return (xs', returntype'')
     Just actual -> do
       let message = "type mismatch: expected a function, got " ++ show actual
-       in tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
+       in tellD [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
 
       xs' <- mapM (annotateType Nothing) xs
 
@@ -118,7 +117,7 @@ annotateApplicationType t p f xs annotateType = do
           expected = Type.fn expectedArgTypes unknown
 
       let message = "note: expected " ++ show expected
-       in tell [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
+       in tellD [diagnostic Error NOT_A_FUNCTION (pointRange f'position) message]
 
       return (xs', Nothing)
     Nothing -> do

@@ -13,7 +13,6 @@ where
 
 import Control.Monad (when)
 import Control.Monad.State (get)
-import Control.Monad.Writer (tell)
 import Data.Functor (void)
 import Data.List (groupBy, intercalate)
 import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
@@ -25,7 +24,7 @@ import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
-import Type.Env (TypeAnnotationEnv)
+import Type.Env (TypeAnnotationEnv, tellD)
 
 data TypeKind = Expected | Inferred
 
@@ -50,7 +49,7 @@ sanitizeT' reporting (AST.TypeRecord _ fields) = do
         let message = "duplicate field: " ++ name'
          in diagnostic Error DUPLICATE_RECORD_TYPE_FIELDS (pointRange p') message
 
-  when reporting $ tell $ fmap toDiagnostic dup
+  when reporting $ tellD $ fmap toDiagnostic dup
   return $ Type $ AST.TypeRecord () (fmap void uniq)
 sanitizeT' rep (AST.TypeVariant _ fields) = do
   let sanitizeF (AST.AVariantFieldType p' n (AST.SomeTyping p'' t)) = do
@@ -64,7 +63,7 @@ sanitizeT' rep (AST.TypeVariant _ fields) = do
         let message = "duplicate field: " ++ name'
          in diagnostic Error DUPLICATE_VARIANT_TYPE_FIELDS (pointRange p') message
 
-  when rep $ tell $ fmap toDiagnostic dup
+  when rep $ tellD $ fmap toDiagnostic dup
   return $ Type $ AST.TypeVariant () (fmap void uniq)
 sanitizeT' _ (AST.TypeVar _ (AST.StellaIdent name)) = do
   context <- get
@@ -80,7 +79,7 @@ liftEqType p lifting = liftEqType' p (Type $ lifting ())
 liftEqType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
 liftEqType' p lifting (Just checked) = do
   when (lifting /= checked) $
-    tell [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
+    tellD [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
   return lifting
 liftEqType' _ lifting Nothing =
   pure lifting
@@ -90,11 +89,11 @@ listItemType _ _ (Just (Type (AST.TypeList () t))) =
   return $ Just $ Type t
 listItemType p Inferred (Just t) = do
   let message = "expected list, got " ++ show t
-  tell [diagnostic Error NOT_A_LIST (pointRange p) message]
+  tellD [diagnostic Error NOT_A_LIST (pointRange p) message]
   return Nothing
 listItemType p Expected (Just t) = do
   let message = "expected " ++ show t ++ ", got list"
-  tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
+  tellD [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
   return Nothing
 listItemType _ _ Nothing =
   return Nothing
@@ -117,7 +116,7 @@ commonType p pts = do
       -- TODO(vityaman): improve diagnostic
       let ts' = fmap (maybe "?" show . fst) ts
           message = "expected same type for all subexpressions, got " ++ intercalate ", " ts'
-      tell [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
+      tellD [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
       return Nothing
 
 mismatch :: Code -> Position -> Type -> Type -> Diagnostic

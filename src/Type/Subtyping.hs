@@ -1,7 +1,6 @@
 module Type.Subtyping (liftSubType, liftSubType') where
 
 import Control.Monad (when, zipWithM_)
-import Control.Monad.Writer (tell)
 import Data.Foldable (find)
 import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION, UNEXPECTED_TYPE_FOR_NULLARY_LABEL))
 import Diagnostic.Core as Diagnostic
@@ -21,7 +20,7 @@ liftSubType' p lifting (Just checked) =
     Right () ->
       return lifting
     Left d -> do
-      tell [d {range = pointRange p}]
+      tellD [d {range = pointRange p}]
       return lifting
 liftSubType' _ lifting Nothing =
   return lifting
