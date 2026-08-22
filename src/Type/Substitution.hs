@@ -6,15 +6,20 @@ module Type.Substitution
     apply,
     applyConstraint,
     applyProgram,
+    checkAmbiguity,
   )
 where
 
+import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Diagnostic.Position (Position)
+import qualified Data.Set as Set
+import Diagnostic.Code (Code (AMBIGUOUS_TYPE))
+import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic)
+import Diagnostic.Position (Position, pointRange, unknown)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Constraint (Constraint (Eq))
-import Type.Core (Type (Type))
+import Type.Core (Type (Type), fv)
 import qualified Type.Core as Type
 
 newtype Substitution = Substitution (Map String Type)
@@ -69,3 +74,11 @@ applyProgram :: Substitution -> AST.Program' (Position, Maybe Type) -> AST.Progr
 applyProgram substitution = fmap applyAnnotation
   where
     applyAnnotation (position, t) = (position, fmap (apply substitution) t)
+
+checkAmbiguity :: Substitution -> Either Diagnostic ()
+checkAmbiguity (Substitution substitutions) =
+  case find (not . Set.null . fv) substitutions of
+    Nothing -> Right ()
+    Just ambiguousType -> do
+      let message = "ambiguous type: " ++ show ambiguousType
+      Left $ diagnostic Error AMBIGUOUS_TYPE (pointRange unknown) message

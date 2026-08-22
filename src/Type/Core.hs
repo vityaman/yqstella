@@ -7,11 +7,14 @@ module Type.Core
     neqT,
     fn,
     list,
+    fv,
   )
 where
 
 import Control.Monad (void)
 import Data.List (intercalate)
+import Data.Set (Set)
+import qualified Data.Set as Set
 import qualified SyntaxGen.AbsStella as AST
 
 newtype Type = Type (AST.Type' ()) deriving (Eq, Ord)
@@ -105,3 +108,35 @@ fn args (Type returntype) = Type $ AST.TypeFun () (fmap toAST args) returntype
 
 list :: Type -> Type
 list (Type t) = Type $ AST.TypeList () t
+
+fv :: Type -> Set String
+fv (Type t') = go Set.empty t'
+  where
+    go bound t =
+      case t of
+        AST.TypeAuto () -> mempty
+        AST.TypeFun () args ret -> Set.unions $ go bound ret : fmap (go bound) args
+        AST.TypeForAll () xs body -> go (bound <> names xs) body
+        AST.TypeRec () x body -> go (Set.insert (name x) bound) body
+        AST.TypeSum () lhs rhs -> go bound lhs <> go bound rhs
+        AST.TypeTuple () types -> Set.unions $ fmap (go bound) types
+        AST.TypeRecord () fields -> Set.unions $ fmap (rf bound) fields
+        AST.TypeVariant () fields -> Set.unions $ fmap (vf bound) fields
+        AST.TypeList () item -> go bound item
+        AST.TypeBool () -> mempty
+        AST.TypeNat () -> mempty
+        AST.TypeUnit () -> mempty
+        AST.TypeTop () -> mempty
+        AST.TypeBottom () -> mempty
+        AST.TypeRef () item -> go bound item
+        AST.TypeVar () ident
+          | name ident `Set.member` bound -> mempty
+          | otherwise -> Set.singleton $ name ident
+
+    names = Set.fromList . fmap name
+    name (AST.StellaIdent value) = value
+
+    rf bound (AST.ARecordFieldType () _ t) = go bound t
+
+    vf _ (AST.AVariantFieldType () _ (AST.NoTyping ())) = mempty
+    vf bound (AST.AVariantFieldType () _ (AST.SomeTyping () t)) = go bound t

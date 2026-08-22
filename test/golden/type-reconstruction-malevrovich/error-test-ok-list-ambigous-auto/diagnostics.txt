@@ -1,4 +1,4 @@
-test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
-YQL translation unsupported: Extension #type-reconstruction not implemented
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+ambiguous type: TypeVar(unit |> 2)
 > language core;
   ^
