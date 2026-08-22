@@ -1,4 +1,4 @@
-test/golden/type-reconstruction-malevrovich/ok-test-ok-higher-order-auto/input.yqst:9:24: [ERROR_UNEXPECTED_LAMBDA]
-type mismatch: expected TypeVar(unit |> 1), got fn(TypeVar(unit |> main |> 5)) -> Nat
->   return apply_to_zero(fn(x : auto) { return succ(x) })
-                         ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-higher-order-auto/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #type-reconstruction not implemented
+> language core;
+  ^

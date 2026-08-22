@@ -35,15 +35,23 @@ annotateAbstractionType t p paramdecls expr annotateType = do
         argtypes <- Type.fn . fmap snd <$> mapM toParamSilent paramdecls
         return (fmap argtypes (typeOf expr'), expr')
 
-  (t', expr') <- case t of
+  paramdecls' <- mapM toParamSilent paramdecls
+  let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls'
+      actualLen = length actual
+
+  t'' <- case t of
+    Just v@(Type (AST.TypeVar () _)) -> do
+      (Type returnT) <- freshTypeVar
+      let functionT = Type $ AST.TypeFun () (fmap (Type.toAST . snd . snd) actual) returnT
+      tellC [Constraint.Eq p v functionT]
+      return $ Just functionT
+    x -> return x
+
+  (t', expr') <- case t'' of
     Just t'@(Type (AST.TypeFun () argtypes returntype)) -> do
-      paramdecls' <- mapM toParamSilent paramdecls
-
-      let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls'
-          expected = fmap Type argtypes
-
-      let actualLen = length actual
+      let expected = fmap Type argtypes
           expectedLen = length expected
+
       when (actualLen /= expectedLen) $ do
         let message =
               "expected "
@@ -65,9 +73,9 @@ annotateAbstractionType t p paramdecls expr annotateType = do
       return (Just t', expr')
     Just (Type (AST.TypeTop ())) ->
       infer' expr
-    Just t'' -> do
+    Just t''' -> do
       (t', expr') <- infer' expr
-      tellD [mismatchSS UNEXPECTED_LAMBDA p (show t'') (maybe "lambda" show t')]
+      tellD [mismatchSS UNEXPECTED_LAMBDA p (show t''') (maybe "lambda" show t')]
       return (t', expr')
     Nothing ->
       infer' expr
