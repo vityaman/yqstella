@@ -1,0 +1,42 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let main (lambda '(xs) (block '(
+    (let yqstellamatchexpr xs)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchnil:7:7
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond (And (Exists yqstellamatchnil:7:7) (Bool 'true)))
+          (let yqstellamatchnil:7:7 (Unwrap yqstellamatchnil:7:7))
+          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let head (ToOptional yqstellamatcharg))
+          (let tail (Skip yqstellamatcharg (Uint64 '1)))
+          (let yqstellamatchcond (And (Exists head) (And (Exists tail) (Bool 'true))))
+          (let head (Unwrap head))
+          (let tail (Unwrap tail))
+          (return
+            (If yqstellamatchcond (Just (+ head (Uint64 '1))) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (declare __xs__ (ListType (DataType 'Uint64)))
+  (let result (Apply main __xs__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

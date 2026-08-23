@@ -1,4 +1,4 @@
-test/golden/type-reconstruction-malevrovich/ok-test-ok-natrec-auto/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
-YQL translation unsupported: Extension #type-reconstruction not implemented
-> language core;
-  ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-natrec-auto/input.yqst:5:10: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Expr' not implemented
+>   return Nat::rec(n, 0, fn(i : auto) {
+           ^
