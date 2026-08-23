@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+generic fn f[T](t : T) -> Nat {
+  return if t then 0 else 1
+}
+
+fn main(n : Nat) -> Nat {
+  return f[Bool](false)
+}

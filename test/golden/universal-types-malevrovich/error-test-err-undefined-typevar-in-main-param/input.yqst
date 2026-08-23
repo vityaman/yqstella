@@ -1,0 +1,6 @@
+language core;
+extend with #universal-types;
+
+fn main(n : T) -> Nat {
+  return succ(n)
+}

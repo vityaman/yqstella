@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #sum-types;
+
+generic fn wrap_left[T, Y](x : T) -> T + Y {
+  return inl(x)
+}
+
+fn main(n : Nat) -> Nat + Bool {
+  return wrap_left[Nat, Bool](n)
+}

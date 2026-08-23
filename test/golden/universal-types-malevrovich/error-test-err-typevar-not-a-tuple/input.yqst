@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #pairs;
+
+generic fn f[T, Y](t : T) -> Y {
+  return t.1
+}
+
+fn main(n : Nat) -> Nat {
+  return f[{Nat, Nat}, Nat]({n, n})
+}

@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+fn ordinary(x : Nat) -> Nat {
+  return x
+}
+
+fn main(n : Nat) -> Nat {
+  return ordinary[Nat](n)
+}

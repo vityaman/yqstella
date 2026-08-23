@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #lists;
+
+generic fn singleton[T](x : T) -> [T] {
+  return [x]
+}
+
+fn main(n : Nat) -> [Nat] {
+  return singleton[Nat](n)
+}

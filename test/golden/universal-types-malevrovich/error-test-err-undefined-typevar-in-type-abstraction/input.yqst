@@ -1,0 +1,6 @@
+language core;
+extend with #universal-types;
+
+fn main(n : Nat) -> forall T . fn(T) -> T {
+  return generic [T] fn(x : Y) { return x }
+}

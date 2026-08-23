@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #references;
+
+generic fn make_ref[T](x : T) -> &T {
+  return new(x)
+}
+
+fn main(n : Nat) -> &Nat {
+  return make_ref[Nat](n)
+}

@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #pairs;
+
+generic fn fst[T, Y](t : {T, Y}) -> T {
+  return t.1
+}
+
+fn main(n : Nat) -> Nat {
+  return fst[Nat, Bool]({n, false})
+}
