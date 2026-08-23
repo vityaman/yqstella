@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-llm/multiparameter-functions-arity-mismatch/input.yqst:6:10: [ERROR_INCORRECT_NUMBER_OF_ARGUMENTS]
+can't unify functions with different arities: 1 and 2
+>   return function
+           ^

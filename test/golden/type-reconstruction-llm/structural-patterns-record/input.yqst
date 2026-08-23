@@ -1,0 +1,9 @@
+language core;
+
+extend with #type-reconstruction, #structural-patterns, #records;
+
+fn main(record : {value : auto}) -> Nat {
+  return match record {
+    {value = value} => succ(value)
+  }
+}

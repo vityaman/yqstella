@@ -136,12 +136,12 @@ ensureEqType p _ lifting@(Type (AST.TypeAuto ())) _ = do
 ensureEqType p _ variable@(Type (AST.TypeVar () _)) (Just checked) = do
   tellC [Constraint.Eq p variable checked]
   return variable
-ensureEqType p _ lifting (Just variable@(Type (AST.TypeVar () _))) = do
-  tellC [Constraint.Eq p lifting variable]
-  return lifting
+ensureEqType p _ lifting (Just checked)
+  | not $ null (Type.fv lifting <> Type.fv checked) = do
+      tellC [Constraint.Eq p lifting checked]
+      return lifting
 ensureEqType _ toDiagnostic lifting (Just checked) = do
-  when (lifting /= checked) $
-    tellD [toDiagnostic checked lifting]
+  when (lifting /= checked) $ tellD [toDiagnostic checked lifting]
   return lifting
 ensureEqType _ _ lifting Nothing =
   pure lifting

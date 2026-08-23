@@ -13,10 +13,10 @@ import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Constraint as Constraint
-import Type.Context (withName)
+import Type.Context (withName, withTyped)
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Decl (toParamSilent, withParamDecls)
+import Type.Decl (toPair)
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, positionOf, tellC, tellD, typeOf, withStateTAE)
 import Type.Expectation (ensureEqParamType, mismatchSS)
 import Type.Lift (liftType')
@@ -29,13 +29,17 @@ annotateAbstractionType ::
   TypeAnnotator AST.Expr' ->
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateAbstractionType t p paramdecls expr annotateType = do
-  let infer' expr'' = do
-        context' <- gets (withName ("abstraction at " ++ show p)) >>= withParamDecls paramdecls
-        expr' <- withStateTAE (const context') (annotateType Nothing expr'')
-        argtypes <- Type.fn . fmap snd <$> mapM toParamSilent paramdecls
-        return (fmap argtypes (typeOf expr'), expr')
+  paramdecls' <- mapM toPair paramdecls
 
-  paramdecls' <- mapM toParamSilent paramdecls
+  let withParams context =
+        foldr (uncurry withTyped) (withName ("abstraction at " ++ show p) context) paramdecls'
+
+  let infer' expr'' = do
+        context' <- gets withParams
+        expr' <- withStateTAE (const context') (annotateType Nothing expr'')
+        let abstractionType = Type.fn (fmap snd paramdecls')
+        return (fmap abstractionType (typeOf expr'), expr')
+
   let actual = Data.Bifunctor.first annotation <$> zip paramdecls paramdecls'
       actualLen = length actual
 
@@ -67,7 +71,7 @@ annotateAbstractionType t p paramdecls expr annotateType = do
             ensureEqParamType p' name actual' expected'
       mapM_ ensureParameterType (zip actual expected)
 
-      context' <- gets (withName ("abstraction at " ++ show p)) >>= withParamDecls paramdecls
+      context' <- gets withParams
       expr' <- withStateTAE (const context') (annotateType (Just $ Type returntype) expr)
 
       return (Just t', expr')

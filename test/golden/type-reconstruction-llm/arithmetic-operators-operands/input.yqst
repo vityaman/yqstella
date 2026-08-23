@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #arithmetic-operators;
+
+fn main(n : auto) -> auto {
+  return n + succ(0)
+}

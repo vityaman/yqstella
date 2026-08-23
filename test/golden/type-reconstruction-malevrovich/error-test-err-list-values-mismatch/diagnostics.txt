@@ -1,4 +1,4 @@
 test/golden/type-reconstruction-malevrovich/error-test-err-list-values-mismatch/input.yqst:8:66: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-can't unify [[Bool]] and [[Nat]]
+can't unify Bool and Nat
 >   return if List::head(List::head(n)) then List::head(List::head(n)) else 0;
                                                                    ^

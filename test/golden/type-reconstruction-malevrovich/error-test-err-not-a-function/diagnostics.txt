@@ -1,4 +1,4 @@
-test/golden/type-reconstruction-malevrovich/error-test-err-not-a-function/input.yqst:9:29: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-can't unify [Bool] and [TypeVar(unit |> main |> 1)]
+test/golden/type-reconstruction-malevrovich/error-test-err-not-a-function/input.yqst:9:18: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and fn(TypeVar(unit |> main |> 2)) -> TypeVar(unit |> main |> 3)
 >             then List::head(n)(0) 
-                              ^
+                   ^

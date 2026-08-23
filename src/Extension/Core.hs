@@ -156,9 +156,5 @@ closure UniversalTypes = [TypeReconstruction]
 closure x = [x]
 
 areConflicting :: Extension -> Extension -> Bool
--- TODO: support unification for complex structures
-areConflicting TypeReconstruction Tuples = True
-areConflicting TypeReconstruction Records = True
-areConflicting TypeReconstruction Variants = True
 areConflicting TypeReconstruction StructuralSubtyping = True
 areConflicting _ _ = False

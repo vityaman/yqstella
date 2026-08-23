@@ -1,0 +1,10 @@
+language core;
+
+extend with #type-reconstruction, #structural-patterns, #lists;
+
+fn main(xs : [auto]) -> Nat {
+  return match xs {
+      [] => 0
+    | cons(head, tail) => succ(head)
+  }
+}

@@ -4,10 +4,11 @@ import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Constraint as Constraint
 import Type.Core (Type (..))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf)
-import Type.Lift (liftType)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, tellC, tellD, typeOf)
+import Type.Lift (liftType, liftType')
 
 annotateRefExprType ::
   Maybe Type ->
@@ -52,12 +53,20 @@ annotateRefExprType (Just t) (AST.Ref p expr) annotateType = do
   tellD [diagnostic Error UNEXPECTED_REFERENCE (pointRange p) message]
   return (AST.Ref (p, Nothing) expr')
 annotateRefExprType t (AST.Deref p expr) annotateType = do
-  let ref't = Type . AST.TypeRef () . (\(Type x) -> x) <$> t
-  expr' <- annotateType ref't expr
+  expr' <- case (t, expr) of
+    (Just expected, AST.ConstMemory {}) ->
+      annotateType (Just $ Type $ AST.TypeRef () $ Type.toAST expected) expr
+    _ ->
+      annotateType Nothing expr
 
   t' <- case typeOf expr' of
-    Just (Type (AST.TypeRef () t')) ->
-      return $ Just $ Type t'
+    Just (Type (AST.TypeRef () t')) -> do
+      result <- liftType' p (Type t') t
+      return $ Just result
+    Just variable@(Type (AST.TypeVar () _)) -> do
+      result <- maybe freshTypeVar return t
+      tellC [Constraint.Eq p variable (Type $ AST.TypeRef () $ Type.toAST result)]
+      return $ Just result
     Just t'@(Type _) -> do
       let message = "expected a reference type, got " ++ show t'
       tellD [diagnostic Error NOT_A_REFERENCE (pointRange p) message]

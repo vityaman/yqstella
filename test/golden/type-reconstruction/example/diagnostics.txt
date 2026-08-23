@@ -1,4 +1,4 @@
-test/golden/type-reconstruction/example/input.yqst:18:27: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-can't unify Bool and Nat
+test/golden/type-reconstruction/example/input.yqst:18:40: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Nat and Bool
 >       return Nat::add(i)( Nat::add(i)( succ( r )));
-                            ^
+                                         ^

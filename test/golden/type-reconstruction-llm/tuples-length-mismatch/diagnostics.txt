@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-llm/tuples-length-mismatch/input.yqst:6:10: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+can't unify tuples of different lengths: 2 and 3
+>   return tuple
+           ^

@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #let-bindings;
+
+fn main(n : auto) -> auto {
+  return let x = n in succ(x)
+}

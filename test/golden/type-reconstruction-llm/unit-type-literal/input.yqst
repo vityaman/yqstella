@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #unit-type;
+
+fn main(n : Nat) -> auto {
+  return unit
+}

@@ -13,12 +13,13 @@ import Diagnostic.Position (Position, pointRange)
 import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import Type.Application (annotateAbstractionType, annotateApplicationType)
+import qualified Type.Constraint as Constraint
 import Type.Context (withName)
 import qualified Type.Context as Context
 import Type.Core (Type (Type), list)
 import qualified Type.Core as Type
 import Type.Decl (withDecls, withParamDecls)
-import Type.Env (TypeAnnotationEnv, isAvailable, tellD, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, isAvailable, tellC, tellD, typeOf, withStateTAE)
 import Type.Exception (annotateExceptionExprType)
 import Type.Expectation (TypeKind (Expected, Inferred), listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
@@ -323,6 +324,10 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- inferType expr
     t' <- case typeOf expr' of
       Just (Type (AST.TypeFun () [arg] ret)) | arg == ret -> return $ Just (Type ret)
+      Just (Type (AST.TypeFun () [arg] ret))
+        | not $ null (Type.fv (Type arg) <> Type.fv (Type ret)) -> do
+            tellC [Constraint.Eq p (Type arg) (Type ret)]
+            return $ Just (Type ret)
       Just t@(Type (AST.TypeFun () [_] _)) -> do
         tellD [mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p "T -> T" (show t)]
         return Nothing

@@ -1,0 +1,8 @@
+language core;
+
+extend with #type-reconstruction, #let-bindings, #let-patterns, #structural-patterns, #pairs;
+
+fn main(pair : {auto, Bool}) -> Nat {
+  return let {value, flag} = pair in
+    if flag then succ(value) else value
+}

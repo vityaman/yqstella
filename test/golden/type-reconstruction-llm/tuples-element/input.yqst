@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #tuples;
+
+fn main(tuple : {auto, Bool, Nat}) -> {Nat, Bool, Nat} {
+  return tuple
+}

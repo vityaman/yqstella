@@ -1,0 +1,10 @@
+language core;
+
+extend with #type-reconstruction, #nested-function-declarations;
+
+fn main(n : auto) -> auto {
+  fn next(value : auto) -> auto {
+    return succ(value)
+  }
+  return next(n)
+}
