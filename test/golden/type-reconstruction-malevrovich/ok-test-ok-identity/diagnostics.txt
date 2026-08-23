@@ -1,4 +1,36 @@
-test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
-ambiguous type: TypeVar(unit |> 5)
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:1:1: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 4)) -> TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
 > language core;
   ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 4)) -> TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+> language core;
+  ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:4:7: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+> fn id(x : auto) -> auto {
+        ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:5:10: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+>   return x
+           ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 4)) -> TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+> language core;
+  ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:8:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+> fn main(n : auto) -> auto {
+          ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:9:10: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+>   return id(n)
+           ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:9:10: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 4)) -> TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+>   return id(n)
+           ^
+test/golden/type-reconstruction-malevrovich/ok-test-ok-identity/input.yqst:9:13: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 4) has unresolved type variable TypeVar(unit |> 4)
+>   return id(n)
+              ^

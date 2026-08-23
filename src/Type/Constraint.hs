@@ -8,4 +8,4 @@ data Constraint = Eq Position Type Type
 type Constraints = [Constraint]
 
 instance Show Constraint where
-  show (Eq p lhs rhs) = "(" ++ show p ++ ") " ++ show lhs ++ " == " ++ show rhs
+  show (Eq _ lhs rhs) = show lhs ++ " == " ++ show rhs

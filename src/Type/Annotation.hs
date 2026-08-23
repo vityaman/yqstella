@@ -17,7 +17,7 @@ import Type.Context (withName)
 import qualified Type.Context as Context
 import Type.Core (Type (Type), list)
 import qualified Type.Core as Type
-import Type.Decl (toParamSilent, withDecls, withParamDecls)
+import Type.Decl (withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, isAvailable, tellD, typeOf, withStateTAE)
 import Type.Exception (annotateExceptionExprType)
 import Type.Expectation (TypeKind (Expected, Inferred), listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
@@ -90,9 +90,7 @@ instance TypeAnnotatable AST.Decl' where
 
     expr' <- withStateTAE (const context') (annotateType returnExpect expr)
 
-    argTypes <- mapM toParamSilent paramdecls
-
-    let t' = fmap (Type.fn $ fmap snd argTypes) (typeOf expr')
+    let t' = Type.fn <$> traverse typeOf paramdecls' <*> typeOf expr'
 
     return
       ( AST.DeclFun

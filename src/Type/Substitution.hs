@@ -10,17 +10,19 @@ module Type.Substitution
   )
 where
 
-import Data.Foldable (find)
+import Control.Monad (when)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
-import Diagnostic.Code (Code (AMBIGUOUS_TYPE))
-import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic)
-import Diagnostic.Position (Position, pointRange, unknown)
+import Diagnostic.Code (Code (AMBIGUOUS_TYPE, DEBUG))
+import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Error, Fatal, Info), diagnostic)
+import Diagnostic.Position (Position, pointRange)
+import Extension.Core (Extension (DebugUnification))
 import qualified SyntaxGen.AbsStella as AST
 import Type.Constraint (Constraint (Eq))
 import Type.Core (Type (Type), fv)
 import qualified Type.Core as Type
+import Type.Env (TypeAnnotationEnv, isAvailable, tellD)
 
 newtype Substitution = Substitution (Map String Type)
 
@@ -70,15 +72,29 @@ applyConstraint :: Substitution -> Constraint -> Constraint
 applyConstraint substitution (Eq position lhs rhs) =
   Eq position (apply substitution lhs) (apply substitution rhs)
 
-applyProgram :: Substitution -> AST.Program' (Position, Maybe Type) -> AST.Program' (Position, Maybe Type)
-applyProgram substitution = fmap applyAnnotation
+applyProgram :: Substitution -> AST.Program' (Position, Maybe Type) -> TypeAnnotationEnv (AST.Program' (Position, Maybe Type))
+applyProgram substitution program = do
+  isDebugUnification <- isAvailable DebugUnification
+  traverse (applyAnnotation isDebugUnification) program
   where
-    applyAnnotation (position, t) = (position, fmap (apply substitution) t)
+    applyAnnotation _ annotation@(_, Nothing) = return annotation
+    applyAnnotation isDebugUnification (position, Just t) = do
+      let t' = apply substitution t
+      when isDebugUnification $
+        tellD [diagnostic Info DEBUG (pointRange position) (show t ++ " => " ++ show t')]
+      return (position, Just t')
 
-checkAmbiguity :: Substitution -> Either Diagnostic ()
-checkAmbiguity (Substitution substitutions) =
-  case find (not . Set.null . fv) substitutions of
-    Nothing -> Right ()
-    Just ambiguousType -> do
-      let message = "ambiguous type: " ++ show ambiguousType
-      Left $ diagnostic Error AMBIGUOUS_TYPE (pointRange unknown) message
+checkAmbiguity :: AST.Program' (Position, Maybe Type) -> Diagnostics
+checkAmbiguity = foldMap checkAnnotation
+  where
+    checkAnnotation :: (Position, Maybe Type) -> Diagnostics
+    checkAnnotation (_, Nothing) = mempty
+    checkAnnotation (position, Just (Type (AST.TypeAuto ()))) =
+      [diagnostic Fatal AMBIGUOUS_TYPE (pointRange position) "unexpected auto type after substitution"]
+    checkAnnotation (position, Just t) =
+      fmap (ambiguousTypeVariable position t) (Set.toList $ fv t)
+
+    ambiguousTypeVariable :: Position -> Type -> String -> Diagnostic
+    ambiguousTypeVariable position t variable =
+      let message = "type " ++ show t ++ " has unresolved type variable " ++ variable
+       in diagnostic Error AMBIGUOUS_TYPE (pointRange position) message

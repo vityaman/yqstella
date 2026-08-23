@@ -64,6 +64,7 @@ data Extension
   | FixpointCombinator
   | LetRecBindings
   | GeneralRecursion
+  | DebugUnification
   deriving (Eq, Ord, Show)
 
 type Extensions = Set Extension
@@ -126,7 +127,9 @@ extensionNameMap =
       -- Recursion
       (FixpointCombinator, "#fixpoint-combinator"),
       (LetRecBindings, "#letrec-bindings"),
-      (GeneralRecursion, "#general-recursion")
+      (GeneralRecursion, "#general-recursion"),
+      -- Debug
+      (DebugUnification, "#debug-unification")
     ]
 
 extensionName :: Extension -> String

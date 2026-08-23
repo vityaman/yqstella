@@ -27,13 +27,13 @@ checkTypes extensions program = do
         tell [diagnostic]
         return (False, program')
       Right substitution -> do
-        let program'' = Substitution.applyProgram substitution program'
+        let (program'', (diagnostic', _)) = run (Substitution.applyProgram substitution program') (Context.empty extensions)
 
-        areTypesUnambiguous <- case Substitution.checkAmbiguity substitution of
-          Left diagnostic -> do
-            tell [diagnostic]
-            return False
-          Right () ->
-            return True
+        tell diagnostic'
+
+        let ambiguityDiagnostics = Substitution.checkAmbiguity program''
+            areTypesUnambiguous = not (any (isFailure . severity) ambiguityDiagnostics)
+
+        tell ambiguityDiagnostics
 
         return (areTypesUnambiguous, program'')

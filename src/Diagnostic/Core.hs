@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 module Diagnostic.Core
-  ( Severity (Fatal, Error),
+  ( Severity (Fatal, Error, Info),
     Diagnostic (Diagnostic),
     severity,
     code,
@@ -27,6 +27,7 @@ import SyntaxGen.LexStella (Posn (Pn))
 data Severity
   = Fatal
   | Error
+  | Info
   deriving (Show, Eq)
 
 data Diagnostic = Diagnostic
@@ -51,6 +52,7 @@ instance Display Diagnostics where
 isFailure :: Severity -> Bool
 isFailure Fatal = True
 isFailure Error = True
+isFailure Info = False
 
 diagnostic :: Severity -> Code -> PositionRange -> String -> Diagnostic
 diagnostic s c = Diagnostic s c "<source>"
