@@ -1,8 +1,10 @@
 module Type.Context
   ( Context,
     empty,
+    withName,
     withTyped,
     withTypeAliased,
+    withFreshTypeVar,
     withExceptionType,
     withExceptionVariant,
     typeOf,
@@ -14,6 +16,7 @@ module Type.Context
 where
 
 import Data.Foldable (find)
+import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import qualified Data.Set as Set
@@ -32,23 +35,30 @@ data ExceptionTypeMode = Unknown | Atomic | OpenVariant
   deriving (Show)
 
 data Context = Context
-  { contextBindings :: Map String Binding,
+  { contextName :: [String],
+    contextBindings :: Map String Binding,
     contextTypeAliases :: Map String Type,
     contextExceptionType :: Maybe Type,
     contextExceptionTypeMode :: ExceptionTypeMode,
-    contextExtensions :: Extensions
+    contextExtensions :: Extensions,
+    contextPrevId :: Int
   }
   deriving (Show)
 
 empty :: Extensions -> Context
 empty extensions =
   Context
-    { contextBindings = Map.empty,
+    { contextName = [],
+      contextBindings = Map.empty,
       contextTypeAliases = Map.empty,
       contextExceptionType = Nothing,
       contextExceptionTypeMode = Unknown,
-      contextExtensions = extensions
+      contextExtensions = extensions,
+      contextPrevId = 0
     }
+
+withName :: String -> Context -> Context
+withName name c = c {contextName = name : contextName c}
 
 withTyped :: String -> Type -> Context -> Context
 withTyped key t c@(Context {contextBindings = bindings}) =
@@ -57,6 +67,12 @@ withTyped key t c@(Context {contextBindings = bindings}) =
 withTypeAliased :: String -> Type -> Context -> Context
 withTypeAliased key t c@(Context {contextTypeAliases = typeAliases}) =
   c {contextTypeAliases = Map.insert key t typeAliases}
+
+withFreshTypeVar :: Context -> (Type, Context)
+withFreshTypeVar c =
+  let nextId = contextPrevId c + 1
+      name = "TypeVar(" ++ intercalate " |> " (reverse $ contextName c) ++ " |> " ++ show nextId ++ ")"
+   in (Type (AST.TypeVar () (AST.StellaIdent name)), c {contextPrevId = nextId})
 
 withExceptionType :: Type -> Context -> Either Diagnostic Context
 withExceptionType t c@Context {contextExceptionTypeMode = Unknown} =

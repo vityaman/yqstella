@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/error-test-err-occurs-check-self-app/input.yqst:5:12: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
+mu TypeVar(unit |> main |> 1). fn(TypeVar(unit |> main |> 1)) -> TypeVar(unit |> main |> 2)
+>   return f(f)
+             ^

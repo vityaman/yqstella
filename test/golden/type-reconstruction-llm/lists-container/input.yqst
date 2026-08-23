@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #lists;
+
+fn main(xs : auto) -> [Nat] {
+  return xs
+}

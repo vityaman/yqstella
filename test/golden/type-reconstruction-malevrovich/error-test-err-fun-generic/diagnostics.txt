@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/error-test-err-fun-generic/input.yqst:11:31: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Nat and Bool
+>   return if id(false) then id(0) else id(succ(0));
+                                ^

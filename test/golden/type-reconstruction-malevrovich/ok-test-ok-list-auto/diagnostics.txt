@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/ok-test-ok-list-auto/input.yqst:5:44: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return List::head(cons(n, cons(succ(n), ([] as [Nat]))))
+                                             ^

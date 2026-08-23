@@ -1,0 +1,10 @@
+language core;
+extend with #type-reconstruction;
+
+fn f(n : Nat) -> Nat {
+  return succ(n)
+}
+
+fn main(b : auto) -> auto {
+  return f(false)
+}

@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #variants, #unit-type;
+
+fn main(value : <| value : auto, failure : Unit |>) -> <| failure : Unit, value : Nat |> {
+  return value
+}

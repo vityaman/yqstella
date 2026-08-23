@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #pairs;
+
+fn main(pair : auto) -> {Nat, Bool} {
+  return pair
+}

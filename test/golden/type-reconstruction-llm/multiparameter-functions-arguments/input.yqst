@@ -1,0 +1,11 @@
+language core;
+
+extend with #type-reconstruction, #multiparameter-functions;
+
+fn choose(flag : auto, value : auto) -> auto {
+  return if flag then succ(value) else 0
+}
+
+fn main(n : auto) -> auto {
+  return choose(true, n)
+}

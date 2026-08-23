@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/error-test-err-occurs-check-list/input.yqst:5:18: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
+mu TypeVar(unit |> main |> 1). [TypeVar(unit |> main |> 1)]
+>   return cons(x, x)
+                   ^

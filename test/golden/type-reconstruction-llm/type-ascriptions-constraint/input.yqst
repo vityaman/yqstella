@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #type-ascriptions;
+
+fn main(value : auto) -> auto {
+  return value as Nat
+}

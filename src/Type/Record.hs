@@ -3,7 +3,6 @@
 module Type.Record (annotateDotRecordType, annotateRecordType) where
 
 import Control.Monad (unless, when)
-import Control.Monad.Writer
 import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -14,7 +13,7 @@ import qualified Extension.Core as Extension
 import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, isAvailable, typeOf)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, isAvailable, tellD, typeOf)
 import Type.Lift (liftType')
 
 annotateDotRecordType ::
@@ -36,7 +35,7 @@ annotateDotRecordType t p expr field annotateType = do
 
       when (null t') $
         let message = "missing record field " ++ field ++ " : " ++ maybe "?" show t
-         in tell [diagnostic Error UNEXPECTED_FIELD_ACCESS (pointRange p) message]
+         in tellD [diagnostic Error UNEXPECTED_FIELD_ACCESS (pointRange p) message]
 
       mapM (\x -> liftType' p x t) t'
     Just actual -> do
@@ -44,7 +43,7 @@ annotateDotRecordType t p expr field annotateType = do
             "type mismatch: expected record with "
               ++ (field ++ ": " ++ maybe "?" show t)
               ++ (", got " ++ show actual)
-      tell [diagnostic Error NOT_A_RECORD (pointRange p) message]
+      tellD [diagnostic Error NOT_A_RECORD (pointRange p) message]
       return Nothing
     Nothing ->
       return Nothing
@@ -63,7 +62,7 @@ annotateRecordType t p bindings annotateType = do
     Just (Type (AST.TypeTop ())) -> return ()
     Just t' ->
       let message = "expected " ++ show t' ++ ", got record"
-       in tell [diagnostic Error UNEXPECTED_RECORD (pointRange p) message]
+       in tellD [diagnostic Error UNEXPECTED_RECORD (pointRange p) message]
     Nothing -> return ()
 
   let name (AST.ABinding _ (AST.StellaIdent name') _) = name'
@@ -102,7 +101,7 @@ annotateRecordType t p bindings annotateType = do
   bindingsDup' <- mapM (annotateType'' expectedTMap) bindingsDup
   let bindings' = bindingsUniq' ++ bindingsDup'
 
-  tell $ fmap toDiagnostic bindingsDup
+  tellD $ fmap toDiagnostic bindingsDup
 
   let actualTMap = toMap' bindingsUniq'
 
@@ -111,14 +110,14 @@ annotateRecordType t p bindings annotateType = do
       let missing = Map.keys $ Map.difference expected actual
       unless (null missing) $
         let message = "missing record fields: " ++ intercalate ", " missing
-         in tell [diagnostic Error MISSING_RECORD_FIELDS (pointRange p) message]
+         in tellD [diagnostic Error MISSING_RECORD_FIELDS (pointRange p) message]
 
       isSubtyping <- isAvailable Extension.StructuralSubtyping
 
       let unexpected = Map.keys $ Map.difference actual expected
       unless (isSubtyping || null unexpected) $
         let message = "unexpected record fields: " ++ intercalate ", " missing
-         in tell [diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p) message]
+         in tellD [diagnostic Error UNEXPECTED_RECORD_FIELDS (pointRange p) message]
 
       return $
         if null missing && (isSubtyping || null unexpected)

@@ -5,20 +5,26 @@ module Type.Env
     isAvailable,
     positionOf,
     typeOf,
+    freshTypeVar,
+    tellD,
+    tellC,
   )
 where
 
 import Annotation (Annotated (annotation))
+import Control.Monad (when)
 import Control.Monad.State
 import Control.Monad.Trans.Writer
-import Diagnostic.Core (Diagnostics)
-import Diagnostic.Position (Position)
-import Extension.Core (Extension)
+import Diagnostic.Code (Code (DEBUG))
+import Diagnostic.Core (Diagnostics, Severity (Info), diagnostic)
+import Diagnostic.Position (Position, pointRange)
+import Extension.Core (Extension (DebugUnification))
+import Type.Constraint (Constraint (Eq), Constraints)
 import Type.Context (Context)
 import qualified Type.Context as Context
 import Type.Core (Type)
 
-type TypeAnnotationEnv a = WriterT Diagnostics (State Context) a
+type TypeAnnotationEnv a = WriterT (Diagnostics, Constraints) (State Context) a
 
 type TypeAnnotator f = Maybe Type -> f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
 
@@ -40,3 +46,22 @@ positionOf = fst . annotation
 
 typeOf :: (Annotated f) => f (Position, Maybe Type) -> Maybe Type
 typeOf = snd . annotation
+
+freshTypeVar :: TypeAnnotationEnv Type
+freshTypeVar = do
+  context <- get
+  let (t, context') = Context.withFreshTypeVar context
+  put context'
+  return t
+
+tellD :: Diagnostics -> TypeAnnotationEnv ()
+tellD ds = tell (ds, mempty)
+
+tellC :: Constraints -> TypeAnnotationEnv ()
+tellC cs = do
+  isDebugUnification <- isAvailable DebugUnification
+  when isDebugUnification $ tellD (fmap toDiagnostic cs)
+  tell (mempty, cs)
+  where
+    toDiagnostic constraint@(Eq position _ _) =
+      diagnostic Info DEBUG (pointRange position) (show constraint)

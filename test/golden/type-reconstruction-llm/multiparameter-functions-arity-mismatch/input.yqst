@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #multiparameter-functions;
+
+fn main(function : fn(auto) -> Nat) -> fn(Nat, Nat) -> Nat {
+  return function
+}

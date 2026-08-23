@@ -1,6 +1,5 @@
 module Type.Alias (typeAliasCollect, typeAliasResolve) where
 
-import Control.Monad.Writer (MonadWriter (tell))
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (mapMaybe)
@@ -11,7 +10,7 @@ import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (..))
-import Type.Env (TypeAnnotationEnv)
+import Type.Env (TypeAnnotationEnv, tellD)
 import Type.Expectation (sanitizeT)
 
 type TypeAliasesRaw = Map String (AST.Type' Position)
@@ -70,11 +69,11 @@ typeAliasResolve types t = do
         Just ty
           | name `Set.member` vis -> do
               let msg = "recursive type alias detected for " ++ name
-              tell [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) msg]
+              tellD [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) msg]
               return Nothing
           | otherwise -> go (Set.insert name vis) ty
         Nothing -> do
           let message = "undefined type alias " ++ name
-          tell [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) message]
+          tellD [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) message]
           return Nothing
     go _ x = return $ Just x

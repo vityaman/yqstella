@@ -1,4 +1,12 @@
-module Extension.Core (Extension (..), Extensions, extensionName, extensionFromName, closure) where
+module Extension.Core
+  ( Extension (..),
+    Extensions,
+    extensionName,
+    extensionFromName,
+    closure,
+    areConflicting,
+  )
+where
 
 import Data.Bimap (Bimap)
 import qualified Data.Bimap as Bimap
@@ -51,10 +59,12 @@ data Extension
   | AmbiguousTypeAsBottom
   | TypeCast
   | TryCastAs
+  | TypeReconstruction
   | UniversalTypes
   | FixpointCombinator
   | LetRecBindings
   | GeneralRecursion
+  | DebugUnification
   deriving (Eq, Ord, Show)
 
 type Extensions = Set Extension
@@ -112,11 +122,14 @@ extensionNameMap =
       (TypeCast, "#type-cast"),
       (TryCastAs, "#try-cast-as"),
       -- Universal Types
+      (TypeReconstruction, "#type-reconstruction"),
       (UniversalTypes, "#universal-types"),
       -- Recursion
       (FixpointCombinator, "#fixpoint-combinator"),
       (LetRecBindings, "#letrec-bindings"),
-      (GeneralRecursion, "#general-recursion")
+      (GeneralRecursion, "#general-recursion"),
+      -- Debug
+      (DebugUnification, "#debug-unification")
     ]
 
 extensionName :: Extension -> String
@@ -139,4 +152,9 @@ closure LetRecBindings = [LetRecBindings, LetBindings, FixpointCombinator]
 closure OpenVariantExceptions = [OpenVariantExceptions, Variants]
 closure TryCastAs = [TryCastAs, Exceptions]
 closure AmbiguousTypeAsBottom = [AmbiguousTypeAsBottom, BottomType]
+closure UniversalTypes = [TypeReconstruction]
 closure x = [x]
+
+areConflicting :: Extension -> Extension -> Bool
+areConflicting TypeReconstruction StructuralSubtyping = True
+areConflicting _ _ = False

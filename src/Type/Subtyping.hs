@@ -1,9 +1,8 @@
 module Type.Subtyping (liftSubType, liftSubType') where
 
 import Control.Monad (when, zipWithM_)
-import Control.Monad.Writer (tell)
 import Data.Foldable (find)
-import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION, UNEXPECTED_TYPE_FOR_NULLARY_LABEL))
+import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, NOT_IMPLEMENTED, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION, UNEXPECTED_TYPE_FOR_NULLARY_LABEL))
 import Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position, pointRange, unknown)
 import Syntax.PrettyPrint (displayAST)
@@ -21,12 +20,24 @@ liftSubType' p lifting (Just checked) =
     Right () ->
       return lifting
     Left d -> do
-      tell [d {range = pointRange p}]
+      tellD [d {range = pointRange p}]
       return lifting
 liftSubType' _ lifting Nothing =
   return lifting
 
 subsumes :: Type -> Type -> Either Diagnostic ()
+subsumes (Type (AST.TypeAuto ())) _ =
+  let message' = "(subsumes) unexpected auto, expected type var"
+   in Left $ diagnostic Error NOT_IMPLEMENTED (pointRange unknown) message'
+subsumes _ (Type (AST.TypeAuto ())) =
+  let message' = "(subsumes) unexpected auto, expected type var"
+   in Left $ diagnostic Error NOT_IMPLEMENTED (pointRange unknown) message'
+subsumes (Type (AST.TypeVar () _)) _ =
+  let message' = "(subsumes) type constraints are not supported yet"
+   in Left $ diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange unknown) message'
+subsumes _ (Type (AST.TypeVar () _)) =
+  let message' = "(subsumes) type constraints are not supported yet"
+   in Left $ diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange unknown) message'
 subsumes lhs rhs | lhs == rhs = Right ()
 subsumes _ (Type (AST.TypeTop ())) = Right ()
 subsumes lhs@(Type (AST.TypeTop ())) rhs =

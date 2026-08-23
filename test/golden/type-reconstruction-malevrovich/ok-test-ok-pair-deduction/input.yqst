@@ -1,0 +1,13 @@
+language core;
+
+extend with 
+#type-reconstruction, 
+#pairs;
+
+fn check_type(n : {Bool, Nat}) -> auto {
+  return if n.1 then n.2 else 0
+}
+
+fn main(n : auto) -> auto {
+  return if n.1 then n.2 else check_type(n)
+}

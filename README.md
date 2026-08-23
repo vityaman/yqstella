@@ -79,7 +79,7 @@ There are following questions under this project:
 | `#type-cast`                        | 🧪 `TYPECHECK` |
 | `#try-cast-as`                      | 🧪 `TYPECHECK` |
 | `#type-cast-patterns`               | 🚫 `WONT`      |
-| `#type-reconstruction`              | ⏳ `TBD`       |
+| `#type-reconstruction`              | ✅ `READY`     |
 | `#universal-types`                  | ⏳ `TBD`       |
 | `#general-recursion`                | 🚫 `WONT`      |
 

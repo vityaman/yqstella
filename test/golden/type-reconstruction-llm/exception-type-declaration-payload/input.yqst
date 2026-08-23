@@ -1,0 +1,9 @@
+language core;
+
+extend with #type-reconstruction, #exceptions, #exception-type-declaration;
+
+exception type = Nat
+
+fn main(n : auto) -> auto {
+  return if Nat::iszero(n) then 0 else throw(n)
+}

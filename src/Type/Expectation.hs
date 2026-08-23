@@ -4,6 +4,7 @@ module Type.Expectation
     sanitizeTSilent,
     liftEqType,
     liftEqType',
+    ensureEqParamType,
     listItemType,
     commonType,
     mismatch,
@@ -13,7 +14,6 @@ where
 
 import Control.Monad (when)
 import Control.Monad.State (get)
-import Control.Monad.Writer (tell)
 import Data.Functor (void)
 import Data.List (groupBy, intercalate)
 import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
@@ -23,9 +23,11 @@ import Diagnostic.Core (Diagnostic, Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange, unknown)
 import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Constraint as Constraint
 import qualified Type.Context as Context
-import Type.Core (Type (Type))
-import Type.Env (TypeAnnotationEnv)
+import Type.Core (Type (Type), toAST)
+import qualified Type.Core as Type
+import Type.Env (TypeAnnotationEnv, freshTypeVar, tellC, tellD)
 
 data TypeKind = Expected | Inferred
 
@@ -39,6 +41,25 @@ sanitizeT :: AST.Type' Position -> TypeAnnotationEnv Type
 sanitizeT = sanitizeT' True
 
 sanitizeT' :: Bool -> AST.Type' Position -> TypeAnnotationEnv Type
+sanitizeT' _ (AST.TypeAuto _) =
+  freshTypeVar
+sanitizeT' reporting (AST.TypeFun _ args ret) = do
+  args' <- fmap toAST <$> mapM (sanitizeT' reporting) args
+  ret' <- toAST <$> sanitizeT' reporting ret
+  return $ Type $ AST.TypeFun () args' ret'
+sanitizeT' reporting t@(AST.TypeForAll p _ _) = do
+  when reporting $ tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) "ForAll"]
+  return (Type.fromAST t)
+sanitizeT' reporting t@(AST.TypeRec p _ _) = do
+  when reporting $ tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) "TypeRec"]
+  return (Type.fromAST t)
+sanitizeT' reporting (AST.TypeSum _ lhs rhs) = do
+  lhs' <- toAST <$> sanitizeT' reporting lhs
+  rhs' <- toAST <$> sanitizeT' reporting rhs
+  return $ Type $ AST.TypeSum () lhs' rhs'
+sanitizeT' reporting (AST.TypeTuple _ ts) = do
+  types' <- fmap toAST <$> mapM (sanitizeT' reporting) ts
+  return $ Type $ AST.TypeTuple () types'
 sanitizeT' reporting (AST.TypeRecord _ fields) = do
   let sanitizeF (AST.ARecordFieldType p' n t) = do
         (Type t') <- sanitizeT' reporting t
@@ -50,7 +71,7 @@ sanitizeT' reporting (AST.TypeRecord _ fields) = do
         let message = "duplicate field: " ++ name'
          in diagnostic Error DUPLICATE_RECORD_TYPE_FIELDS (pointRange p') message
 
-  when reporting $ tell $ fmap toDiagnostic dup
+  when reporting $ tellD $ fmap toDiagnostic dup
   return $ Type $ AST.TypeRecord () (fmap void uniq)
 sanitizeT' rep (AST.TypeVariant _ fields) = do
   let sanitizeF (AST.AVariantFieldType p' n (AST.SomeTyping p'' t)) = do
@@ -64,37 +85,81 @@ sanitizeT' rep (AST.TypeVariant _ fields) = do
         let message = "duplicate field: " ++ name'
          in diagnostic Error DUPLICATE_VARIANT_TYPE_FIELDS (pointRange p') message
 
-  when rep $ tell $ fmap toDiagnostic dup
+  when rep $ tellD $ fmap toDiagnostic dup
   return $ Type $ AST.TypeVariant () (fmap void uniq)
+sanitizeT' reporting (AST.TypeList _ t) = do
+  item' <- toAST <$> sanitizeT' reporting t
+  return $ Type $ AST.TypeList () item'
+sanitizeT' _ (AST.TypeBool _) =
+  pure $ Type $ AST.TypeBool ()
+sanitizeT' _ (AST.TypeNat _) =
+  pure $ Type $ AST.TypeNat ()
+sanitizeT' _ (AST.TypeUnit _) =
+  pure $ Type $ AST.TypeUnit ()
+sanitizeT' _ (AST.TypeTop _) =
+  pure $ Type $ AST.TypeTop ()
+sanitizeT' _ (AST.TypeBottom _) =
+  pure $ Type $ AST.TypeBottom ()
+sanitizeT' reporting (AST.TypeRef _ t) = do
+  referenced' <- toAST <$> sanitizeT' reporting t
+  return $ Type $ AST.TypeRef () referenced'
 sanitizeT' _ (AST.TypeVar _ (AST.StellaIdent name)) = do
   context <- get
   case Context.typeWithAlias name context of
     Just t -> return t
     Nothing -> return $ Type $ AST.TypeVar () (AST.StellaIdent name)
-sanitizeT' _ t = pure $ Type $ void t
 
 -- TODO: make it return Maybe Type
 liftEqType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
 liftEqType p lifting = liftEqType' p (Type $ lifting ())
 
 liftEqType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
-liftEqType' p lifting (Just checked) = do
-  when (lifting /= checked) $
-    tell [mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p checked lifting]
+liftEqType' p = ensureEqType p (mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p)
+
+ensureEqParamType :: Position -> String -> Type -> Type -> TypeAnnotationEnv ()
+ensureEqParamType p name actual expected =
+  void $ ensureEqType p toDiagnostic actual (Just expected)
+  where
+    toDiagnostic expected' actual' =
+      let parameter = "(" ++ name ++ " : " ++ show actual' ++ ")"
+       in mismatchSS UNEXPECTED_TYPE_FOR_PARAMETER p (show expected') parameter
+
+ensureEqType :: Position -> (Type -> Type -> Diagnostic) -> Type -> Maybe Type -> TypeAnnotationEnv Type
+ensureEqType p _ lifting (Just (Type (AST.TypeAuto ()))) = do
+  let message = "unexpected checked auto type, must be a type var"
+  tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) message]
   return lifting
-liftEqType' _ lifting Nothing =
+ensureEqType p _ lifting@(Type (AST.TypeAuto ())) _ = do
+  let message = "unexpected lifting auto type, must be a type var"
+  tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) message]
+  return lifting
+ensureEqType p _ variable@(Type (AST.TypeVar () _)) (Just checked) = do
+  tellC [Constraint.Eq p variable checked]
+  return variable
+ensureEqType p _ lifting (Just checked)
+  | not $ null (Type.fv lifting <> Type.fv checked) = do
+      tellC [Constraint.Eq p lifting checked]
+      return lifting
+ensureEqType _ toDiagnostic lifting (Just checked) = do
+  when (lifting /= checked) $ tellD [toDiagnostic checked lifting]
+  return lifting
+ensureEqType _ _ lifting Nothing =
   pure lifting
 
 listItemType :: Position -> TypeKind -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
 listItemType _ _ (Just (Type (AST.TypeList () t))) =
   return $ Just $ Type t
+listItemType p _ (Just variable@(Type (AST.TypeVar () _))) = do
+  (Type item) <- freshTypeVar
+  tellC [Constraint.Eq p variable (Type (AST.TypeList () item))]
+  return $ Just $ Type item
 listItemType p Inferred (Just t) = do
   let message = "expected list, got " ++ show t
-  tell [diagnostic Error NOT_A_LIST (pointRange p) message]
+  tellD [diagnostic Error NOT_A_LIST (pointRange p) message]
   return Nothing
 listItemType p Expected (Just t) = do
   let message = "expected " ++ show t ++ ", got list"
-  tell [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
+  tellD [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
   return Nothing
 listItemType _ _ Nothing =
   return Nothing
@@ -117,7 +182,7 @@ commonType p pts = do
       -- TODO(vityaman): improve diagnostic
       let ts' = fmap (maybe "?" show . fst) ts
           message = "expected same type for all subexpressions, got " ++ intercalate ", " ts'
-      tell [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
+      tellD [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
       return Nothing
 
 mismatch :: Code -> Position -> Type -> Type -> Diagnostic

@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #sequencing, #unit-type;
+
+fn main(value : auto) -> auto {
+  return value; succ(0)
+}

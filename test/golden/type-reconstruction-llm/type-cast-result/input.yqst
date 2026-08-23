@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #type-cast;
+
+fn main(n : Nat) -> auto {
+  return n cast as Nat
+}

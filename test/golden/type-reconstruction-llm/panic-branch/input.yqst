@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #panic;
+
+fn main(n : auto) -> auto {
+  return if Nat::iszero(n) then 0 else panic!
+}

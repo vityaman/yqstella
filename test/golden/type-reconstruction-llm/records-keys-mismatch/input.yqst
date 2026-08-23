@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #records;
+
+fn main(record : {value : auto}) -> {other : Nat} {
+  return record
+}

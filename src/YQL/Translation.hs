@@ -477,6 +477,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension ComparisonOperations = True
     isSupportedExtension LogicalOperators = True
     isSupportedExtension Panic = True
+    isSupportedExtension TypeReconstruction = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension

@@ -1,0 +1,11 @@
+language core;
+
+extend with #type-reconstruction, #nullary-functions;
+
+fn zero() -> auto {
+  return 0
+}
+
+fn main(n : Nat) -> auto {
+  return zero()
+}

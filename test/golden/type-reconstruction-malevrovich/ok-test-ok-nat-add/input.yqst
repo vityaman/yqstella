@@ -1,0 +1,16 @@
+language core;
+extend with #type-reconstruction;
+
+fn Nat::add(n : auto) -> fn(auto) -> auto {
+  return fn(m : auto) {
+    return Nat::rec(n, m, fn(i : auto) {
+      return fn(r : auto) {
+        return succ(r)
+      }
+    })
+  }
+}
+
+fn main(n : auto) -> auto {
+  return Nat::add(n)(n)
+}

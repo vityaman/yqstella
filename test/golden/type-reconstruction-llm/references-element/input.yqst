@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #references;
+
+fn main(reference : auto) -> Nat {
+  return *reference
+}

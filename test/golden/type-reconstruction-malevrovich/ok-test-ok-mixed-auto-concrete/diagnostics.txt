@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-malevrovich/ok-test-ok-mixed-auto-concrete/input.yqst:5:10: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Expr' not implemented
+>   return Nat::rec(n, 0, fn(i : auto) {
+           ^

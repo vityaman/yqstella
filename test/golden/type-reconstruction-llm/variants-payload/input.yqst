@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #variants;
+
+fn main(value : <| value : auto |>) -> <| value : Nat |> {
+  return value
+}

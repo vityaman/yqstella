@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-llm/variants-keys-mismatch/input.yqst:6:10: [ERROR_MISSING_VARIANT_LABELS]
+can't unify variants with different labels; unexpected {value}, missing {other}
+>   return value
+           ^

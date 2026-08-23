@@ -3,7 +3,6 @@
 module Type.Decl (withParamDecls, withDecls, toPair, toParamSilent) where
 
 import Control.Monad (unless)
-import Control.Monad.Writer (tell)
 import qualified Data.Map as Map
 import Data.Maybe (catMaybes)
 import Diagnostic.Code (Code (..))
@@ -16,7 +15,7 @@ import Type.Context (Context)
 import qualified Type.Context as Context
 import Type.Core (Type (..))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, withStateTAE)
+import Type.Env (TypeAnnotationEnv, tellD, withStateTAE)
 import Type.Expectation (sanitizeT, sanitizeTSilent)
 
 withParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
@@ -30,7 +29,7 @@ withParamDecls paramdecls context = do
   paramdecls' <- mapM toPair uniq
   mapM_ toPair dup
 
-  tell $ fmap toDiagnostic dup
+  tellD $ fmap toDiagnostic dup
   return $ foldr (uncurry Context.withTyped) context paramdecls'
 
 withTypeAliases :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
@@ -65,7 +64,7 @@ withDecls decls isTopLevel context = do
       unpack (k, [(_, t)]) = (k, t)
       unpack _ = undefined
 
-  tell $ fmap toDiagnostic duplicates
+  tellD $ fmap toDiagnostic duplicates
   return $ foldr (uncurry Context.withTyped) context' kvs
   where
     visit :: AST.Decl' Position -> TypeAnnotationEnv (Maybe (String, [(Position, Type)]))
@@ -75,22 +74,22 @@ withDecls decls isTopLevel context = do
       returntype' <- sanitizeT returntype
       return $ Just (name, [(p, Type.fn args' returntype')])
     visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
-      tell [notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"]
+      tellD [notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"]
       return Nothing
     visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
-      tell [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
+      tellD [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
       return Nothing
     visit (AST.DeclTypeAlias {}) =
       return Nothing
     visit (AST.DeclExceptionType p _) = do
       unless isTopLevel $ do
         let message = "only-top level exception type is allowed"
-        tell [diagnostic Error ILLEGAL_LOCAL_EXCEPTION_TYPE (pointRange p) message]
+        tellD [diagnostic Error ILLEGAL_LOCAL_EXCEPTION_TYPE (pointRange p) message]
       return Nothing
     visit (AST.DeclExceptionVariant p _ _) = do
       unless isTopLevel $ do
         let message = "only-top level exception variant type is allowed"
-        tell [diagnostic Error ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION (pointRange p) message]
+        tellD [diagnostic Error ILLEGAL_LOCAL_OPEN_VARIANT_EXCEPTION (pointRange p) message]
       return Nothing
 
 toPair :: AST.ParamDecl' Position -> TypeAnnotationEnv (String, Type)

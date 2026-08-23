@@ -1,14 +1,14 @@
 module Type.Reference (annotateRefExprType) where
 
-import Control.Monad.Writer (tell)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Constraint as Constraint
 import Type.Core (Type (..))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, typeOf)
-import Type.Lift (liftType)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, tellC, tellD, typeOf)
+import Type.Lift (liftType, liftType')
 
 annotateRefExprType ::
   Maybe Type ->
@@ -28,7 +28,7 @@ annotateRefExprType t (AST.Assign p dst src) annotateType = do
       return $ Just $ Type.fromAST t'
     Just t' -> do
       let message = "expected a reference, but got " ++ show t'
-      tell [diagnostic Error NOT_A_REFERENCE (pointRange p) message]
+      tellD [diagnostic Error NOT_A_REFERENCE (pointRange p) message]
       return Nothing
     Nothing ->
       return Nothing
@@ -50,18 +50,26 @@ annotateRefExprType (Just t'@(Type (AST.TypeRef () t))) (AST.Ref p expr) annotat
 annotateRefExprType (Just t) (AST.Ref p expr) annotateType = do
   expr' <- annotateType Nothing expr
   let message = "expected reference type, but got " ++ show t
-  tell [diagnostic Error UNEXPECTED_REFERENCE (pointRange p) message]
+  tellD [diagnostic Error UNEXPECTED_REFERENCE (pointRange p) message]
   return (AST.Ref (p, Nothing) expr')
 annotateRefExprType t (AST.Deref p expr) annotateType = do
-  let ref't = Type . AST.TypeRef () . (\(Type x) -> x) <$> t
-  expr' <- annotateType ref't expr
+  expr' <- case (t, expr) of
+    (Just expected, AST.ConstMemory {}) ->
+      annotateType (Just $ Type $ AST.TypeRef () $ Type.toAST expected) expr
+    _ ->
+      annotateType Nothing expr
 
   t' <- case typeOf expr' of
-    Just (Type (AST.TypeRef () t')) ->
-      return $ Just $ Type t'
+    Just (Type (AST.TypeRef () t')) -> do
+      result <- liftType' p (Type t') t
+      return $ Just result
+    Just variable@(Type (AST.TypeVar () _)) -> do
+      result <- maybe freshTypeVar return t
+      tellC [Constraint.Eq p variable (Type $ AST.TypeRef () $ Type.toAST result)]
+      return $ Just result
     Just t'@(Type _) -> do
       let message = "expected a reference type, got " ++ show t'
-      tell [diagnostic Error NOT_A_REFERENCE (pointRange p) message]
+      tellD [diagnostic Error NOT_A_REFERENCE (pointRange p) message]
       return Nothing
     Nothing ->
       return Nothing
@@ -69,12 +77,12 @@ annotateRefExprType t (AST.Deref p expr) annotateType = do
   return (AST.Deref (p, t') expr')
 annotateRefExprType Nothing (AST.ConstMemory p addr) _ = do
   let message = "type inference for memory address is not supported (use type ascriptions)"
-  tell [diagnostic Error AMBIGUOUS_REFERENCE_TYPE (pointRange p) message]
+  tellD [diagnostic Error AMBIGUOUS_REFERENCE_TYPE (pointRange p) message]
   return (AST.ConstMemory (p, Nothing) addr)
 annotateRefExprType t@(Just (Type (AST.TypeRef () _))) (AST.ConstMemory p addr) _ = do
   return (AST.ConstMemory (p, t) addr)
 annotateRefExprType (Just t) (AST.ConstMemory p addr) _ = do
   let message = "expected " ++ show t ++ ", but got memory address"
-  tell [diagnostic Error UNEXPECTED_MEMORY_ADDRESS (pointRange p) message]
+  tellD [diagnostic Error UNEXPECTED_MEMORY_ADDRESS (pointRange p) message]
   return (AST.ConstMemory (p, Nothing) addr)
 annotateRefExprType _ _ _ = error "Unexpected non-reference expression"

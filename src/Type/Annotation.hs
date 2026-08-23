@@ -6,7 +6,6 @@ import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (unless)
 import Control.Monad.State
-import Control.Monad.Writer
 import Data.Foldable (find)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic (range), Severity (Error), diagnostic, notImplemented)
@@ -14,11 +13,13 @@ import Diagnostic.Position (Position, pointRange)
 import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import Type.Application (annotateAbstractionType, annotateApplicationType)
+import qualified Type.Constraint as Constraint
+import Type.Context (withName)
 import qualified Type.Context as Context
 import Type.Core (Type (Type), list)
 import qualified Type.Core as Type
-import Type.Decl (toParamSilent, withDecls, withParamDecls)
-import Type.Env (TypeAnnotationEnv, isAvailable, typeOf, withStateTAE)
+import Type.Decl (withDecls, withParamDecls)
+import Type.Env (TypeAnnotationEnv, isAvailable, tellC, tellD, typeOf, withStateTAE)
 import Type.Exception (annotateExceptionExprType)
 import Type.Expectation (TypeKind (Expected, Inferred), listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
 import Type.Expression (annotateTT2B, annotateTT2T)
@@ -41,7 +42,7 @@ inferType = annotateType Nothing
 
 instance TypeAnnotatable AST.Program' where
   annotateType _ (AST.AProgram p languagedecl extensions decls) = do
-    context' <- get >>= withDecls decls {-isTopLevel=-} True
+    context' <- gets (withName "unit") >>= withDecls decls {-isTopLevel=-} True
     decls' <- withStateTAE (const context') (mapM inferType decls)
 
     t' <- case find isMain decls' of
@@ -49,7 +50,7 @@ instance TypeAnnotatable AST.Program' where
         return t'
       Just (AST.DeclFun (p', Just (Type (AST.TypeFun _ args _))) _ _ _ _ _ _ _) -> do
         let message = "main function must have exactly one parameter, got " ++ show (length args)
-        tell [diagnostic Error INCORRECT_ARITY_OF_MAIN (pointRange p') message]
+        tellD [diagnostic Error INCORRECT_ARITY_OF_MAIN (pointRange p') message]
         return Nothing
       Just (AST.DeclFun (_, Just t'@(Type _)) _ _ _ _ _ _ _) -> do
         error $ "unexpected main function type " ++ show t'
@@ -58,7 +59,7 @@ instance TypeAnnotatable AST.Program' where
       Just _ -> do
         error "isMain is true only on a DeclFun"
       Nothing -> do
-        tell [diagnostic Error MISSING_MAIN (pointRange p) "not found: main function"]
+        tellD [diagnostic Error MISSING_MAIN (pointRange p) "not found: main function"]
         return Nothing
 
     return (AST.AProgram (p, t') (stub languagedecl) (stubL extensions) decls')
@@ -67,14 +68,14 @@ instance TypeAnnotatable AST.Program' where
       isMain _ = False
 
 instance TypeAnnotatable AST.Decl' where
-  annotateType _ (AST.DeclFun p annotations stellaident paramdecls returntype throwtype decls expr) = do
-    unless (null annotations) $ tell [notImplemented p "DeclFun annotations"]
+  annotateType _ (AST.DeclFun p annotations (AST.StellaIdent fname) paramdecls returntype throwtype decls expr) = do
+    unless (null annotations) $ tellD [notImplemented p "DeclFun annotations"]
 
-    context' <- get >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
+    context' <- gets (withName fname) >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
 
     () <- case throwtype of
       (AST.NoThrowType _) -> pure ()
-      (AST.SomeThrowType _ _) -> tell [notImplemented p "DeclFun ThrowType"]
+      (AST.SomeThrowType _ _) -> tellD [notImplemented p "DeclFun ThrowType"]
 
     let paramT :: AST.ParamDecl' Position -> AST.ParamDecl' (Position, Maybe Type)
         paramT (AST.AParamDecl p' (AST.StellaIdent name) t) =
@@ -90,15 +91,13 @@ instance TypeAnnotatable AST.Decl' where
 
     expr' <- withStateTAE (const context') (annotateType returnExpect expr)
 
-    argTypes <- mapM toParamSilent paramdecls
-
-    let t' = fmap (Type.fn $ fmap snd argTypes) (typeOf expr')
+    let t' = Type.fn <$> traverse typeOf paramdecls' <*> typeOf expr'
 
     return
       ( AST.DeclFun
           (p, t')
           (stubL annotations)
-          stellaident
+          (AST.StellaIdent fname)
           paramdecls'
           (stub returntype)
           (stub throwtype)
@@ -114,14 +113,14 @@ instance TypeAnnotatable AST.Decl' where
     context <- get
     _ <- case Context.withExceptionType t' context of
       Right c -> put c
-      Left issue -> tell [issue {range = pointRange p}]
+      Left issue -> tellD [issue {range = pointRange p}]
     return $ stub f
   annotateType _ f@(AST.DeclExceptionVariant p (AST.StellaIdent name) t) = do
     t' <- sanitizeT t
     context <- get
     _ <- case Context.withExceptionVariant name t' context of
       Right c -> put c
-      Left issue -> tell [issue {range = pointRange p}]
+      Left issue -> tellD [issue {range = pointRange p}]
     return $ stub f
 
 instance TypeAnnotatable AST.LocalDecl' where
@@ -152,10 +151,10 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Let p bindings inExpr) =
     annotateLetType t p bindings inExpr annotateType
   annotateType _ x@(AST.LetRec {}) = do
-    tell [notImplemented (annotation x) "LetRec"]
+    tellD [notImplemented (annotation x) "LetRec"]
     return $ stub x
   annotateType _ x@(AST.TypeAbstraction {}) = do
-    tell [notImplemented (annotation x) "TypeAbstraction"]
+    tellD [notImplemented (annotation x) "TypeAbstraction"]
     return $ stub x
   annotateType t (AST.LessThan p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
@@ -199,7 +198,7 @@ instance TypeAnnotatable AST.Expr' where
     isBottom <- isAvailable Extension.AmbiguousTypeAsBottom
     unless isBottom $ do
       let message = "type inference for empty lists is not supported (use type ascriptions)"
-      tell [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
+      tellD [diagnostic Error AMBIGUOUS_LIST_TYPE (pointRange p) message]
 
     let t = if isBottom then Just $ list $ Type.fromAST' AST.TypeBottom else Nothing
     return (AST.List (p, t) [])
@@ -250,7 +249,7 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Application p f xs) =
     annotateApplicationType t p f xs annotateType
   annotateType _ x@(AST.TypeApplication {}) = do
-    tell [notImplemented (annotation x) "TypeApplication"]
+    tellD [notImplemented (annotation x) "TypeApplication"]
     return $ stub x
   annotateType t (AST.DotRecord p expr (AST.StellaIdent field)) =
     annotateDotRecordType t p expr field annotateType
@@ -325,14 +324,18 @@ instance TypeAnnotatable AST.Expr' where
     expr' <- inferType expr
     t' <- case typeOf expr' of
       Just (Type (AST.TypeFun () [arg] ret)) | arg == ret -> return $ Just (Type ret)
+      Just (Type (AST.TypeFun () [arg] ret))
+        | not $ null (Type.fv (Type arg) <> Type.fv (Type ret)) -> do
+            tellC [Constraint.Eq p (Type arg) (Type ret)]
+            return $ Just (Type ret)
       Just t@(Type (AST.TypeFun () [_] _)) -> do
-        tell [mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p "T -> T" (show t)]
+        tellD [mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p "T -> T" (show t)]
         return Nothing
       Just t@(Type (AST.TypeFun () _ _)) -> do
-        tell [mismatchSS INCORRECT_NUMBER_OF_ARGUMENTS p "T -> T" (show t)]
+        tellD [mismatchSS INCORRECT_NUMBER_OF_ARGUMENTS p "T -> T" (show t)]
         return Nothing
       Just t -> do
-        tell [mismatchSS NOT_A_FUNCTION p "T -> T" (show t)]
+        tellD [mismatchSS NOT_A_FUNCTION p "T -> T" (show t)]
         return Nothing
       Nothing -> return Nothing
     return (AST.Fix (p, t') expr')
@@ -351,10 +354,10 @@ instance TypeAnnotatable AST.Expr' where
     let t' = typeOf z'
     return $ AST.NatRec (p, t') n' z' s'
   annotateType _ x@(AST.Fold {}) = do
-    tell [notImplemented (annotation x) "Fold"]
+    tellD [notImplemented (annotation x) "Fold"]
     return $ stub x
   annotateType _ x@(AST.Unfold {}) = do
-    tell [notImplemented (annotation x) "Unfold"]
+    tellD [notImplemented (annotation x) "Unfold"]
     return $ stub x
   annotateType t (AST.ConstTrue p) = do
     t' <- liftType p AST.TypeBool t
@@ -371,7 +374,7 @@ instance TypeAnnotatable AST.Expr' where
         then
           Just <$> liftType p AST.TypeNat t
         else do
-          tell [notImplemented p "Negative Integer"]
+          tellD [notImplemented p "Negative Integer"]
           return Nothing
 
     return $ AST.ConstInt (p, t') n
@@ -384,7 +387,7 @@ instance TypeAnnotatable AST.Expr' where
       (Just t'') -> do
         Just <$> liftType' p t'' t
       Nothing -> do
-        tell [Context.unknownName p name]
+        tellD [Context.unknownName p name]
         return Nothing
 
     return $ AST.Var (p, t') stellaident

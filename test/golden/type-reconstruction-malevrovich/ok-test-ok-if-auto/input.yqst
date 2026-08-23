@@ -1,0 +1,6 @@
+language core;
+extend with #type-reconstruction;
+
+fn main(b : auto) -> auto {
+  return if b then 0 else succ(0)
+}

@@ -1,0 +1,28 @@
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:1:1: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 2)) -> TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> language core;
+  ^
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 2)) -> TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> language core;
+  ^
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:4:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> fn main(n : auto) -> auto {
+          ^
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:5:10: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+>   return List::head(cons(n, []))
+           ^
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:5:21: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+>   return List::head(cons(n, []))
+                      ^
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:5:26: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+>   return List::head(cons(n, []))
+                           ^
+test/golden/type-reconstruction-malevrovich/error-test-ok-list-ambigous-auto/input.yqst:5:29: [ERROR_AMBIGUOUS_TYPE]
+type [TypeVar(unit |> 2)] has unresolved type variable TypeVar(unit |> 2)
+>   return List::head(cons(n, []))
+                              ^

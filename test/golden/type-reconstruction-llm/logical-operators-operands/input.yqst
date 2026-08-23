@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction, #logical-operators;
+
+fn main(b : auto) -> auto {
+  return b and true
+}

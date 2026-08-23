@@ -1,0 +1,6 @@
+language core;
+extend with #type-reconstruction, #lists;
+
+fn main(n : auto) -> auto {
+  return List::head(cons(n, cons(succ(n), ([] as [Nat]))))
+}

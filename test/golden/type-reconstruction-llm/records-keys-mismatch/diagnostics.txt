@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-llm/records-keys-mismatch/input.yqst:6:10: [ERROR_UNEXPECTED_RECORD_FIELDS]
+can't unify records with different fields; unexpected {value}, missing {other}
+>   return record
+           ^

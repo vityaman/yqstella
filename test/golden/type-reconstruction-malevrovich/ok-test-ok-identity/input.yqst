@@ -1,0 +1,10 @@
+language core;
+extend with #type-reconstruction;
+
+fn id(x : auto) -> auto {
+  return x
+}
+
+fn main(n : auto) -> auto {
+  return id(n)
+}

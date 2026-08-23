@@ -1,0 +1,6 @@
+language core;
+extend with #type-reconstruction, #pairs;
+
+fn main(n : auto) -> auto {
+  return {n, succ(n)}.1
+}
