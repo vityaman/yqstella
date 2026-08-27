@@ -1,0 +1,16 @@
+language core;
+extend with #variants,#unit-type,#structural-patterns,#natural-literals;
+
+fn boolVar(x : Bool) -> <| yes : Bool, no : Unit |> {
+  return if x then <| yes = true |> else <| no = unit |>
+}
+
+fn main(flag : Bool) -> Nat {
+  return match boolVar(flag) {
+      <| yes = true |> => 1
+    | <| yes = false |> => 0
+    | <| no = unit |> => 0
+  }
+}
+
+// SUCCESS

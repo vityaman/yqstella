@@ -1,0 +1,20 @@
+language core;
+extend with #lists,#structural-patterns,#natural-literals;
+
+fn filterNonZero(xs : [Nat]) -> [Nat] {
+  return match xs {
+    [] => []
+  | cons(h, t) =>
+      match h {
+        0 => filterNonZero(t)
+      | _ => cons(h, filterNonZero(t))
+      }
+  }
+}
+
+fn main(_ : Nat) -> [Nat] {
+  return filterNonZero([0, 1, 0, 2, 3])
+  //  [1,2,3]
+}
+
+//SUCCESS

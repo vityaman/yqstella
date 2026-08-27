@@ -1,0 +1,54 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let choose (lambda '(T) (lambda '(condition yes no) (If condition yes no))))
+  (let singleton (lambda '(T) (lambda '(value) (AsList value))))
+  (let prepend (lambda '(T) (lambda '(value values) (Prepend value values))))
+  (let head_or (lambda '(T)
+    (lambda '(values fallback) (If (Not (HasItems values)) fallback (Unwrap (ToOptional values))))))
+  (let attach (lambda '(T U) (lambda '(value metadata) '(value metadata))))
+  (let start_history (lambda '(T)
+    (lambda '(value) (AsStruct '('current value) '('history (Apply (Apply singleton T) value))))))
+  (let record_next (lambda '(T)
+    (lambda '(state next)
+      (AsStruct '('current next) '('history (Apply (Apply prepend T) next (Member state 'history)))))))
+  (let history_depth (lambda '(values)
+    (If
+      (Not (HasItems values))
+      (Uint64 '0)
+      (If
+        (Not (HasItems (Skip values (Uint64 '1))))
+        (Uint64 '1)
+        (If (Not (HasItems (Skip (Skip values (Uint64 '1)) (Uint64 '1)))) (Uint64 '2) (Uint64 '3))))))
+  (let main (lambda '(n) (block '(
+    (let initial (Apply (Apply start_history (DataType 'Uint64)) n))
+    (return (block '(
+      (let first (Apply (Apply record_next (DataType 'Uint64)) initial (+MayWarn n (Uint64 '1))))
+      (return (block '(
+        (let second (Apply (Apply record_next (DataType 'Uint64)) first (+MayWarn n (Uint64 '2))))
+        (return (block '(
+          (let previous
+            (Apply (Apply head_or (DataType 'Uint64)) (Skip (Member second 'history) (Uint64 '1)) n))
+          (return (block '(
+            (let tagged
+              (Apply
+                (Apply attach (DataType 'Uint64) (DataType 'Bool))
+                (Member second 'current)
+                (> (Member second 'current) previous)))
+            (return (block '(
+              (let selected (Apply (Apply choose (DataType 'Uint64)) (Nth tagged '1) (Nth tagged '0) previous))
+              (return
+                (AsStruct
+                  '('current (Member second 'current))
+                  '('previous previous)
+                  '('selected selected)
+                  '('depth (Apply history_depth (Member second 'history)))
+                  '('fresh (Nth tagged '1)))))))))))))))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

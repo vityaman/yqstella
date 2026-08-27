@@ -1,0 +1,14 @@
+language core;
+extend with #universal-types;
+
+generic fn make_const[X](x : X) -> forall Y. fn(Y) -> X {
+  return generic [Y] fn(y : Y) { return x }
+}
+
+generic fn preserve[Y](y : Y) -> Y {
+  return make_const[Y](y)[Nat](0)
+}
+
+fn main(n : Nat) -> Nat {
+  return preserve[Nat](n)
+}

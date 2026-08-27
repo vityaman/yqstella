@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/fix-fix-abstraction-good/input.yqst:12:33: [ERROR_LEXICS]
+illegal token
+> extend with #fixpoint-combinator' or '#general-recursion;
+                                  ^
+test/golden/no-generics-metametamoon/fix-fix-abstraction-good/input.yqst:1:0: [ERROR_SYNTAX]
+syntax error at end of file
+> /*
+  ^

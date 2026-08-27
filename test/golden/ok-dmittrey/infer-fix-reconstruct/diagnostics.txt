@@ -1,0 +1,12 @@
+test/golden/ok-dmittrey/infer-fix-reconstruct/input.yqst:1:1: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 3)) -> Nat has unresolved type variable TypeVar(unit |> 3)
+> language core;
+  ^
+test/golden/ok-dmittrey/infer-fix-reconstruct/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 3)) -> Nat has unresolved type variable TypeVar(unit |> 3)
+> language core;
+  ^
+test/golden/ok-dmittrey/infer-fix-reconstruct/input.yqst:9:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 3) has unresolved type variable TypeVar(unit |> 3)
+> fn main(n : auto) -> auto {
+          ^

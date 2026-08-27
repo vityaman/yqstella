@@ -1,0 +1,11 @@
+language core;
+
+fn dec_or_one(n : Nat) -> Nat {
+  return if Nat::iszero(n) then succ(0) else Nat::pred(n)
+}
+
+fn main(n : Nat) -> Nat {
+  return dec_or_one(n)
+}
+
+//SUCCESS

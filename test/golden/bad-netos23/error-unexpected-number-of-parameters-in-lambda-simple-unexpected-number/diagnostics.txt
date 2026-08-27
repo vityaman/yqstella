@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-number-of-parameters-in-lambda-simple-unexpected-number/input.yqst:7:12: [ERROR_UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA]
+expected 1 parameters for type fn(Nat) -> Nat, but actually got 2
+>     return fn(a : Nat, b : Nat) {
+             ^

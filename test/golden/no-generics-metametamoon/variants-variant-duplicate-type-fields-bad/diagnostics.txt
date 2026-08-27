@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/variants-variant-duplicate-type-fields-bad/input.yqst:17:25: [ERROR_DUPLICATE_VARIANT_TYPE_FIELDS]
+duplicate field: a
+> fn main(n : <| a : Nat, a : Bool |>) -> Nat {
+                          ^

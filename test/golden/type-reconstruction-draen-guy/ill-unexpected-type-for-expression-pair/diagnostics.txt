@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-draen-guy/ill-unexpected-type-for-expression-pair/input.yqst:10:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and Nat
+>   return test({0, 0})
+                ^

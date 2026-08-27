@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-variant-fields-order/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected <| value : Nat, failure : Nat |>, got <| failure : Nat, value : Nat |>
+>   return foo(true)
+           ^

@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-not-a-list-is-empty/input.yqst:6:24: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return List::isempty(arg)
+                         ^

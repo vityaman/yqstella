@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-test-1-reconstruct/input.yqst:10:41: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify fn(Unit) -> Unit and Unit
+> 	return seq(seq(seq(unit)(unit))(seq(unit)))(seq(seq(unit)(unit))(seq(unit)(unit)))
+                                          ^

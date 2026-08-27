@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/tuple-tuple-projection-on-noy-tuple/input.yqst:18:10: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got Nat
+>   return n.2
+           ^

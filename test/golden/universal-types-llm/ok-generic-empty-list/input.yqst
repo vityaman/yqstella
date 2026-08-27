@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #lists, #nullary-functions;
+
+generic fn empty[T]() -> [T] {
+  return []
+}
+
+fn main(n : Nat) -> Bool {
+  return List::isempty(empty[Nat]())
+}

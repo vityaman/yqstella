@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/tuple-tuple-index-out-of-bounds-bad/input.yqst:18:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+type mismatch: expected tuple with size at least 3, got {Nat, Bool}
+>   return n.3
+           ^

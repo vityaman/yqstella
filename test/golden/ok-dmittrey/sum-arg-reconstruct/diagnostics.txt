@@ -1,0 +1,44 @@
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:1:1: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 3)) -> Nat has unresolved type variable TypeVar(unit |> 3)
+> language core;
+  ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(Nat + TypeVar(unit |> main |> 3)) -> Nat has unresolved type variable TypeVar(unit |> main |> 3)
+> language core;
+  ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:5:9: [ERROR_AMBIGUOUS_TYPE]
+type Nat + TypeVar(unit |> main |> 3) has unresolved type variable TypeVar(unit |> main |> 3)
+> fn test(first : auto) -> auto {
+          ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:6:16: [ERROR_AMBIGUOUS_TYPE]
+type Nat + TypeVar(unit |> main |> 3) has unresolved type variable TypeVar(unit |> main |> 3)
+>   return match first {
+                 ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:7:7: [ERROR_AMBIGUOUS_TYPE]
+type Nat + TypeVar(unit |> main |> 3) has unresolved type variable TypeVar(unit |> main |> 3)
+>       inl(n) => n
+        ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:8:7: [ERROR_AMBIGUOUS_TYPE]
+type Nat + TypeVar(unit |> main |> 3) has unresolved type variable TypeVar(unit |> main |> 3)
+>     | inr(_) => 0
+        ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:8:11: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> main |> 3) has unresolved type variable TypeVar(unit |> main |> 3)
+>     | inr(_) => 0
+            ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 3)) -> Nat has unresolved type variable TypeVar(unit |> 3)
+> language core;
+  ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:12:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 3) has unresolved type variable TypeVar(unit |> 3)
+> fn main(input : auto) -> auto {
+          ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:13:10: [ERROR_AMBIGUOUS_TYPE]
+type fn(Nat + TypeVar(unit |> main |> 3)) -> Nat has unresolved type variable TypeVar(unit |> main |> 3)
+>   return test(inl(0))
+           ^
+test/golden/ok-dmittrey/sum-arg-reconstruct/input.yqst:13:15: [ERROR_AMBIGUOUS_TYPE]
+type Nat + TypeVar(unit |> main |> 3) has unresolved type variable TypeVar(unit |> main |> 3)
+>   return test(inl(0))
+                ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-INJECTION-simple-unexpected-inl/input.yqst:7:10: [ERROR_UNEXPECTED_INJECTION]
+expected Nat, but got inl(Nat)
+>   return inl(0)
+           ^

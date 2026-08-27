@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-SUBTYPE-error/input.yqst:13:16: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Nat, got Bool
+>   return throw(true)
+                 ^

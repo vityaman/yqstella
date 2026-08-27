@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-pattern-for-type-unexpected-variant-pattern-label/input.yqst:14:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag fail not found
+>     <| fail = f |> => 0
+      ^

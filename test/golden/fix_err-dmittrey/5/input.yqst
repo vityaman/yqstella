@@ -1,0 +1,9 @@
+language core;
+extend with #variants,#arithmetic-operators,#lists,#unit-type,#natural-literals,#structural-patterns,#multiparameter-functions,#fixpoint-combinator;
+
+
+fn main(_ : Nat) -> Bool {
+  return fix (fn (x : Nat) { return true })
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_PARAMETER

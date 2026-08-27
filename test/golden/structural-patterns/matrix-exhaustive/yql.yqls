@@ -9,7 +9,16 @@
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:15:7 (OptionalIf (Not yqstellamatcharg) (Bool 'false)))
+          (let yqstellamatchfalse:15:7
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
           (let yqstellamatchcond (And (Exists yqstellamatchfalse:15:7) (Bool 'true)))
           (let yqstellamatchfalse:15:7 (Unwrap yqstellamatchfalse:15:7))
           (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
@@ -17,7 +26,16 @@
     (let yqstellamatchbr1
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchtrue:16:7 (OptionalIf yqstellamatcharg (Bool 'true)))
+          (let yqstellamatchtrue:16:7
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond (And (Exists yqstellamatchtrue:16:7) (Bool 'true)))
           (let yqstellamatchtrue:16:7 (Unwrap yqstellamatchtrue:16:7))
           (return
@@ -264,8 +282,26 @@
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:103:16 (OptionalIf (Not (Nth yqstellamatcharg '1)) (Bool 'false)))
-          (let yqstellamatchfalse:103:9 (OptionalIf (Not (Nth yqstellamatcharg '0)) (Bool 'false)))
+          (let yqstellamatchfalse:103:16
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '1)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchfalse:103:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
           (let yqstellamatchcond
             (And (Exists yqstellamatchfalse:103:16) (And (Exists yqstellamatchfalse:103:9) (Bool 'true))))
           (let yqstellamatchfalse:103:16 (Unwrap yqstellamatchfalse:103:16))
@@ -275,8 +311,26 @@
     (let yqstellamatchbr1
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:104:9 (OptionalIf (Not (Nth yqstellamatcharg '0)) (Bool 'false)))
-          (let yqstellamatchtrue:104:16 (OptionalIf (Nth yqstellamatcharg '1) (Bool 'true)))
+          (let yqstellamatchfalse:104:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:104:16
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '1)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And (Exists yqstellamatchfalse:104:9) (And (Exists yqstellamatchtrue:104:16) (Bool 'true))))
           (let yqstellamatchfalse:104:9 (Unwrap yqstellamatchfalse:104:9))
@@ -290,8 +344,26 @@
     (let yqstellamatchbr2
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:105:15 (OptionalIf (Not (Nth yqstellamatcharg '1)) (Bool 'false)))
-          (let yqstellamatchtrue:105:9 (OptionalIf (Nth yqstellamatcharg '0) (Bool 'true)))
+          (let yqstellamatchfalse:105:15
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '1)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:105:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And (Exists yqstellamatchfalse:105:15) (And (Exists yqstellamatchtrue:105:9) (Bool 'true))))
           (let yqstellamatchfalse:105:15 (Unwrap yqstellamatchfalse:105:15))
@@ -305,8 +377,26 @@
     (let yqstellamatchbr3
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchtrue:106:15 (OptionalIf (Nth yqstellamatcharg '1) (Bool 'true)))
-          (let yqstellamatchtrue:106:9 (OptionalIf (Nth yqstellamatcharg '0) (Bool 'true)))
+          (let yqstellamatchtrue:106:15
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '1)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
+          (let yqstellamatchtrue:106:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And (Exists yqstellamatchtrue:106:15) (And (Exists yqstellamatchtrue:106:9) (Bool 'true))))
           (let yqstellamatchtrue:106:15 (Unwrap yqstellamatchtrue:106:15))
@@ -324,9 +414,36 @@
     (let yqstellamatchbr0
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:118:18 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '0)) (Bool 'false)))
-          (let yqstellamatchfalse:118:25 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '1)) (Bool 'false)))
-          (let yqstellamatchfalse:118:9 (OptionalIf (Not (Nth yqstellamatcharg '0)) (Bool 'false)))
+          (let yqstellamatchfalse:118:18
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchfalse:118:25
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchfalse:118:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchfalse:118:18)
@@ -339,9 +456,36 @@
     (let yqstellamatchbr1
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:119:18 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '0)) (Bool 'false)))
-          (let yqstellamatchfalse:119:9 (OptionalIf (Not (Nth yqstellamatcharg '0)) (Bool 'false)))
-          (let yqstellamatchtrue:119:25 (OptionalIf (Nth (Nth yqstellamatcharg '1) '1) (Bool 'true)))
+          (let yqstellamatchfalse:119:18
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchfalse:119:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:119:25
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchfalse:119:18)
@@ -358,9 +502,36 @@
     (let yqstellamatchbr2
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:120:24 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '1)) (Bool 'false)))
-          (let yqstellamatchfalse:120:9 (OptionalIf (Not (Nth yqstellamatcharg '0)) (Bool 'false)))
-          (let yqstellamatchtrue:120:18 (OptionalIf (Nth (Nth yqstellamatcharg '1) '0) (Bool 'true)))
+          (let yqstellamatchfalse:120:24
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchfalse:120:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:120:18
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchfalse:120:24)
@@ -377,9 +548,36 @@
     (let yqstellamatchbr3
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:121:9 (OptionalIf (Not (Nth yqstellamatcharg '0)) (Bool 'false)))
-          (let yqstellamatchtrue:121:18 (OptionalIf (Nth (Nth yqstellamatcharg '1) '0) (Bool 'true)))
-          (let yqstellamatchtrue:121:24 (OptionalIf (Nth (Nth yqstellamatcharg '1) '1) (Bool 'true)))
+          (let yqstellamatchfalse:121:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:121:18
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
+          (let yqstellamatchtrue:121:24
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchfalse:121:9)
@@ -396,9 +594,36 @@
     (let yqstellamatchbr4
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:122:17 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '0)) (Bool 'false)))
-          (let yqstellamatchfalse:122:24 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '1)) (Bool 'false)))
-          (let yqstellamatchtrue:122:9 (OptionalIf (Nth yqstellamatcharg '0) (Bool 'true)))
+          (let yqstellamatchfalse:122:17
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchfalse:122:24
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:122:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchfalse:122:17)
@@ -415,9 +640,36 @@
     (let yqstellamatchbr5
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:123:17 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '0)) (Bool 'false)))
-          (let yqstellamatchtrue:123:24 (OptionalIf (Nth (Nth yqstellamatcharg '1) '1) (Bool 'true)))
-          (let yqstellamatchtrue:123:9 (OptionalIf (Nth yqstellamatcharg '0) (Bool 'true)))
+          (let yqstellamatchfalse:123:17
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:123:24
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
+          (let yqstellamatchtrue:123:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchfalse:123:17)
@@ -434,9 +686,36 @@
     (let yqstellamatchbr6
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchfalse:124:23 (OptionalIf (Not (Nth (Nth yqstellamatcharg '1) '1)) (Bool 'false)))
-          (let yqstellamatchtrue:124:17 (OptionalIf (Nth (Nth yqstellamatcharg '1) '0) (Bool 'true)))
-          (let yqstellamatchtrue:124:9 (OptionalIf (Nth yqstellamatcharg '0) (Bool 'true)))
+          (let yqstellamatchfalse:124:23
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf (Not x) (Bool 'false)))))
+          (let yqstellamatchtrue:124:17
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
+          (let yqstellamatchtrue:124:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchfalse:124:23)
@@ -456,9 +735,36 @@
     (let yqstellamatchbr7
       (Apply
         (lambda '(yqstellamatcharg) (block '(
-          (let yqstellamatchtrue:125:17 (OptionalIf (Nth (Nth yqstellamatcharg '1) '0) (Bool 'true)))
-          (let yqstellamatchtrue:125:23 (OptionalIf (Nth (Nth yqstellamatcharg '1) '1) (Bool 'true)))
-          (let yqstellamatchtrue:125:9 (OptionalIf (Nth yqstellamatcharg '0) (Bool 'true)))
+          (let yqstellamatchtrue:125:17
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
+          (let yqstellamatchtrue:125:23
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth (Nth yqstellamatcharg '1) '1)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
+          (let yqstellamatchtrue:125:9
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Nth yqstellamatcharg '0)
+              (lambda '(x) (OptionalIf x (Bool 'true)))))
           (let yqstellamatchcond
             (And
               (Exists yqstellamatchtrue:125:17)

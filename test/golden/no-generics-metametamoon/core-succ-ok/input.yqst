@@ -1,0 +1,14 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+fn main(n : Nat) -> Nat {
+  return succ(n)
+}

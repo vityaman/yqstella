@@ -1,0 +1,11 @@
+language core;
+
+fn twice(f : fn(Nat) -> Nat) -> fn(Nat) -> Nat {
+  return fn(x : Nat) { return f(f(x)) }
+}
+
+fn main(_ : Nat) -> fn(Nat) -> Nat {
+  return fn(n : Nat) { return twice(fn(x : Nat) { return succ(x) })(n) }
+}
+
+//SUCCESS

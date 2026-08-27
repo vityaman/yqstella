@@ -1,0 +1,15 @@
+language core;
+
+extend with
+#multiparameter-functions,
+  #type-reconstruction;
+
+fn test9(x : auto, y : auto) -> auto {
+  return if true then (if x then y else 0) else false
+}
+
+fn main(y : Nat) -> Bool {
+  return true
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

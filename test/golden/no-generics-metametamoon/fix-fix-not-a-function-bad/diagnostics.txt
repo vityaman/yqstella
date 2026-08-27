@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/fix-fix-not-a-function-bad/input.yqst:18:18: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected T -> T, got fn(Nat) -> Bool
+>   return let a = fix(n) in a
+                   ^

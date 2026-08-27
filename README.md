@@ -80,7 +80,7 @@ There are following questions under this project:
 | `#try-cast-as`                      | 🧪 `TYPECHECK` |
 | `#type-cast-patterns`               | 🚫 `WONT`      |
 | `#type-reconstruction`              | ✅ `READY`     |
-| `#universal-types`                  | ⏳ `TBD`       |
+| `#universal-types`                  | ✅ `READY`     |
 | `#general-recursion`                | 🚫 `WONT`      |
 
 ## YQL Correspondence

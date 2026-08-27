@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-NOT-A-REFERENCE-assignment-to-non-ref-parameter/input.yqst:5:16: [ERROR_NOT_A_REFERENCE]
+expected a reference, but got Nat
+> 	return n := 0; n
+                 ^

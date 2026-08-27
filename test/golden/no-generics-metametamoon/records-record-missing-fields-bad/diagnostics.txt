@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-record-missing-fields-bad/input.yqst:18:10: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: b
+>   return {a = n}
+           ^

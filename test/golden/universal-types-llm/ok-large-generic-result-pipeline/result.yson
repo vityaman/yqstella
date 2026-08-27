@@ -1,0 +1,63 @@
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "StructType";
+                                    [
+                                        [
+                                            "left";
+                                            [
+                                                "DataType";
+                                                "Uint64"
+                                            ]
+                                        ];
+                                        [
+                                            "right";
+                                            [
+                                                "DataType";
+                                                "Uint64"
+                                            ]
+                                        ];
+                                        [
+                                            "total";
+                                            [
+                                                "DataType";
+                                                "Uint64"
+                                            ]
+                                        ];
+                                        [
+                                            "valid";
+                                            [
+                                                "DataType";
+                                                "Bool"
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        [
+                            "6";
+                            "4";
+                            "10";
+                            %true
+                        ]
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]

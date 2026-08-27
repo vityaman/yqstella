@@ -1,0 +1,8 @@
+test/golden/universal-types-malevrovich/error-test-err-instantiated-arg-type-mismatch/input.yqst:9:25: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return identity[Bool](n)
+                          ^
+test/golden/universal-types-malevrovich/error-test-err-instantiated-arg-type-mismatch/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return identity[Bool](n)
+           ^

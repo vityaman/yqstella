@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-list-cons-bad/input.yqst:6:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Nat and Bool
+>   return cons(true, [n])
+                       ^

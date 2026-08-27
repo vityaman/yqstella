@@ -1,0 +1,17 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_ILLEGAL_EMPTY_MATCHING",
+    "location": "16:10"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+fn main(n : Nat) -> Nat {
+  return match n {}
+}

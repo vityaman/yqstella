@@ -1,0 +1,8 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-PATTERN-FOR-TYPE-variant-asc/input.yqst:8:11: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag b not found
+>         | <| b = t |> => 0
+            ^
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-PATTERN-FOR-TYPE-variant-asc/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return match (<| a = succ(0) |>) as <| a : Nat, c : Bool |> {
+           ^

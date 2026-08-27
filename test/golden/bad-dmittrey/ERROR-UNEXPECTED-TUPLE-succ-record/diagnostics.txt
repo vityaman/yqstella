@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TUPLE-succ-record/input.yqst:6:15: [ERROR_UNEXPECTED_TUPLE]
+type mismatch: expected Nat, got {Nat, Bool}
+>   return succ({0, false })
+                ^

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-natrec-type-mismatch-bad/input.yqst:16:24: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return Nat::rec(n, 0, fn(i : Nat) { return fn(acc : Nat) { return succ(acc) } })
+                         ^

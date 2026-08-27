@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-if-bad/input.yqst:11:23: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Nat and Bool
+>   return funInt(true, 0)
+                        ^

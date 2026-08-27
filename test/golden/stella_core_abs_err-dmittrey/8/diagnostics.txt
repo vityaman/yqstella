@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_err-dmittrey/8/input.yqst:11:27: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Nat, got (x : Bool)
+>     return doubleApply(fn(x : Bool) { return succ(0) })(y)
+                            ^

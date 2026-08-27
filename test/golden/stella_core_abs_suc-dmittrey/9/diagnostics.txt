@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_suc-dmittrey/9/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #multiparameter-functions
+> language core;
+  ^

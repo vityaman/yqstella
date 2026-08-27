@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-incorrect-number-of-arguments-infer-fix-multiple-param/input.yqst:10:33: [ERROR_INCORRECT_NUMBER_OF_ARGUMENTS]
+type mismatch: expected T -> T, got fn(Nat, Nat) -> Bool
+>   return (fn (a : Nat) { return fix(foo); } ) (0)
+                                  ^

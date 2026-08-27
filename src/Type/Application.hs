@@ -11,15 +11,18 @@ import Data.Maybe (fromMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
+import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Constraint as Constraint
 import Type.Context (withName, withTyped)
+import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toPair)
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, positionOf, tellC, tellD, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, isAvailable, positionOf, tellC, tellD, typeOf, withStateTAE)
 import Type.Expectation (ensureEqParamType, mismatchSS)
 import Type.Lift (liftType')
+import qualified Type.Unification as Unification
 
 annotateAbstractionType ::
   Maybe Type ->
@@ -30,6 +33,7 @@ annotateAbstractionType ::
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateAbstractionType t p paramdecls expr annotateType = do
   paramdecls' <- mapM toPair paramdecls
+  metaVariables <- gets Context.metaVars
 
   let withParams context =
         foldr (uncurry withTyped) (withName ("abstraction at " ++ show p) context) paramdecls'
@@ -44,7 +48,7 @@ annotateAbstractionType t p paramdecls expr annotateType = do
       actualLen = length actual
 
   t'' <- case t of
-    Just v@(Type (AST.TypeVar () _)) -> do
+    Just v@(Type (AST.TypeVar () _)) | Unification.isMetaVar metaVariables v -> do
       (Type returnT) <- freshTypeVar
       let functionT = Type $ AST.TypeFun () (fmap (Type.toAST . snd . snd) actual) returnT
       tellC [Constraint.Eq p v functionT]
@@ -68,7 +72,18 @@ annotateAbstractionType t p paramdecls expr annotateType = do
         return ()
 
       let ensureParameterType ((p', (name, actual')), expected') =
-            ensureEqParamType p' name actual' expected'
+            do
+              isSubtyping <- isAvailable Extension.StructuralSubtyping
+              isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+              isUniversalTypes <- isAvailable Extension.UniversalTypes
+              if isSubtyping
+                then do
+                  _ <- liftType' p' expected' (Just actual')
+                  pure ()
+                else
+                  if isTypeReconstruction && not isUniversalTypes
+                    then tellC [Constraint.Eq p' actual' expected']
+                    else ensureEqParamType p' name actual' expected'
       mapM_ ensureParameterType (zip actual expected)
 
       context' <- gets withParams
@@ -95,10 +110,11 @@ annotateApplicationType ::
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateApplicationType t p f xs annotateType = do
   f' <- annotateType Nothing f
+  metaVariables <- gets Context.metaVars
   let f'position = positionOf f'
 
   f't <- case typeOf f' of
-    Just variable@(Type (AST.TypeVar () _)) -> do
+    Just variable@(Type (AST.TypeVar () _)) | Unification.isMetaVar metaVariables variable -> do
       argTypes <- fmap Type.toAST <$> mapM (const freshTypeVar) [1 .. length xs]
       returnType <- Type.toAST <$> freshTypeVar
       let fType = Type (AST.TypeFun () argTypes returnType)

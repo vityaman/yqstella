@@ -1,0 +1,9 @@
+language core;
+extend with #variants, #lists,#unit-type,#natural-literals,#structural-patterns,#fixpoint-combinator;
+
+
+fn main(_ : Nat) -> [Nat] {
+  return fix (fn (xs : [Nat]) { return xs })
+}
+
+//SUCCESS

@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types;
+
+generic fn identity[T](x : /*e=ERROR_UNDEFINED_TYPE_VARIABLE*/ S) -> T {
+  return x
+}
+
+fn main(x : Nat) -> Nat {
+  return identity[Nat](x)
+}

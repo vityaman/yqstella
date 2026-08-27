@@ -1,0 +1,15 @@
+language core;
+extend with #variants, #unit-type,#natural-literals,#structural-patterns;
+
+fn nested(flag : Bool) -> <| ok : <| num : Nat |> , err : Unit |> {
+  return if flag then <| ok = <| num = 1 |> |> else <| err = unit |>
+}
+
+fn main(f : Bool) -> Nat {
+  return match nested(f) {
+      <| ok = <| num = n |> |> => n
+    | <| err = unit |> => 0
+  }
+}
+
+// SUCCESS

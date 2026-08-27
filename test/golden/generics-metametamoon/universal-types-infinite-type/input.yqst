@@ -1,0 +1,13 @@
+/*e=ERROR_OCCURS_CHECK_INFINITE_TYPE*/ language core;
+
+extend with
+  #type-reconstruction, #lists;
+extend with #multiparameter-functions;
+
+fn equal_types(l : auto, r : auto) -> auto {
+  return if true then l else r
+}
+
+fn main(n : auto) -> [auto] {
+  return equal_types(n, [n])
+}

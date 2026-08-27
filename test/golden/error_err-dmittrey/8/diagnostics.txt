@@ -1,0 +1,8 @@
+test/golden/error_err-dmittrey/8/input.yqst:14:10: [ERROR_EXCEPTION_TYPE_NOT_DECLARED]
+expection type is not declared
+>   return throw(x)
+           ^
+test/golden/error_err-dmittrey/8/input.yqst:18:10: [ERROR_EXCEPTION_TYPE_NOT_DECLARED]
+expection type is not declared
+>   return try {
+           ^

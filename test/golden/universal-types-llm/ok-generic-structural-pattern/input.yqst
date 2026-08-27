@@ -1,0 +1,13 @@
+language core;
+
+extend with #universal-types, #pairs, #structural-patterns;
+
+generic fn first[A, B](pair : {A, B}) -> A {
+  return match pair {
+    {value, _} => value
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return first[Nat, Bool]({n, false})
+}

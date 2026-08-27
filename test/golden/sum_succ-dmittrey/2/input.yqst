@@ -1,0 +1,13 @@
+language core;
+extend with #sum-types;
+
+fn main(input : Nat + (Bool + (fn(Nat) -> Nat))) -> Nat {
+    return match input {
+        inl(n) => n
+      | inr(inl(true)) => succ(0)
+      | inr(inl(false)) => 0
+      | inr(inr(f)) => f(0)
+    }
+}
+
+//SUCCESS

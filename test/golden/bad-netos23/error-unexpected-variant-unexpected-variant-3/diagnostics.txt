@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-variant-unexpected-variant-3/input.yqst:16:41: [ERROR_UNEXPECTED_VARIANT]
+expected Bool, but got a variant
+>   return proc(cons(false, [true, false, <| value = n |>, false]))
+                                          ^

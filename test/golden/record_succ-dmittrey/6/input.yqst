@@ -1,0 +1,9 @@
+language core;
+extend with #records,#let-bindings,#natural-literals;
+
+fn main(_ : Nat) -> Nat {
+  return let r = {outer = {inner = {z = 99}}, n = 1} in
+  r.outer.inner.z
+}
+
+//SUCCESS

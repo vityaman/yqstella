@@ -1,0 +1,18 @@
+language core;
+extend with #natural-literals,#type-ascriptions, #references,#unit-type,#arithmetic-operators,#let-bindings;
+
+fn main(_ : Nat) -> Unit {
+  //     42
+  return let r = new(42) in
+
+  //  "" : <0x0BEEF123>
+  let rawAddr = <0x0BEEF123> as &Nat in
+
+  //--     r
+  let x = *r in
+
+  //    
+  r := x + 1;
+}
+
+//SUCCESS

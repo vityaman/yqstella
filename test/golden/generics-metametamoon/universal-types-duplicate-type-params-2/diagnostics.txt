@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/universal-types-duplicate-type-params-2/input.yqst:6:47: [ERROR_DUPLICATE_TYPE_PARAMETER]
+duplicate type parameter: Y
+>   return /*e=ERROR_DUPLICATE_TYPE_PARAMETER*/ generic [Y, Y] fn(y : Y) { return x }
+                                                ^

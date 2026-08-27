@@ -1,0 +1,14 @@
+language core;
+
+extend with
+  #type-reconstruction;
+
+fn test6(x : auto) -> auto {
+  return if false then x else true
+}
+
+fn main(y : Nat) -> Bool {
+  return true
+}
+
+//SUCCESS

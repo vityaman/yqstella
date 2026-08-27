@@ -1,0 +1,12 @@
+language core;
+extend with #unit-type;
+
+fn ignore(_ : Nat) -> Unit {
+  return unit
+}
+
+fn main(_ : Nat) -> Unit {
+  return unit
+}
+
+// SUCCESS

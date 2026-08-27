@@ -3,6 +3,7 @@
 module Type.Record (annotateDotRecordType, annotateRecordType) where
 
 import Control.Monad (unless, when)
+import Control.Monad.State (gets)
 import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map
@@ -12,9 +13,12 @@ import Diagnostic.Position (Position, pointRange)
 import qualified Extension.Core as Extension
 import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Constraint as Constraint
+import qualified Type.Context as Context
 import Type.Core (Type (Type))
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, isAvailable, tellD, typeOf)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, isAvailable, tellC, tellD, typeOf)
 import Type.Lift (liftType')
+import qualified Type.Unification as Unification
 
 annotateDotRecordType ::
   Maybe Type ->
@@ -57,9 +61,15 @@ annotateRecordType ::
   TypeAnnotator AST.Expr' ->
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateRecordType t p bindings annotateType = do
+  metaVariables <- gets Context.metaVars
+  let expectedMetaVariable = case t of
+        Just variable -> Unification.isMetaVar metaVariables variable
+        Nothing -> False
+
   () <- case t of
     Just (Type (AST.TypeRecord () _)) -> return ()
     Just (Type (AST.TypeTop ())) -> return ()
+    Just _ | expectedMetaVariable -> return ()
     Just t' ->
       let message = "expected " ++ show t' ++ ", got record"
        in tellD [diagnostic Error UNEXPECTED_RECORD (pointRange p) message]
@@ -141,5 +151,11 @@ annotateRecordType t p bindings annotateType = do
       t' = case expectedTMap of
         Nothing -> infer bindingsUniq'
         Just _ -> fmap toType t''
+
+  case (t, t') of
+    (Just expected, Just actual)
+      | expectedMetaVariable ->
+          tellC [Constraint.Eq p expected actual]
+    _ -> pure ()
 
   return (AST.Record (p, t') bindings')

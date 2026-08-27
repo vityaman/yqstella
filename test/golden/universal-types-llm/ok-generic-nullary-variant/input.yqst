@@ -1,0 +1,14 @@
+language core;
+
+extend with #universal-types, #nullary-functions, #variants, #nullary-variant-labels;
+
+generic fn none[T]() -> <| none, some : T |> {
+  return <| none |>
+}
+
+fn main(n : Nat) -> Nat {
+  return match none[Nat]() {
+    <| none |> => n
+  | <| some = value |> => value
+  }
+}

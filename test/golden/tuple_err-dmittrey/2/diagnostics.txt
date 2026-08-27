@@ -1,0 +1,4 @@
+test/golden/tuple_err-dmittrey/2/input.yqst:9:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+tuple index should be positive, got 0
+>   return tup.0
+           ^

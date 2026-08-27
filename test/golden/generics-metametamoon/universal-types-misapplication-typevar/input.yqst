@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types;
+
+fn identity(x : Nat) -> Nat {
+  return x
+}
+
+fn main(x : Nat) -> Nat {
+  return /*e=ERROR_NOT_A_GENERIC_FUNCTION*/ identity[Nat](x)
+}

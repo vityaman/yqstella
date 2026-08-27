@@ -1,0 +1,37 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let applyToZero (lambda '(f) (Apply f (Uint64 '0))))
+  (let main (lambda '(m) (block '(
+    (let fun (lambda '(x)
+      (Variant
+        (+ x (Uint64 '1))
+        'inl
+        (VariantType (StructType '('inl (DataType 'Uint64)) '('inr (DataType 'Bool)))))))
+    (return (block '(
+      (let yqstellamatchexpr (Apply applyToZero fun))
+      (let yqstellamatchbr0
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let n (Guess yqstellamatcharg 'inl))
+            (let yqstellamatchcond (And (Exists n) (Bool 'true)))
+            (let n (Unwrap n))
+            (return (If yqstellamatchcond (Just n) (Nothing (OptionalType (DataType 'Uint64))))))))
+          yqstellamatchexpr))
+      (let yqstellamatchbr1
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let _ (Guess yqstellamatcharg 'inr))
+            (let yqstellamatchcond (And (Exists _) (Bool 'true)))
+            (let _ (Unwrap _))
+            (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+          yqstellamatchexpr))
+      (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))))))
+  (declare __m__ (DataType 'Uint64))
+  (let result (Apply main __m__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

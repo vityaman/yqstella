@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-149/input.yqst:19:48: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
+mu TypeVar(unit |> main |> 2). TypeVar(unit |> main |> 3) + (fn(TypeVar(unit |> main |> 2)) -> Nat)
+>   return g(inr(inr(inr(fn(n : auto) { return g(inr(inr(n))) }))))
+                                                 ^

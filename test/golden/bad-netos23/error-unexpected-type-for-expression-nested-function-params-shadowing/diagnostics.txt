@@ -1,0 +1,12 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-nested-function-params-shadowing/input.yqst:7:20: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>    	return if (n) then n else false  // n : Nat, not n : Bool one
+                     ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-nested-function-params-shadowing/input.yqst:7:28: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>    	return if (n) then n else false  // n : Nat, not n : Bool one
+                             ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-nested-function-params-shadowing/input.yqst:7:35: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>    	return if (n) then n else false  // n : Nat, not n : Bool one
+                                    ^

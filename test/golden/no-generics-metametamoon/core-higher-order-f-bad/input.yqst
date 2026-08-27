@@ -1,0 +1,25 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION",
+    "location": "24:12"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+fn id(n : Bool) -> Bool {
+    return n
+}
+
+fn f(x : fn(Nat) -> Nat) -> Bool {
+    return false
+}
+
+fn main(n : Nat) -> Bool {
+  return f(id)
+}

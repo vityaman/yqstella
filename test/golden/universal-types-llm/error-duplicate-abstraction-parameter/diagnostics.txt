@@ -1,0 +1,8 @@
+test/golden/universal-types-llm/error-duplicate-abstraction-parameter/input.yqst:5:11: [ERROR_DUPLICATE_TYPE_PARAMETER]
+duplicate type parameter: T
+>   return (generic [T, T] fn(x : T) { return x })[Nat, Nat](n)
+            ^
+test/golden/universal-types-llm/error-duplicate-abstraction-parameter/input.yqst:5:10: [ERROR_INCORRECT_NUMBER_OF_TYPE_ARGUMENTS]
+expected 1 type arguments, got 2
+>   return (generic [T, T] fn(x : T) { return x })[Nat, Nat](n)
+           ^

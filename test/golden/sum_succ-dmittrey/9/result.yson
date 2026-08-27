@@ -1,0 +1,70 @@
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "VariantType";
+                                    [
+                                        "StructType";
+                                        [
+                                            [
+                                                "inl";
+                                                [
+                                                    "DataType";
+                                                    "Uint64"
+                                                ]
+                                            ];
+                                            [
+                                                "inr";
+                                                [
+                                                    "VariantType";
+                                                    [
+                                                        "StructType";
+                                                        [
+                                                            [
+                                                                "inl";
+                                                                [
+                                                                    "VoidType"
+                                                                ]
+                                                            ];
+                                                            [
+                                                                "inr";
+                                                                [
+                                                                    "DataType";
+                                                                    "Uint64"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        [
+                            "1";
+                            [
+                                "0";
+                                "Void"
+                            ]
+                        ]
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]

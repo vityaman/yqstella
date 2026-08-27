@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-tuple-application-record/input.yqst:10:15: [ERROR_UNEXPECTED_TUPLE]
+type mismatch: expected Nat, got {Nat, Bool}
+>   return foo ({0, false})
+                ^

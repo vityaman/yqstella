@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-list-cons/input.yqst:8:11: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return  cons(0, []);
+            ^

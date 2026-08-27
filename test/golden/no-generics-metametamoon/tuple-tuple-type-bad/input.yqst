@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION",
+    "location": "18:10"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #tuples;
+
+fn main(n : {Nat, Nat}) -> Bool {
+  return n
+}

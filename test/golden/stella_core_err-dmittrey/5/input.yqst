@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type;
+
+fn main(b : Bool) -> Bool {
+  return if c then true else false
+}
+
+//ERROR_UNDEFINED_VARIABLE

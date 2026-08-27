@@ -1,0 +1,6 @@
+language core;
+extend with #universal-types;
+
+fn main(n : Nat) -> Nat {
+  return (generic [X] generic [Y] fn(x : X) { return fn(y : Y) { return x } })[Nat][Bool](n)(false)
+}

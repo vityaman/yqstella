@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-72/input.yqst:7:47: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return List::isempty(/*e=ERROR_NOT_A_LIST*/ arg)
+                                                ^

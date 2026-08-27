@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/sum-types-unexpected-inr-bad/input.yqst:18:10: [ERROR_UNEXPECTED_INJECTION]
+expected Nat, but got inr(Nat)
+>   return inr(n)
+           ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-simple-list-reconstruct/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected Nat, got list
+>   return [arg, 0]
+           ^

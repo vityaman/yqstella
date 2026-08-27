@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #panic, #unit-type;
+
+generic fn abort[T](_ : Unit) -> T {
+  return panic!
+}
+
+fn main(n : Nat) -> Nat {
+  return if Nat::iszero(n) then n else abort[Nat](unit)
+}

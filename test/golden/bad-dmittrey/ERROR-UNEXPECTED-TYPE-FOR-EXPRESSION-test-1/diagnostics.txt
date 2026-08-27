@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-test-1/input.yqst:9:30: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Unit, got fn(Unit) -> Unit
+> 	return seq(seq(unit)(seq(unit)))(unit)
+                               ^

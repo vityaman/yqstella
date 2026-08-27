@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-LIST-cons/input.yqst:8:11: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return  cons(0, []);
+            ^

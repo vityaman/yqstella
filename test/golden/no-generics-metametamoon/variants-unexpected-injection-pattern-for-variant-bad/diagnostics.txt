@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/variants-unexpected-injection-pattern-for-variant-bad/input.yqst:19:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type <| a : Nat, b : Bool |>
+>       inl(n) => n
+        ^
+test/golden/no-generics-metametamoon/variants-unexpected-injection-pattern-for-variant-bad/input.yqst:20:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type <| a : Nat, b : Bool |>
+>     | inr(b) => 0
+        ^

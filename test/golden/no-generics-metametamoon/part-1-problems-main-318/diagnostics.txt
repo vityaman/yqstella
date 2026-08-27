@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-318/input.yqst:18:5: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field a : ?
+>     { x = { x = { x = { x = false, y = 0}
+      ^

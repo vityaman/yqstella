@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-non-nullary-variant-pattern-simple/input.yqst:7:12: [ERROR_UNEXPECTED_NON_NULLARY_VARIANT_PATTERN]
+unexpected non nullary pattern
+>       <| b = t |> => 0
+             ^

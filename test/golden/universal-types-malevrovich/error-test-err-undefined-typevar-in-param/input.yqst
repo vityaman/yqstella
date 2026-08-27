@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+generic fn f[T](x : Y) -> T {
+  return x
+}
+
+fn main(n : Nat) -> Nat {
+  return f[Nat](n)
+}

@@ -1,0 +1,10 @@
+language core;
+extend with #references;
+
+fn f(x : Nat) -> Nat { return x }
+
+fn main(n : Nat) -> Nat {
+  return f(<0x1234>)
+}
+
+//ERROR_UNEXPECTED_MEMORY_ADDRESS

@@ -1,0 +1,25 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_PATTERN_FOR_TYPE",
+    "location": "18:7"
+  }
+}
+TEST_END
+*/
+
+language core;
+extend with #variants;
+
+fn g(x : <| number : Nat, boolean : Bool, function : fn(Nat) -> Nat |>) -> Nat {
+  return match x {
+      <| number1   = n |> => succ(n)
+    | <| function = f |> => f(f(succ(0)))
+  }
+}
+
+fn main(x : Nat) -> Nat {
+  return g(<| function = fn(n : Nat) { return g(<| number = n |>) } |>)
+}

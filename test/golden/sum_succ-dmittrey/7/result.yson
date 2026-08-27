@@ -1,0 +1,71 @@
+[
+    {
+        "Write" = [
+            {
+                "Type" = [
+                    "ListType";
+                    [
+                        "StructType";
+                        [
+                            [
+                                "result";
+                                [
+                                    "VariantType";
+                                    [
+                                        "StructType";
+                                        [
+                                            [
+                                                "inl";
+                                                [
+                                                    "DataType";
+                                                    "Bool"
+                                                ]
+                                            ];
+                                            [
+                                                "inr";
+                                                [
+                                                    "VariantType";
+                                                    [
+                                                        "StructType";
+                                                        [
+                                                            [
+                                                                "inl";
+                                                                [
+                                                                    "DataType";
+                                                                    "Bool"
+                                                                ]
+                                                            ];
+                                                            [
+                                                                "inr";
+                                                                [
+                                                                    "DataType";
+                                                                    "Bool"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                "Data" = [
+                    [
+                        [
+                            "1";
+                            [
+                                "0";
+                                %true
+                            ]
+                        ]
+                    ]
+                ]
+            }
+        ];
+        "Unordered" = %true
+    }
+]

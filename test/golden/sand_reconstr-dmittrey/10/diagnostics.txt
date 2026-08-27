@@ -1,0 +1,12 @@
+test/golden/sand_reconstr-dmittrey/10/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 2)) -> TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> language core;
+  ^
+test/golden/sand_reconstr-dmittrey/10/input.yqst:6:11: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> fn test10(z : auto) -> auto {
+            ^
+test/golden/sand_reconstr-dmittrey/10/input.yqst:7:10: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+>   return z
+           ^

@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #references;
+
+generic fn narrow[T](reference : &T) -> &Nat {
+  return reference
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

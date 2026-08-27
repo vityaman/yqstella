@@ -1,0 +1,4 @@
+test/golden/universal-types-malevrovich/error-test-err-type-application-to-literal/input.yqst:5:10: [ERROR_NOT_A_GENERIC_FUNCTION]
+expected a generic function, got Nat
+>   return 0[Nat]
+           ^

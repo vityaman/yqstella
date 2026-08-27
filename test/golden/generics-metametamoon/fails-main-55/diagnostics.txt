@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-55/input.yqst:7:68: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return (fn (a : auto) { return List::head(/*e=ERROR_NOT_A_LIST*/ arg) })(0)
+                                                                     ^

@@ -1,0 +1,4 @@
+test/golden/core_basics-dmittrey/arith-basic/input.yqst:4:22: [ERROR_BAD_EXTENSION]
+disabled extension usage: #natural-literals
+>   return succ (succ (5))
+                       ^

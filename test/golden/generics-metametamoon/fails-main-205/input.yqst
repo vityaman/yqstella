@@ -1,0 +1,12 @@
+// Capture pitfall + #records: nested projection assumes residual is a pair.
+language core;
+
+extend with #universal-types, #records, #tuples;
+
+generic fn mkConst[X](x : X) -> forall Y. fn(Y) -> X {
+  return generic [Y] fn(y : Y) { return x }
+}
+
+fn main(n : Nat) -> Nat {
+  return /*e=ERROR_NOT_A_TUPLE*/ { p = mkConst[forall Z. fn(Z) -> Z](generic [Z] fn(z : Z) { return z })[Nat](n) }.p.1
+}

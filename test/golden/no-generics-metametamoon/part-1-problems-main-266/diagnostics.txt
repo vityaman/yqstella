@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-266/input.yqst:22:42: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return (fn (a : Nat) { return cons(0, [true]); } ) (0)
+                                           ^

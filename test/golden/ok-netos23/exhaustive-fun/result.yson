@@ -1,0 +1,33 @@
+minirun ABI version: 2.45.0
+test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:20:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:20:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:20:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:17:14: Error: At function: Unwrap
+                	    (return (Unwrap (Coalesce yqstellamatchbr0)))))))
+	             ^
+                    test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:17:22: Error: At function: Coalesce
+                    	    (return (Unwrap (Coalesce yqstellamatchbr0)))))))
+	                     ^
+                        test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:15:20: Error: At function: If
+                        	          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+	                   ^
+                            test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:13:35: Error: At function: And
+                            	          (let yqstellamatchcond (And (Exists a) (Bool 'true)))
+	                                  ^
+                                test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:13:40: Error: At function: Exists
+                                	          (let yqstellamatchcond (And (Exists a) (Bool 'true)))
+	                                       ^
+                                    test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:18:15: Error: Expected computable data, but got lambda
+                                    	  (let __n__ (lambda '(x0) (Uint64 '0)))
+	              ^
+                                    test/golden/ok-netos23/exhaustive-fun/yql.yqls:<main>:18:15: Error: Computable required. Atom, key, world, datasink, datasource, type, lambda are not computable
+                                    	  (let __n__ (lambda '(x0) (Uint64 '0)))
+	              ^

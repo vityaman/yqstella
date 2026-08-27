@@ -1,0 +1,16 @@
+language core;
+extend with #tuples;
+
+fn noop(_ : {}) -> {} {
+  return {}
+}
+
+fn third(tup : {Nat, Nat}) -> Nat {
+  return tup.2
+}
+
+fn main(n : Nat) -> Nat {
+  return third({n, succ(n), succ(succ(n))})
+}
+
+// ERROR_UNEXPECTED_TUPLE_LENGTH

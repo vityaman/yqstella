@@ -1,0 +1,12 @@
+// sample program in Stella Core
+language core;
+
+fn increment_twice(n : Nat) -> Nat {
+  return succ(succ(0))
+}
+
+fn main(r : Nat) -> Nat {
+  return increment_twice(r)
+}
+
+//SUCCESS

@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/core-duplicate-function-declaration-bad/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: f
+> /*
+  ^
+test/golden/no-generics-metametamoon/core-duplicate-function-declaration-bad/input.yqst:1:0: [ERROR_DUPLICATE_FUNCTION_DECLARATION]
+duplicate declaration: f
+> /*
+  ^

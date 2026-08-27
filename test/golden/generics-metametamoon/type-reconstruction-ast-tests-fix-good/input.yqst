@@ -1,0 +1,10 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #fixpoint-combinator;
+
+fn main(n : Nat) -> auto {
+  return fix(fn(f : auto) {
+    return fn(x : auto) { return x }
+  })(n)
+}

@@ -1,0 +1,25 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #type-reconstruction, #multiparameter-functions;
+
+fn app(f : auto, x : auto) -> auto {
+  return f(x)
+}
+
+
+fn funInt(b : Nat) -> Nat {
+  return b
+}
+
+fn main(n : Nat) -> auto {
+  return app(funInt, n)
+}

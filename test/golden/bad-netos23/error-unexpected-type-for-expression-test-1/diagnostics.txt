@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-test-1/input.yqst:9:30: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Unit, got fn(Unit) -> Unit
+> 	return seq(seq(unit)(seq(unit)))(unit)
+                               ^

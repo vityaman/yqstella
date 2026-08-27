@@ -1,0 +1,13 @@
+language core;
+
+extend with #unit-type;
+
+fn boolTwice(f : Bool) -> Bool {
+  return f
+}
+
+fn main(n : Nat) -> Bool {
+    return boolTwice(n)
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

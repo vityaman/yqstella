@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+generic fn bad[X](x : X) -> forall X. fn(X) -> X {
+  return generic [X] fn(y : X) { return x }
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

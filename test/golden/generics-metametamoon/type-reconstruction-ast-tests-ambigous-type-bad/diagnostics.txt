@@ -1,0 +1,16 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-ambigous-type-bad/input.yqst:1:28: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 2)) -> TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> /*e=ERROR_AMBIGUOUS_TYPE*/ language core;
+                             ^
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-ambigous-type-bad/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 2)) -> TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> /*e=ERROR_AMBIGUOUS_TYPE*/ language core;
+  ^
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-ambigous-type-bad/input.yqst:6:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+> fn main(n : auto) -> auto {
+          ^
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-ambigous-type-bad/input.yqst:7:10: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 2) has unresolved type variable TypeVar(unit |> 2)
+>   return n
+           ^

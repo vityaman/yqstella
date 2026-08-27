@@ -1,0 +1,8 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-const-identity/input.yqst:12:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Y, got X
+>     	return x
+                 ^
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-const-identity/input.yqst:10:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Y) -> X, got fn(Y) -> Y
+>   return identity[fn(Y) -> Y](
+           ^

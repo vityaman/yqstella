@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-parameter-return-lambda-with-wrong-second-argument/input.yqst:6:17: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Bool, got (j : Nat)
+>       return fn(j : Nat) {
+                  ^

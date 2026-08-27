@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-bad-return-type-reconstruct/input.yqst:6:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Nat) -> Nat, got Nat
+>     return succ(n)
+             ^

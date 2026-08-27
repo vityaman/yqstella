@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNDEFINED-VARIABLE-in-let/input.yqst:6:36: [ERROR_UNDEFINED_VARIABLE]
+undefined variable x
+>   return let y = let x = 0 in x in x
+                                     ^

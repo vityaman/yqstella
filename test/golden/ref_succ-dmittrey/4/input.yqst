@@ -1,0 +1,13 @@
+language core;
+extend with #references,#unit-type,#let-bindings,#sequencing;
+
+fn inc(ref : &Nat) -> Unit {
+  return ref := succ(*ref)
+}
+
+fn main(n : Nat) -> Nat {
+  return let r = new(n) in
+    inc(r);
+    *r
+}
+//SUCCESS

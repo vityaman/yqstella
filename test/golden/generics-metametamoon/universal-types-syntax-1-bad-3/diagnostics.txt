@@ -1,0 +1,12 @@
+test/golden/generics-metametamoon/universal-types-syntax-1-bad-3/input.yqst:10:57: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable Y
+>   return identity[  /*e=ERROR_UNDEFINED_TYPE_VARIABLE*/ Y](x)
+                                                          ^
+test/golden/generics-metametamoon/universal-types-syntax-1-bad-3/input.yqst:10:60: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Y, got Nat
+>   return identity[  /*e=ERROR_UNDEFINED_TYPE_VARIABLE*/ Y](x)
+                                                             ^
+test/golden/generics-metametamoon/universal-types-syntax-1-bad-3/input.yqst:10:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Y
+>   return identity[  /*e=ERROR_UNDEFINED_TYPE_VARIABLE*/ Y](x)
+           ^

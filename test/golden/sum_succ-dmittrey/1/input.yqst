@@ -1,0 +1,8 @@
+language core;
+extend with #sum-types, #unit-type;
+
+fn main(b : Bool) -> Nat + Bool {
+    return if b then inl(0) else inr(true)
+}
+
+//SUCCESS

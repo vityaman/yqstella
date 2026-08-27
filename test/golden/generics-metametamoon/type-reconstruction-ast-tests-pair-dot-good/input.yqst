@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #pairs;
+
+fn fst(p : auto) -> auto {
+  return p.1
+}
+
+fn main(n : Nat) -> auto {
+  return fst({n, true})
+}

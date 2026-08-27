@@ -1,0 +1,15 @@
+language core;
+extend with #lists,#structural-patterns,#natural-literals;
+
+fn mapSucc(xs : [Nat]) -> [Nat] {
+  return match xs {
+    [] => []
+  | cons(h, t) => cons(succ(h), mapSucc(t))
+  }
+}
+
+fn main(_ : Nat) -> [Nat] {
+  return mapSucc([1,2,3])
+}
+
+//SUCCESS

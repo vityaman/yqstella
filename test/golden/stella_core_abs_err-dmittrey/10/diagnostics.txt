@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_err-dmittrey/10/input.yqst:10:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return boolTwice(n)
+                       ^

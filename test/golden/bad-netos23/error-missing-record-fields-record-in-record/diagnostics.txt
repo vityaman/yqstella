@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-missing-record-fields-record-in-record/input.yqst:7:27: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: x
+>   return { i = 0, inner = { y = succ(0) }}
+                            ^

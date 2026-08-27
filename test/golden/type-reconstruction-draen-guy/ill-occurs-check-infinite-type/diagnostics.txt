@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-draen-guy/ill-occurs-check-infinite-type/input.yqst:6:16: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
+mu TypeVar(unit |> main |> 1). fn(TypeVar(unit |> main |> 1)) -> TypeVar(unit |> main |> 2)
+>   return value(value)
+                 ^

@@ -1,0 +1,4 @@
+minirun ABI version: 2.45.0
+test/golden/patterns_succ-dmittrey/6/yql.yqls:<main>:35:60: Error: Name not found: sum
+	            (If yqstellamatchcond (Just (+MayWarn h (Apply sum t))) (Nothing (OptionalType (DataType 'Uint64))))))))
+	                                                           ^

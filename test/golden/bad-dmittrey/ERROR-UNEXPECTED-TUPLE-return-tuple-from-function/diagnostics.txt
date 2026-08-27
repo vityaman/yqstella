@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TUPLE-return-tuple-from-function/input.yqst:6:10: [ERROR_UNEXPECTED_TUPLE]
+type mismatch: expected Nat, got {Nat, Nat, Bool}
+>   return {n, succ(n), true}
+           ^

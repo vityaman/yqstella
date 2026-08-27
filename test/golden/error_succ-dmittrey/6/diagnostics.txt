@@ -1,0 +1,4 @@
+test/golden/error_succ-dmittrey/6/input.yqst:14:1: [ERROR_DUPLICATE_EXCEPTION_TYPE]
+exception type redefinition is not supported
+> exception type = Bool
+  ^

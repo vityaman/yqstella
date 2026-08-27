@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-infer-fix-reconstruct/input.yqst:10:33: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected T -> T, got Nat
+>   return (fn (a : Nat) { return fix(0); } ) (0)
+                                  ^

@@ -4,7 +4,7 @@ module Type.Annotation (annotateType, inferType) where
 
 import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (unless)
+import Control.Monad (foldM, unless)
 import Control.Monad.State
 import Data.Foldable (find)
 import Diagnostic.Code (Code (..))
@@ -19,16 +19,18 @@ import qualified Type.Context as Context
 import Type.Core (Type (Type), list)
 import qualified Type.Core as Type
 import Type.Decl (withDecls, withParamDecls)
-import Type.Env (TypeAnnotationEnv, isAvailable, tellC, tellD, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, isAvailable, positionOf, tellC, tellD, typeOf, withStateTAE)
 import Type.Exception (annotateExceptionExprType)
-import Type.Expectation (TypeKind (Expected, Inferred), listItemType, mismatchSS, sanitizeT, sanitizeTSilent)
+import Type.Expectation (TypeKind (Expected, Inferred), ensureEqType, listItemType, mismatchSS, sanitizeT, sanitizeTSilent, validateTypeParameters)
 import Type.Expression (annotateTT2B, annotateTT2T)
 import Type.Lift (liftType, liftType')
 import Type.Match (annotateLetType, annotateMatchType)
 import Type.Record (annotateDotRecordType, annotateRecordType)
 import Type.Reference (annotateRefExprType)
+import qualified Type.Substitution as Substitution
 import Type.Sum (annotateSumExprType)
 import Type.Tuple (annotateDotTupleType, annotateTupleType)
+import qualified Type.Unification as Unification
 import Type.Variant (variantExprTyping, variantFieldTyping)
 
 class TypeAnnotatable f where
@@ -40,10 +42,47 @@ checkType t = annotateType $ Just t
 inferType :: (TypeAnnotatable f) => f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
 inferType = annotateType Nothing
 
+annotateFunction ::
+  Position ->
+  [AST.Annotation' Position] ->
+  String ->
+  [AST.ParamDecl' Position] ->
+  AST.ReturnType' Position ->
+  AST.ThrowType' Position ->
+  [AST.Decl' Position] ->
+  AST.Expr' Position ->
+  TypeAnnotationEnv
+    ( Maybe Type,
+      [AST.ParamDecl' (Position, Maybe Type)],
+      [AST.Decl' (Position, Maybe Type)],
+      AST.Expr' (Position, Maybe Type)
+    )
+annotateFunction p annotations fname paramdecls returntype throwtype decls expr = do
+  unless (null annotations) $ tellD [notImplemented p "DeclFun annotations"]
+
+  context' <- gets (withName fname) >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
+
+  case throwtype of
+    AST.NoThrowType _ -> pure ()
+    AST.SomeThrowType _ _ -> tellD [notImplemented p "DeclFun ThrowType"]
+
+  let annotateParam (AST.AParamDecl p' (AST.StellaIdent name) type_) =
+        AST.AParamDecl (p', Context.typeOf name context') (AST.StellaIdent name) (stub type_)
+      paramdecls' = fmap annotateParam paramdecls
+
+  decls' <- withStateTAE (const context') (mapM inferType decls)
+  expectedReturn <- case returntype of
+    AST.SomeReturnType _ type_ -> Just <$> sanitizeTSilent type_
+    AST.NoReturnType _ -> pure Nothing
+  expr' <- withStateTAE (const context') (annotateType expectedReturn expr)
+
+  return (Type.fn <$> traverse typeOf paramdecls' <*> typeOf expr', paramdecls', decls', expr')
+
 instance TypeAnnotatable AST.Program' where
   annotateType _ (AST.AProgram p languagedecl extensions decls) = do
     context' <- gets (withName "unit") >>= withDecls decls {-isTopLevel=-} True
-    decls' <- withStateTAE (const context') (mapM inferType decls)
+    context'' <- foldM addExceptionDeclaration context' decls
+    decls' <- withStateTAE (const context'') (mapM annotateTopDecl decls)
 
     t' <- case find isMain decls' of
       Just (AST.DeclFun (_, t'@(Just (Type (AST.TypeFun _ args _)))) _ _ _ _ _ _ _) | length args == 1 -> do
@@ -64,38 +103,29 @@ instance TypeAnnotatable AST.Program' where
 
     return (AST.AProgram (p, t') (stub languagedecl) (stubL extensions) decls')
     where
+      addExceptionDeclaration context (AST.DeclExceptionType p' type_) =
+        withStateTAE (const context) $ do
+          type' <- sanitizeT type_
+          case Context.withExceptionType type' context of
+            Right context' -> pure context'
+            Left issue -> do
+              tellD [issue {range = pointRange p'}]
+              pure context
+      addExceptionDeclaration context _ = pure context
+
+      annotateTopDecl f@(AST.DeclExceptionType {}) = pure $ stub f
+      annotateTopDecl decl = inferType decl
+
       isMain (AST.DeclFun _ _ (AST.StellaIdent name) _ _ _ _ _) | name == "main" = True
       isMain _ = False
 
 instance TypeAnnotatable AST.Decl' where
   annotateType _ (AST.DeclFun p annotations (AST.StellaIdent fname) paramdecls returntype throwtype decls expr) = do
-    unless (null annotations) $ tellD [notImplemented p "DeclFun annotations"]
-
-    context' <- gets (withName fname) >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
-
-    () <- case throwtype of
-      (AST.NoThrowType _) -> pure ()
-      (AST.SomeThrowType _ _) -> tellD [notImplemented p "DeclFun ThrowType"]
-
-    let paramT :: AST.ParamDecl' Position -> AST.ParamDecl' (Position, Maybe Type)
-        paramT (AST.AParamDecl p' (AST.StellaIdent name) t) =
-          let t' = Context.typeOf name context'
-           in AST.AParamDecl (p', t') (AST.StellaIdent name) (stub t)
-
-    let paramdecls' = fmap paramT paramdecls
-
-    decls' <- withStateTAE (const context') (mapM inferType decls)
-    returnExpect <- case returntype of
-      AST.SomeReturnType _ t -> Just <$> sanitizeTSilent t
-      AST.NoReturnType _ -> pure Nothing
-
-    expr' <- withStateTAE (const context') (annotateType returnExpect expr)
-
-    let t' = Type.fn <$> traverse typeOf paramdecls' <*> typeOf expr'
+    (functionType, paramdecls', decls', expr') <- annotateFunction p annotations fname paramdecls returntype throwtype decls expr
 
     return
       ( AST.DeclFun
-          (p, t')
+          (p, functionType)
           (stubL annotations)
           (AST.StellaIdent fname)
           paramdecls'
@@ -104,8 +134,24 @@ instance TypeAnnotatable AST.Decl' where
           decls'
           expr'
       )
-  annotateType _ f@(AST.DeclFunGeneric {}) = do
-    return $ stub f
+  annotateType _ (AST.DeclFunGeneric p annotations (AST.StellaIdent fname) parameters paramdecls returntype throwtype decls expr) = do
+    current <- get
+    let (resolved, context') = Context.bindTypeVariables parameters current
+    (functionType, paramdecls', decls', expr') <-
+      withStateTAE (const context') $ annotateFunction p annotations fname paramdecls returntype throwtype decls expr
+    let universalType = Type . AST.TypeForAll () resolved . Type.toAST <$> functionType
+    return
+      ( AST.DeclFunGeneric
+          (p, universalType)
+          (stubL annotations)
+          (AST.StellaIdent fname)
+          resolved
+          paramdecls'
+          (stub returntype)
+          (stub throwtype)
+          decls'
+          expr'
+      )
   annotateType _ f@(AST.DeclTypeAlias {}) = do
     return $ stub f
   annotateType _ f@(AST.DeclExceptionType p t) = do
@@ -153,9 +199,20 @@ instance TypeAnnotatable AST.Expr' where
   annotateType _ x@(AST.LetRec {}) = do
     tellD [notImplemented (annotation x) "LetRec"]
     return $ stub x
-  annotateType _ x@(AST.TypeAbstraction {}) = do
-    tellD [notImplemented (annotation x) "TypeAbstraction"]
-    return $ stub x
+  annotateType expected (AST.TypeAbstraction p parameters expr) = do
+    parameters' <- validateTypeParameters p parameters
+    context <- get
+    let (resolved, context') = Context.bindTypeVariables parameters' context
+        expectedBody = case expected of
+          Just (Type (AST.TypeForAll () expectedParameters body))
+            | length expectedParameters == length resolved ->
+                Just $ Substitution.substitute (zip expectedParameters (fmap (Type . AST.TypeVar ()) resolved)) (Type body)
+          _ -> Nothing
+    expr' <- withStateTAE (const context') (annotateType expectedBody expr)
+    actual <- case typeOf expr' of
+      Just body -> Just <$> liftType' p (Type $ AST.TypeForAll () resolved (Type.toAST body)) expected
+      Nothing -> pure Nothing
+    return $ AST.TypeAbstraction (p, actual) resolved expr'
   annotateType t (AST.LessThan p lhs rhs) = do
     (t', lhs', rhs') <- annotateTT2B annotateType annotateType t lhs rhs
     return (AST.LessThan (p, t') lhs' rhs')
@@ -248,9 +305,25 @@ instance TypeAnnotatable AST.Expr' where
     annotateRefExprType t x annotateType
   annotateType t (AST.Application p f xs) =
     annotateApplicationType t p f xs annotateType
-  annotateType _ x@(AST.TypeApplication {}) = do
-    tellD [notImplemented (annotation x) "TypeApplication"]
-    return $ stub x
+  annotateType expected (AST.TypeApplication p expr types) = do
+    expr' <- inferType expr
+    types' <- mapM sanitizeT types
+    result <- case typeOf expr' of
+      Just (Type (AST.TypeForAll () parameters body))
+        | length parameters == length types' -> do
+            let instantiated = Substitution.substitute (zip parameters types') (Type body)
+            Just <$> liftType' p instantiated expected
+        | otherwise -> do
+            let message =
+                  "expected " ++ show (length parameters) ++ " type arguments, got " ++ show (length types')
+            tellD [diagnostic Error INCORRECT_NUMBER_OF_TYPE_ARGUMENTS (pointRange p) message]
+            return Nothing
+      Just actual -> do
+        let message = "expected a generic function, got " ++ show actual
+        tellD [diagnostic Error NOT_A_GENERIC_FUNCTION (pointRange $ positionOf expr') message]
+        return Nothing
+      Nothing -> return Nothing
+    return $ AST.TypeApplication (p, result) expr' (fmap stub types)
   annotateType t (AST.DotRecord p expr (AST.StellaIdent field)) =
     annotateDotRecordType t p expr field annotateType
   annotateType t (AST.DotTuple p expr index) =
@@ -260,16 +333,39 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Record p bindings) =
     annotateRecordType t p bindings annotateType
   annotateType t (AST.ConsList p head'' tail'') = do
-    headT <- listItemType p Expected t
+    let expectedListType = case t of
+          Just (Type (AST.TypeTop ())) -> Nothing
+          _ -> t
+    headT <- listItemType p Expected expectedListType
 
     head' <- annotateType headT head''
     let itemT = headT <|> snd (annotation head')
         listT = fmap Type.list itemT
 
-    tail' <- annotateType listT tail''
+    tail' <- case tail'' of
+      AST.List {} -> annotateType listT tail''
+      AST.ConsList {} -> annotateType listT tail''
+      AST.Tail {} -> annotateType listT tail''
+      _ -> do
+        inferred <- inferType tail''
+        case typeOf inferred of
+          Just actual -> do
+            isSubtyping <- isAvailable Extension.StructuralSubtyping
+            if isSubtyping
+              then do
+                _ <- liftType' (annotation tail'') actual listT
+                pure ()
+              else do
+                let toDiagnostic expected actual' =
+                      mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION (annotation tail'') (show expected) (show actual')
+                _ <- ensureEqType (annotation tail'') toDiagnostic actual listT
+                pure ()
+            pure ()
+          Nothing -> pure ()
+        pure inferred
     let tailT = listT <|> snd (annotation tail')
 
-    t' <- listItemType (annotation tail'') Inferred tailT
+    t' <- fmap Type.list <$> listItemType (annotation tail'') Inferred tailT
     return (AST.ConsList (p, t') head' tail')
   annotateType t (AST.Head p expr) = do
     let listT = fmap Type.list t
@@ -285,11 +381,17 @@ instance TypeAnnotatable AST.Expr' where
     _ <- uncurry (`listItemType` Inferred) $ annotation expr'
     return (AST.IsEmpty (p, Just t') expr')
   annotateType t (AST.Tail p expr) = do
-    headT <- listItemType p Expected t
-    let listT = fmap Type.list headT
-    expr' <- annotateType listT expr
-    let listT' = listT <|> snd (annotation expr')
-    return (AST.Tail (p, listT') expr')
+    isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+    case (isTypeReconstruction, t) of
+      (False, Just (Type (AST.TypeList _ item))) -> do
+        let listT = Just $ Type.list $ Type item
+        expr' <- annotateType listT expr
+        return (AST.Tail (p, listT <|> typeOf expr') expr')
+      _ -> do
+        expr' <- inferType expr
+        itemT <- listItemType (annotation expr) Inferred (typeOf expr')
+        t' <- traverse (\item -> liftType' p (Type.list item) t) itemT
+        return (AST.Tail (p, t') expr')
   annotateType t x@(AST.Panic {}) =
     annotateExceptionExprType t x annotateType
   annotateType t x@(AST.Throw {}) = do
@@ -322,10 +424,11 @@ instance TypeAnnotatable AST.Expr' where
     return $ AST.IsZero (p, Just t') expr'
   annotateType Nothing (AST.Fix p expr) = do
     expr' <- inferType expr
+    metaVariables <- gets Context.metaVars
     t' <- case typeOf expr' of
-      Just (Type (AST.TypeFun () [arg] ret)) | arg == ret -> return $ Just (Type ret)
+      Just (Type (AST.TypeFun () [arg] ret)) | Unification.alphaEq (Type arg) (Type ret) -> return $ Just (Type ret)
       Just (Type (AST.TypeFun () [arg] ret))
-        | not $ null (Type.fv (Type arg) <> Type.fv (Type ret)) -> do
+        | not $ null (Unification.freeMetaVars metaVariables (Type arg) <> Unification.freeMetaVars metaVariables (Type ret)) -> do
             tellC [Constraint.Eq p (Type arg) (Type ret)]
             return $ Just (Type ret)
       Just t@(Type (AST.TypeFun () [_] _)) -> do

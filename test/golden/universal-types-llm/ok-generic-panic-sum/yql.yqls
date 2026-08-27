@@ -1,0 +1,43 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let abort (lambda '(T)
+    (lambda '(_)
+      (Ensure
+        (Variant
+          (Unwrap (Nothing (OptionalType T)))
+          'inl
+          (VariantType (StructType '('inl T) '('inr (DataType 'Bool)))))
+        (Bool 'false)
+        (String '"panic at :6:10")))))
+  (let main (lambda '(n)
+    (If
+      (== n (Uint64 '0))
+      n
+      (block '(
+        (let yqstellamatchexpr (Apply (Apply abort (DataType 'Uint64)) (Void)))
+        (let yqstellamatchbr0
+          (Apply
+            (lambda '(yqstellamatcharg) (block '(
+              (let value (Guess yqstellamatcharg 'inl))
+              (let yqstellamatchcond (And (Exists value) (Bool 'true)))
+              (let value (Unwrap value))
+              (return (If yqstellamatchcond (Just value) (Nothing (OptionalType (DataType 'Uint64))))))))
+            yqstellamatchexpr))
+        (let yqstellamatchbr1
+          (Apply
+            (lambda '(yqstellamatcharg) (block '(
+              (let value (Guess yqstellamatcharg 'inr))
+              (let yqstellamatchcond (And (Exists value) (Bool 'true)))
+              (let value (Unwrap value))
+              (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+            yqstellamatchexpr))
+        (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

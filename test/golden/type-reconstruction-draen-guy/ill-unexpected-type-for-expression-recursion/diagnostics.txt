@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-draen-guy/ill-unexpected-type-for-expression-recursion/input.yqst:18:38: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Nat and Bool
+>       return Nat::add(i)(Nat::add(i)(succ(r)))
+                                       ^

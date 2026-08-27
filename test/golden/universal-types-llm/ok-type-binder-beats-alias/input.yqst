@@ -1,0 +1,17 @@
+language core;
+extend with #universal-types, #multiparameter-functions, #type-aliases;
+
+type X = Nat
+type Poly = forall X. fn(X) -> X
+
+generic fn identity[X](x : X) -> X {
+  return x
+}
+
+fn apply_nat(f : Poly, n : Nat) -> Nat {
+  return f[Nat](n)
+}
+
+fn main(n : Nat) -> Nat {
+  return apply_nat(identity, n)
+}

@@ -1,0 +1,8 @@
+language core;
+extend with #references,#arithmetic-operators,#natural-literals;
+
+fn main(n : Nat) -> Nat {
+  return <0x1234> + 1
+}
+
+//ERROR_UNEXPECTED_MEMORY_ADDRESS

@@ -1,0 +1,8 @@
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-main-param/input.yqst:4:13: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable T
+> fn main(n : T) -> Nat {
+              ^
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-main-param/input.yqst:5:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got T
+>   return succ(n)
+                ^

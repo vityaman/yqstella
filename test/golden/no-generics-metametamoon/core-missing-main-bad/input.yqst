@@ -1,0 +1,17 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_MISSING_MAIN",
+    "location": "13:1"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+fn notMain(n : Nat) -> Nat {
+  return n
+}

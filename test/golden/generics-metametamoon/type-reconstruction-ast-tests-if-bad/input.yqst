@@ -1,0 +1,12 @@
+/*e=ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION*/ language core;
+
+extend with #type-reconstruction, #multiparameter-functions;
+
+
+fn funInt(x : auto, y : auto) -> auto {
+  return if true then x else y
+}
+
+fn main(n : Nat) -> auto {
+  return funInt(true, 0)
+}

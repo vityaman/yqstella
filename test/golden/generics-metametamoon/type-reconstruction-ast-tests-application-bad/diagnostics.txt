@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-application-bad/input.yqst:15:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify fn(Nat) -> Nat and Nat
+>   return app(funInt, funInt)
+                       ^

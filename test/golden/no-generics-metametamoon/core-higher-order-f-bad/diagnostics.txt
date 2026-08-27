@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-higher-order-f-bad/input.yqst:24:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Nat) -> Nat, got fn(Bool) -> Bool
+>   return f(id)
+             ^

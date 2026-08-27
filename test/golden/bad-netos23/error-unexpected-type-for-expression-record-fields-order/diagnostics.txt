@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-record-fields-order/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected {b : Nat, a : Nat}, got {a : Nat, b : Nat}
+>   return foo(true)
+           ^

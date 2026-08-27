@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+fn use(f : forall T, T. fn(T) -> T) -> Nat {
+  return f[Nat](0)
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION",
+    "location": "18:14"
+   }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #sum-types;
+
+fn main(x : Bool) -> Nat + Bool {
+  return inl(x)
+}

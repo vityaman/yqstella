@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-my-mismatch/input.yqst:4:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Nat) -> Nat, got Nat
+>     return if x then succ(0) else 0
+                       ^

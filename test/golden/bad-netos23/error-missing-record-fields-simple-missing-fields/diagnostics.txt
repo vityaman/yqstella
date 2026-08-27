@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-missing-record-fields-simple-missing-fields/input.yqst:6:10: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: snd
+>   return { fst = 0 }
+           ^

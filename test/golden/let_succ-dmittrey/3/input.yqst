@@ -1,0 +1,33 @@
+language core;
+
+extend with #let-bindings;
+extend with #comparison-operators;
+
+fn square(n : Nat) -> Nat {
+  return Nat::rec(n, 0, fn(i : Nat) {
+      return fn(r : Nat) {
+        // r := r + (2*i + 1)
+        return let double = succ(i) in succ(double)
+      }
+  })
+}
+
+fn isRightTriangle(a : Nat) -> fn(Nat) -> fn(Nat) -> Bool {
+  return let a2 = square(a) in fn(b : Nat) {
+    return let b2 = square(b) in
+    fn (c : Nat) {
+        return let c2 = square(c) in
+               let sum = succ(b2) in
+                 sum == c2
+    }
+  }
+}
+
+fn main(_ : Nat) -> Bool {
+  return let one = succ(0) in
+         let two = succ(one) in
+           isRightTriangle(one)(one)(two)
+}
+
+
+//SUCCESS

@@ -1,0 +1,4 @@
+test/golden/tuple_err-dmittrey/0/input.yqst:9:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+type mismatch: expected tuple with size at least 4, got {Nat, Nat, Nat}
+>   return tup.4
+           ^

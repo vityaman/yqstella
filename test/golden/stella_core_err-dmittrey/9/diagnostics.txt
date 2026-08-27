@@ -1,0 +1,8 @@
+test/golden/stella_core_err-dmittrey/9/input.yqst:6:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got Bool
+>   return true(0)
+           ^
+test/golden/stella_core_err-dmittrey/9/input.yqst:6:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
+>   return true(0)
+           ^

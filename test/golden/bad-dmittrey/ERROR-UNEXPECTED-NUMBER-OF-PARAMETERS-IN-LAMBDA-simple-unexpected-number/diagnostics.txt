@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-NUMBER-OF-PARAMETERS-IN-LAMBDA-simple-unexpected-number/input.yqst:7:12: [ERROR_UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA]
+expected 1 parameters for type fn(Nat) -> Nat, but actually got 2
+>     return fn(a : Nat, b : Nat) {
+             ^

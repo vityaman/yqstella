@@ -1,0 +1,10 @@
+language core;
+extend with #variants,#type-ascriptions,#let-bindings,#arithmetic-operators,#lists,#unit-type,#natural-literals,#structural-patterns,#multiparameter-functions,#fixpoint-combinator;
+
+
+fn main(_ : Nat) -> [Nat] {
+  return let xs = [] in   //    
+  xs
+}
+
+//ERROR_AMBIGUOUS_LIST_TYPE

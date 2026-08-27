@@ -1,0 +1,4 @@
+test/golden/universal-types-malevrovich/error-test-err-type-application-to-lambda/input.yqst:5:11: [ERROR_NOT_A_GENERIC_FUNCTION]
+expected a generic function, got fn(Nat) -> Nat
+>   return (fn(x : Nat) { return x })[Nat](n)
+            ^

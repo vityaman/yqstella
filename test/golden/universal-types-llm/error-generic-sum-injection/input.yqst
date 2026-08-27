@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #sum-types;
+
+generic fn invalid[T](value : T) -> T + Nat {
+  return inr(value)
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

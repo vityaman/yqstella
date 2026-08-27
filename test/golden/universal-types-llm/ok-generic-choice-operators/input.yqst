@@ -1,0 +1,17 @@
+language core;
+
+extend with
+  #universal-types,
+  #multiparameter-functions,
+  #natural-literals,
+  #arithmetic-operators,
+  #comparison-operators,
+  #logical-operators;
+
+generic fn choose[T](condition : Bool, yes : T, no : T) -> T {
+  return if condition then yes else no
+}
+
+fn main(n : Nat) -> Nat {
+  return choose[Nat]((n + 1 > 1) and true, n * 2, n - 1)
+}

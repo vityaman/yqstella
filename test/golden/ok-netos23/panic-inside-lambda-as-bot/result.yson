@@ -1,0 +1,8 @@
+minirun ABI version: 2.45.0
+test/golden/ok-netos23/panic-inside-lambda-as-bot/yql.yqls:<main>:9:41: Error: Condition violated:
+
+panic at :6:37
+
+
+	      (lambda '(x) (If (Bool 'false) x (Ensure (Uint64 '0) (Bool 'false) (String '"panic at :6:37"))))
+	                                        ^

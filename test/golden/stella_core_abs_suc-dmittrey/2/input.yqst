@@ -1,0 +1,7 @@
+language core;
+
+fn main(_ : Nat) -> fn(Bool) -> Bool {
+  return fn(b : Bool) { return if b then false else true }
+}
+
+//SUCCESS

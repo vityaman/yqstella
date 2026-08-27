@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNDEFINED-VARIABLE-nested-func/input.yqst:12:10: [ERROR_UNDEFINED_VARIABLE]
+undefined variable bar
+>   return bar(0)
+           ^

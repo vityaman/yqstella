@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/unit-types-unit-bad/input.yqst:18:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Unit, got Nat
+>   return n
+           ^

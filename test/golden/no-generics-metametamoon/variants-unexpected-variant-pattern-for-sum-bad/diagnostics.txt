@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/variants-unexpected-variant-pattern-for-sum-bad/input.yqst:19:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat + Bool
+>       <| a = n |> => n
+        ^
+test/golden/no-generics-metametamoon/variants-unexpected-variant-pattern-for-sum-bad/input.yqst:20:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat + Bool
+>     | <| b = b |> => 0
+        ^

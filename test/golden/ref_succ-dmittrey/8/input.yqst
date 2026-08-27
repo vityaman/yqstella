@@ -1,0 +1,14 @@
+language core;
+extend with #references, #unit-type, #let-bindings, #sequencing;
+
+fn setToZero(ref : &Nat) -> Nat {
+  return let old = *ref in
+  ref := 0;
+  old
+}
+
+fn main(n : Nat) -> Nat {
+  return let r = new(n) in setToZero(r)
+}
+
+//SUCCESS

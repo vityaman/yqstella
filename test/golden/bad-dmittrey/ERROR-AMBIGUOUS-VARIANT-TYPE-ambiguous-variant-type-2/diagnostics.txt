@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-AMBIGUOUS-VARIANT-TYPE-ambiguous-variant-type-2/input.yqst:8:11: [ERROR_AMBIGUOUS_VARIANT_TYPE]
+type inference for variant types is not supported (use type ascriptions)
+>   return {<| value = n |>, 0}.2
+            ^

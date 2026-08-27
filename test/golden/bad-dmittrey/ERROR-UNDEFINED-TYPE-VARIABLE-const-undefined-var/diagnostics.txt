@@ -1,0 +1,12 @@
+test/golden/bad-dmittrey/ERROR-UNDEFINED-TYPE-VARIABLE-const-undefined-var/input.yqst:5:34: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable Y
+> generic fn const[X](x : X) -> fn(Y) -> X {
+                                   ^
+test/golden/bad-dmittrey/ERROR-UNDEFINED-TYPE-VARIABLE-const-undefined-var/input.yqst:6:17: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable Y
+>   return fn(y : Y) {
+                  ^
+test/golden/bad-dmittrey/ERROR-UNDEFINED-TYPE-VARIABLE-const-undefined-var/input.yqst:12:10: [ERROR_INCORRECT_NUMBER_OF_TYPE_ARGUMENTS]
+expected 1 type arguments, got 2
+>   return const[Nat, Bool](x)(false)
+           ^

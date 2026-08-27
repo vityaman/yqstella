@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-unexpected-multiparam/input.yqst:14:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got fn(Nat, Bool) -> Nat
+>     return get_m_f(0, true, 0)
+             ^

@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-rigid-type-is-not-list/input.yqst:5:21: [ERROR_NOT_A_LIST]
+type mismatch: expected [Nat], got T
+>   return List::head(value)
+                      ^

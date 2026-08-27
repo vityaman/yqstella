@@ -1,0 +1,12 @@
+language core;
+extend with #records,#natural-literals;
+
+fn unwrap(r : {a : {b : Nat}}) -> Nat {
+  return r.a.b
+}
+
+fn main(_ : Nat) -> Nat {
+  return unwrap({a = {b = 42}})
+}
+
+//SUCCESS

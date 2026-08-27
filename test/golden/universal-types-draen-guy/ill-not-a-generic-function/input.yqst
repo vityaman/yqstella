@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types;
+
+fn test(n : Nat) -> Nat {
+  return n
+}
+
+fn main(n : Nat) -> Nat {
+  return test[Bool](n)
+}

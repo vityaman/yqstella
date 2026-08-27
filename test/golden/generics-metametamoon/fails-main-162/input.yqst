@@ -1,0 +1,12 @@
+// SUCCESS
+
+language core;
+
+extend with #type-reconstruction, #sum-types;
+
+fn main(x : auto) -> Nat {
+  return match x {
+    inl(n) => n
+    | inr(n) => n
+  }
+}

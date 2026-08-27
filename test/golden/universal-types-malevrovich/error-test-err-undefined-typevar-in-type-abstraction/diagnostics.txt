@@ -1,0 +1,12 @@
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-type-abstraction/input.yqst:5:29: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable Y
+>   return generic [T] fn(x : Y) { return x }
+                              ^
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-type-abstraction/input.yqst:5:25: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected T, got (x : Y)
+>   return generic [T] fn(x : Y) { return x }
+                          ^
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-type-abstraction/input.yqst:5:41: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected T, got Y
+>   return generic [T] fn(x : Y) { return x }
+                                          ^

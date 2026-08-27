@@ -1,0 +1,12 @@
+language core;
+extend with #records,#nullary-functions,#natural-literals;
+
+fn make() -> {x : Nat, x : Nat} {  // :   x   
+  return {x = 1}
+}
+
+fn main(a : Nat) -> Nat {
+  return a
+}
+
+//ERROR_DUPLICATE_RECORD_TYPE_FIELDS

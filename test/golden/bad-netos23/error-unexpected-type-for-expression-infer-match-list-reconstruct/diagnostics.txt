@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-infer-match-list-reconstruct/input.yqst:8:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected Nat, got list
+>     | y => []
+             ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-infer-match-list-reconstruct/input.yqst:6:34: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return (fn (a : auto) { return match(0) {
+                                   ^

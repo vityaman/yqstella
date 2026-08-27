@@ -1,0 +1,15 @@
+language core;
+extend with #sum-types,#comparison-operators;
+
+fn doubleOrZero(n : Nat) -> Nat + Nat {
+    return if n == 0 then inl(0) else inr(n)
+}
+
+fn main(n : Nat) -> Nat {
+    return match doubleOrZero(succ(0)) {
+        inl(z) => z
+      | inr(x) => succ(x)
+    }
+}
+
+//SUCCESS

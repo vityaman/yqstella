@@ -1,0 +1,12 @@
+language core;
+extend with #variants,#unit-type,#type-ascriptions,#natural-literals,#nullary-variant-labels;
+
+fn example(x : Bool) -> <| a : Nat, b |> {
+  return if x then <| a = 5 |> else <| b = 4 |>
+}
+
+fn main(flag : Nat) -> Nat {
+  return flag
+}
+
+// ERROR_UNEXPECTED_DATA_FOR_NULLARY_LABEL

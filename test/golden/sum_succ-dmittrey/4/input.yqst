@@ -1,0 +1,15 @@
+language core;
+extend with #sum-types,#natural-literals;
+
+fn choose(b : Bool) -> Nat + Bool {
+    return if b then inl(1) else inr(false)
+}
+
+fn main(_ : Bool) -> Nat {
+    return match choose(true) {
+        inl(n) => n
+      | inr(_) => 0
+    }
+}
+
+//SUCCESS

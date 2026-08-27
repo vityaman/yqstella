@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-ambiguous-panic-type-panic-inside-lambda/input.yqst:6:16: [ERROR_AMBIGUOUS_PANIC_TYPE]
+type inference for panic is not supported (use type ascriptions)
+>     	return panic!
+                 ^

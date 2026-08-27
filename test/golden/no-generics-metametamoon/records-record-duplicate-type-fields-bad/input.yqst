@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_DUPLICATE_RECORD_TYPE_FIELDS",
+    "location": "17:13"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #records;
+
+fn main(n : {a : Nat, a : Nat}) -> Nat {
+  return n.a
+}

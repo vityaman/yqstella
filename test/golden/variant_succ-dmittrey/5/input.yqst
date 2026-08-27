@@ -1,0 +1,15 @@
+language core;
+extend with #variants, #unit-type,#natural-literals,#structural-patterns;
+
+fn deep(x : Bool) -> <| outer : <| inner : Nat |> , fail : Unit |> {
+  return if x then <| outer = <| inner = 42 |> |> else <| fail = unit |>
+}
+
+fn main(flag : Bool) -> Nat {
+  return match deep(flag) {
+      <| outer = <| inner = n |> |> => n
+    | <| fail = unit |> => 0
+  }
+}
+
+// SUCCESS

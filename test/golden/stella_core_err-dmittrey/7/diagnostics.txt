@@ -1,0 +1,4 @@
+test/golden/stella_core_err-dmittrey/7/input.yqst:6:27: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return if b then 0 else false
+                            ^

@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #records, #multiparameter-functions;
+
+fn mkRec(x : auto, y : auto) -> auto {
+  return { a = x, b = y }
+}
+
+fn main(n : Nat) -> auto {
+  return mkRec(n, true)
+}

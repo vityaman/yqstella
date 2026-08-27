@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-record-projection-on-not-record/input.yqst:18:10: [ERROR_NOT_A_RECORD]
+type mismatch: expected record with a: Nat, got Nat
+>   return n.a
+           ^

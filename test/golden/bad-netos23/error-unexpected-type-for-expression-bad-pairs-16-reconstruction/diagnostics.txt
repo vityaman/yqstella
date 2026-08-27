@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-bad-pairs-16-reconstruction/input.yqst:7:5: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got {Nat, Bool}
+>     (fn(x : Nat) { return { { { x, x }, { x, x } }, { { x, Nat::iszero(x) }, { x, x } } } })(0).2.1
+      ^

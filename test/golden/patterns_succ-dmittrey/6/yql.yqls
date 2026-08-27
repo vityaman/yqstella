@@ -1,0 +1,43 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let sum (lambda '(xs) (block '(
+    (let yqstellamatchexpr xs)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchnil:6:5
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond (And (Exists yqstellamatchnil:6:5) (Bool 'true)))
+          (let yqstellamatchnil:6:5 (Unwrap yqstellamatchnil:6:5))
+          (return (If yqstellamatchcond (Just (Uint64 '0)) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let h (ToOptional yqstellamatcharg))
+          (let t (Skip yqstellamatcharg (Uint64 '1)))
+          (let yqstellamatchcond (And (Exists h) (And (Exists t) (Bool 'true))))
+          (let h (Unwrap h))
+          (let t (Unwrap t))
+          (return
+            (If yqstellamatchcond (Just (+MayWarn h (Apply sum t))) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1)))))))
+  (let main (lambda '(_) (Apply sum (AsList (Uint64 '1) (Uint64 '2) (Uint64 '3)))))
+  (declare _____ (DataType 'Uint64))
+  (let result (Apply main _____))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

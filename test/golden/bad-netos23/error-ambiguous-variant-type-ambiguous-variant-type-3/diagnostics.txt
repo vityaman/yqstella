@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-ambiguous-variant-type-ambiguous-variant-type-3/input.yqst:6:17: [ERROR_AMBIGUOUS_VARIANT_TYPE]
+type inference for variant types is not supported (use type ascriptions)
+>   return match  <| value = n |> {
+                  ^
+test/golden/bad-netos23/error-ambiguous-variant-type-ambiguous-variant-type-3/input.yqst:6:28: [ERROR_UNDEFINED_VARIABLE]
+undefined variable n
+>   return match  <| value = n |> {
+                             ^

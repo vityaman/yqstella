@@ -1,0 +1,11 @@
+language core;
+
+fn flip(b : Bool) -> Bool {
+  return if b then false else true
+}
+
+fn main(b : Bool) -> Bool {
+  return flip(b)
+}
+
+//SUCCESS

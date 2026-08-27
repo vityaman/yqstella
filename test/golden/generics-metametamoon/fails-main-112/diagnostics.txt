@@ -1,0 +1,12 @@
+test/golden/generics-metametamoon/fails-main-112/input.yqst:8:31: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>                   return if k(succ(0))
+                                ^
+test/golden/generics-metametamoon/fails-main-112/input.yqst:8:29: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>                   return if k(succ(0))
+                              ^
+test/golden/generics-metametamoon/fails-main-112/input.yqst:17:35: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return mk(fn(x : auto) { return Nat::iszero(x)}).x(false)
+                                    ^

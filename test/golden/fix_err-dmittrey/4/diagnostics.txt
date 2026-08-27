@@ -1,0 +1,12 @@
+test/golden/fix_err-dmittrey/4/input.yqst:6:15: [ERROR_UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA]
+expected 1 parameters for type fn(Nat) -> Nat, but actually got 2
+>   return fix (fn (x : Bool, y : Bool) { return x })
+                ^
+test/golden/fix_err-dmittrey/4/input.yqst:6:19: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Nat, got (x : Bool)
+>   return fix (fn (x : Bool, y : Bool) { return x })
+                    ^
+test/golden/fix_err-dmittrey/4/input.yqst:6:48: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return fix (fn (x : Bool, y : Bool) { return x })
+                                                 ^

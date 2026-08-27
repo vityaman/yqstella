@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/records-record-duplicate-type-fields-in-lambda-infer-bad/input.yqst:18:28: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: a
+>   return (fn(r : {a : Nat, a : Nat}) { return 0 })(n)
+                             ^
+test/golden/no-generics-metametamoon/records-record-duplicate-type-fields-in-lambda-infer-bad/input.yqst:18:52: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected {a : Nat}, got Nat
+>   return (fn(r : {a : Nat, a : Nat}) { return 0 })(n)
+                                                     ^

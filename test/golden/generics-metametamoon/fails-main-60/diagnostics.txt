@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-60/input.yqst:10:33: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected T -> T, got Nat
+>   return (fn (a : Nat) { return fix(0); } ) (/*e=ERROR_NOT_A_FUNCTION*/ 0)
+                                  ^

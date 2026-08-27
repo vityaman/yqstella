@@ -1,0 +1,72 @@
+language core;
+
+extend with
+  #universal-types,
+  #variants,
+  #pairs,
+  #records,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #arithmetic-operators,
+  #comparison-operators;
+
+generic fn success[E, A](value : A) -> <| failure : E, success : A |> {
+  return <| success = value |>
+}
+
+generic fn failure[E, A](error : E) -> <| failure : E, success : A |> {
+  return <| failure = error |>
+}
+
+generic fn map_success[E, A, B](transform : fn(A) -> B, result : <| failure : E, success : A |>) -> <| failure : E, success : B |> {
+  return match result {
+    <| failure = error |> => failure[E, B](error)
+  | <| success = value |> => success[E, B](transform(value))
+  }
+}
+
+generic fn pair_success[E, A, B](left : <| failure : E, success : A |>, right : <| failure : E, success : B |>) -> <| failure : E, success : {A, B} |> {
+  return match left {
+    <| failure = error |> => failure[E, {A, B}](error)
+  | <| success = left_value |> => match right {
+      <| failure = error |> => failure[E, {A, B}](error)
+    | <| success = right_value |> => success[E, {A, B}]({left_value, right_value})
+    }
+  }
+}
+
+generic fn recover[E, A](fallback : fn(E) -> A, result : <| failure : E, success : A |>) -> A {
+  return match result {
+    <| failure = error |> => fallback(error)
+  | <| success = value |> => value
+  }
+}
+
+fn validate(value : Nat) -> <| failure : Bool, success : Nat |> {
+  return if value > 0 then success[Bool, Nat](value) else failure[Bool, Nat](false)
+}
+
+fn double(value : Nat) -> Nat {
+  return value * 2
+}
+
+fn next(value : Nat) -> Nat {
+  return value + 1
+}
+
+fn fallback(_ : Bool) -> Nat {
+  return 5
+}
+
+fn main(n : Nat) -> {left : Nat, right : Nat, total : Nat, valid : Bool} {
+  return let checked = validate(n) in
+    let doubled = map_success[Bool, Nat, Nat](double, checked) in
+    let advanced = map_success[Bool, Nat, Nat](next, checked) in
+    let combined = pair_success[Bool, Nat, Nat](doubled, advanced) in
+    let left = recover[Bool, Nat](fallback, doubled) in
+    let right = recover[Bool, Nat](fallback, advanced) in
+    let total = recover[Bool, Nat](fallback,
+      map_success[Bool, {Nat, Nat}, Nat](fn(pair : {Nat, Nat}) { return pair.1 + pair.2 }, combined)) in
+    { left = left, right = right, total = total, valid = total > 5 }
+}

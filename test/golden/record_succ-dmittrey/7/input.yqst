@@ -1,0 +1,12 @@
+language core;
+extend with #records,#natural-literals;
+
+fn pair(n : Nat) -> {val : Nat, next : Nat} {
+  return {val = n, next = succ(n)}
+}
+
+fn main(_ : Nat) -> Nat {
+  return pair(10).next
+}
+
+//SUCCESS

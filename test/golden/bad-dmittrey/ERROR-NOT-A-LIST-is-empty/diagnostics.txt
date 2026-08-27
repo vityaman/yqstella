@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-NOT-A-LIST-is-empty/input.yqst:6:24: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return List::isempty(arg)
+                         ^

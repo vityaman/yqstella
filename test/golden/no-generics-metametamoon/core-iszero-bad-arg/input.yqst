@@ -1,0 +1,17 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+      "code": "ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION",
+      "location": "16:22"
+    }
+}
+TEST_END
+*/
+
+language core;
+
+fn main(b : Bool) -> Bool {
+  return Nat::iszero(b)
+}

@@ -1,0 +1,16 @@
+language core;
+extend with #records,#natural-literals,#let-bindings;
+
+fn make(_ : Nat) -> {f : fn(Nat) -> Nat, base : Nat} {
+  return {f = fn(x : Nat) { return succ(x) }, base = 100}
+}
+
+fn main(n : Nat) -> Nat {
+  return let r = make(n) in
+  r.f(r.base)
+}
+
+//SUCCESS
+
+
+//SUCCESS

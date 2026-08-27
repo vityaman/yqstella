@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-VARIANT-LABEL-unexpected-nullary-label/input.yqst:6:10: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label e for <| a : Nat, b, c |>
+>   return <| e |>
+           ^

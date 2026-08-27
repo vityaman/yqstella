@@ -1,0 +1,6 @@
+language core;
+extend with #universal-types;
+
+fn main(n : Nat) -> Nat {
+  return (generic [T, T] fn(x : T) { return x })[Nat, Nat](n)
+}

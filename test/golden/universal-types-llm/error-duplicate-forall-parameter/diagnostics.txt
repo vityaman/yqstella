@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-duplicate-forall-parameter/input.yqst:4:12: [ERROR_DUPLICATE_TYPE_PARAMETER]
+duplicate type parameter: T
+> fn use(f : forall T, T. fn(T) -> T) -> Nat {
+             ^

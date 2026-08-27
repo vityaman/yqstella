@@ -1,0 +1,11 @@
+language core;
+
+extend with #references, #top-type, #structural-patterns, #natural-literals;
+
+fn main(x : Nat) -> Nat {
+  return match x {
+    unit => 0
+  }
+}
+
+//ERROR_UNEXPECTED_PATTERN_FOR_TYPE

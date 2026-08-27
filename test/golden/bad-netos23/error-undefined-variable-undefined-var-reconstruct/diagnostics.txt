@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-undefined-variable-undefined-var-reconstruct/input.yqst:10:34: [ERROR_UNDEFINED_VARIABLE]
+undefined variable unk
+> 		return if n then unk else false;
+                                   ^

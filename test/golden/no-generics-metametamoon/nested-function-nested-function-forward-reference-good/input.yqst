@@ -1,0 +1,22 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #nested-function-declarations;
+
+fn main(n : Nat) -> Nat {
+  fn caller(x : Nat) -> Nat {
+    return callee(x)
+  }
+  fn callee(x : Nat) -> Nat {
+    return succ(x)
+  }
+  return caller(n)
+}

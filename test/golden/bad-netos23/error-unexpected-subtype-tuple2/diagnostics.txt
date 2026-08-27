@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-subtype-tuple2/input.yqst:10:11: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Nat, got Bool
+>   return {true, 12}
+            ^
+test/golden/bad-netos23/error-unexpected-subtype-tuple2/input.yqst:10:17: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Bool, got Nat
+>   return {true, 12}
+                  ^

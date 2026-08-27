@@ -1,0 +1,4 @@
+test/golden/universal-types-malevrovich/error-test-err-body-uses-wrong-type-for-typevar/input.yqst:5:13: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got T
+>   return if t then 0 else 1
+              ^

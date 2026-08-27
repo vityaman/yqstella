@@ -1,0 +1,4 @@
+test/golden/tuple_err-dmittrey/3/input.yqst:9:10: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got Unit
+>   return unit.4
+           ^

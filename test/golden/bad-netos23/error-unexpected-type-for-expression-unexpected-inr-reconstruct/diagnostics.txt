@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-unexpected-inr-reconstruct/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify TypeVar(unit |> main |> 1) + Nat and Nat
+>   return inr(0)
+           ^

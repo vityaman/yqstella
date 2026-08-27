@@ -1,0 +1,4 @@
+test/golden/stella_core_err-dmittrey/4/input.yqst:6:10: [ERROR_UNDEFINED_VARIABLE]
+undefined variable x
+>   return x
+           ^

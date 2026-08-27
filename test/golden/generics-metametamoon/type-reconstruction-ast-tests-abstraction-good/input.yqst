@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #multiparameter-functions;
+
+fn apply(f : auto, x : auto) -> auto {
+  return f(x)
+}
+
+fn main(n : Nat) -> auto {
+  return apply(fn(x : auto) { return succ(x) }, n)
+}

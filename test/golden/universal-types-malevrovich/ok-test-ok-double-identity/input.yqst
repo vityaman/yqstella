@@ -1,0 +1,14 @@
+language core;
+extend with #universal-types;
+
+generic fn identity[T](x : T) -> T {
+  return x
+}
+
+generic fn double_identity[T](x : T) -> T {
+  return identity[T](x)
+}
+
+fn main(n : Nat) -> Nat {
+  return double_identity[Nat](n)
+}

@@ -1,0 +1,16 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #type-reconstruction;
+
+fn main(n : auto) -> auto {
+  return succ(n)
+}

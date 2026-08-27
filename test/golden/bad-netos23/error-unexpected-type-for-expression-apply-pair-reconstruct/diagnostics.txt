@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-apply-pair-reconstruct/input.yqst:7:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got {Nat, Bool}
+>   return {0, false}(0)
+           ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-apply-pair-reconstruct/input.yqst:7:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
+>   return {0, false}(0)
+           ^

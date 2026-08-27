@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-205/input.yqst:11:34: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got forall Z. fn(Z) -> Z
+>   return /*e=ERROR_NOT_A_TUPLE*/ { p = mkConst[forall Z. fn(Z) -> Z](generic [Z] fn(z : Z) { return z })[Nat](n) }.p.1
+                                   ^

@@ -1,0 +1,11 @@
+language core;
+
+fn was_one(n : Nat) -> Bool {
+  return Nat::iszero(Nat::pred(n))
+}
+
+fn main(n : Nat) -> Bool {
+  return was_one(n)
+}
+
+//SUCCESS

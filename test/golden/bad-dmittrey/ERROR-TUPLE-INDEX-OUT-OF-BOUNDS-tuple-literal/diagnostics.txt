@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-TUPLE-INDEX-OUT-OF-BOUNDS-tuple-literal/input.yqst:5:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+type mismatch: expected tuple with size at least 4, got {Nat, Nat, Bool}
+>   return {n, succ(n), true}.4
+           ^

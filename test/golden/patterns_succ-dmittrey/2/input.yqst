@@ -1,0 +1,12 @@
+language core;
+extend with #arithmetic-operators,#variants,#tuples,#lists,#unit-type,#natural-literals,#structural-patterns,#fixpoint-combinator;
+
+
+fn main(_ : Nat) -> Nat {
+  return match {succ(0), 0} {
+    {x, y} => succ(x + y)
+    | {x, z} => succ(x + z)
+  }
+}
+
+//SUCCESS

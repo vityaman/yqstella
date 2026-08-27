@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-different-branches-reconstruct/input.yqst:6:36: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return if true then false else n
+                                     ^

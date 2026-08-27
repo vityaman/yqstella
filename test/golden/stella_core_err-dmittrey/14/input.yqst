@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type,#fixpoint-combinator;
+
+fn main(b : Bool) -> Nat {
+  return if b then x else true
+}
+
+//ERROR_UNDEFINED_VARIABLE

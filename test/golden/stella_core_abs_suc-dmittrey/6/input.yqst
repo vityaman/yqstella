@@ -1,0 +1,7 @@
+language core;
+
+fn main(_ : Nat) -> fn(Nat) -> Bool {
+  return fn(x : Nat) { return Nat::iszero(x) }
+}
+
+//SUCCESS

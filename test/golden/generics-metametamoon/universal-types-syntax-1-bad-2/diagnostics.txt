@@ -1,0 +1,12 @@
+test/golden/generics-metametamoon/universal-types-syntax-1-bad-2/input.yqst:5:64: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable S
+> generic fn identity[T](x : /*e=ERROR_UNDEFINED_TYPE_VARIABLE*/ S) -> T {
+                                                                 ^
+test/golden/generics-metametamoon/universal-types-syntax-1-bad-2/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected T, got S
+>   return x
+           ^
+test/golden/generics-metametamoon/universal-types-syntax-1-bad-2/input.yqst:10:24: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected S, got Nat
+>   return identity[Nat](x)
+                         ^

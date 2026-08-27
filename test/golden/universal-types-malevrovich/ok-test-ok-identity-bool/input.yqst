@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+generic fn identity[T](x : T) -> T {
+  return x
+}
+
+fn main(n : Nat) -> Bool {
+  return identity[Bool](false)
+}

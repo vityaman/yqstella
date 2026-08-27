@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #multiparameter-functions, #predecessor;
+
+generic fn repeat[T](count : Nat, value : T) -> T {
+  return if Nat::iszero(count) then value else repeat[T](Nat::pred(count), value)
+}
+
+fn main(n : Nat) -> Nat {
+  return repeat[Nat](n, n)
+}

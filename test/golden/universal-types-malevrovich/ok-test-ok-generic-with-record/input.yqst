@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #records;
+
+generic fn make_box[T](x : T) -> {val : T} {
+  return {val = x}
+}
+
+fn main(n : Nat) -> {val : Nat} {
+  return make_box[Nat](n)
+}

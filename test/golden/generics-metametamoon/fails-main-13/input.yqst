@@ -1,0 +1,12 @@
+language core;
+extend with #universal-types;
+
+generic fn id[X](a : X) -> forall X. fn(X) -> X {
+  return /*e=ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION*/ generic[X] fn(b : X) {
+    return a
+  }
+}
+
+fn main(a : Nat) -> Nat {
+  return a
+}

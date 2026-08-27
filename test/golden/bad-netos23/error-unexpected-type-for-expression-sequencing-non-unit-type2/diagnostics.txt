@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-sequencing-non-unit-type2/input.yqst:5:51: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Unit, got Nat
+> 	return (fn(a : Nat) { return unit }) (0); (fn(a : Nat) { return a }) (0); 0
+                                                    ^

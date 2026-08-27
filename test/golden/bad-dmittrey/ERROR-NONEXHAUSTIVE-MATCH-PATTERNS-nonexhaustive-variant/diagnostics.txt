@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-NONEXHAUSTIVE-MATCH-PATTERNS-nonexhaustive-variant/input.yqst:13:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: <| failure = _ |>
+>   return match attempt(succeed) {
+           ^

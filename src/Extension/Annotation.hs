@@ -110,7 +110,7 @@ instance ExtensionsAnnotatable AST.Type' where
       types' = fmap annotateExtensions types
       type_' = annotateExtensions type_
   annotateExtensions (AST.TypeForAll p stellaidents type_) =
-    AST.TypeForAll (p, Set.empty) stellaidents type_'
+    AST.TypeForAll (p, Set.singleton Extension.UniversalTypes) stellaidents type_'
     where
       type_' = annotateExtensions type_
   annotateExtensions (AST.TypeRec p stellaident type_) =
@@ -248,7 +248,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
   annotateExtensions (AST.PatternTrue p) =
     AST.PatternTrue (p, Set.fromList [Extension.StructuralPatterns])
   annotateExtensions (AST.PatternUnit p) =
-    AST.PatternUnit (p, Set.fromList [Extension.UnitType, Extension.StructuralPatterns])
+    AST.PatternUnit (p, Set.singleton Extension.StructuralPatterns)
   annotateExtensions (AST.PatternInt p n) =
     AST.PatternInt (p, Set.fromList [Extension.StructuralPatterns]) n
   annotateExtensions (AST.PatternSucc p pattern_) =
@@ -311,7 +311,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr' = annotateExtensions expr
       p' = [Extension.LetBindings, Extension.LetRecBindings, Extension.FixpointCombinator]
   annotateExtensions (AST.TypeAbstraction p stellaidents expr) =
-    AST.TypeAbstraction (p, Set.empty) stellaidents expr'
+    AST.TypeAbstraction (p, Set.singleton Extension.UniversalTypes) stellaidents expr'
     where
       expr' = annotateExtensions expr
   annotateExtensions (AST.LessThan p expr1 expr2) =
@@ -419,7 +419,7 @@ instance ExtensionsAnnotatable AST.Expr' where
       expr' = annotateExtensions expr
       exprs' = fmap annotateExtensions exprs
   annotateExtensions (AST.TypeApplication p expr types) =
-    AST.TypeApplication (p, Set.empty) expr' types'
+    AST.TypeApplication (p, Set.singleton Extension.UniversalTypes) expr' types'
     where
       expr' = annotateExtensions expr
       types' = fmap annotateExtensions types

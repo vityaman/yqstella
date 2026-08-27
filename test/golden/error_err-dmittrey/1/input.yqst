@@ -1,0 +1,10 @@
+language core;
+extend with #natural-literals,#exceptions,#arithmetic-operators,#exception-type-declaration,#comparison-operators,#multiparameter-functions;
+
+exception type = Nat
+
+fn main( x : Nat) -> Bool {
+    return throw(true)  // :  Nat,   Bool
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

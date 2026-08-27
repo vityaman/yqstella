@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-record-dot/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return {x = 0, y = 0}.x
+           ^

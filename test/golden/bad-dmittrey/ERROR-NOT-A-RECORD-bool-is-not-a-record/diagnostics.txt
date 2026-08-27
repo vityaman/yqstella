@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-NOT-A-RECORD-bool-is-not-a-record/input.yqst:5:10: [ERROR_NOT_A_RECORD]
+type mismatch: expected record with field: Nat, got Nat
+>   return 0.field
+           ^

@@ -1,0 +1,7 @@
+language core;
+
+fn main(_ : Nat) -> fn(Nat) -> Nat {
+  return fn(n : Nat) { return if Nat::iszero(n) then 0 else succ(n) }
+}
+
+//SUCCESS

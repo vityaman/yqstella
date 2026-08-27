@@ -1,0 +1,14 @@
+language core;
+extend with #universal-types, #pairs;
+
+generic fn first[X, Y](p : {X, Y}) -> X {
+  return p.1
+}
+
+generic fn preserve[Y](y : Y) -> Y {
+  return first[Y, Nat]({y, 0})
+}
+
+fn main(n : Nat) -> Nat {
+  return preserve[Nat](n)
+}

@@ -1,0 +1,17 @@
+language core;
+extend with #natural-literals,#exceptions,#arithmetic-operators,#exception-type-declaration,#comparison-operators,#multiparameter-functions;
+
+exception type = Nat  //     
+
+fn div(x : Nat, y : Nat) -> Nat {
+  return if y == 0 then
+    throw(0)  //   ( Nat)
+  else
+     x
+}
+
+fn main(n : Nat) -> Nat {
+  return try { div(n, 0) } catch { e => e }
+}
+
+//SUCCESS

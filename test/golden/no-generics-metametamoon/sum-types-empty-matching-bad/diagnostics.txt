@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/sum-types-empty-matching-bad/input.yqst:16:10: [ERROR_ILLEGAL_EMPTY_MATCHING]
+expected at least one match case
+>   return match n {}
+           ^

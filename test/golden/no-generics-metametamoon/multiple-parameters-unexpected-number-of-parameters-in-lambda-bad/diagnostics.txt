@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/multiple-parameters-unexpected-number-of-parameters-in-lambda-bad/input.yqst:18:10: [ERROR_UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA]
+expected 2 parameters for type fn(Nat, Bool) -> Nat, but actually got 1
+>   return fn(x : Nat) { return x }
+           ^

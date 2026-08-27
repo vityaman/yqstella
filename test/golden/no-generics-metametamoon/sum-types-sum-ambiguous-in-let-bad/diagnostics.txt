@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/sum-types-sum-ambiguous-in-let-bad/input.yqst:18:18: [ERROR_AMBIGUOUS_SUM_TYPE]
+type inference for sum types is not supported (use type ascriptions)
+>   return let x = inl(n) in 0
+                   ^

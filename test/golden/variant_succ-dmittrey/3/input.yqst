@@ -1,0 +1,15 @@
+language core;
+extend with #variants, #unit-type,#natural-literals,#structural-patterns;
+
+fn example(x : Bool) -> <| a : Nat, b : Unit |> {
+  return if x then <| a = 5 |> else <| b = unit |>
+}
+
+fn main(flag : Bool) -> Nat {
+  return match example(flag) {
+      <| a = n |> => succ(n)
+    | <| b = unit |> => 0
+  }
+}
+
+// SUCCESS

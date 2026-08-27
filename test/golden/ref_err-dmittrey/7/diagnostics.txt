@@ -1,0 +1,4 @@
+test/golden/ref_err-dmittrey/7/input.yqst:7:12: [ERROR_UNEXPECTED_MEMORY_ADDRESS]
+expected Nat, but got memory address
+>   return f(<0x1234>)
+             ^

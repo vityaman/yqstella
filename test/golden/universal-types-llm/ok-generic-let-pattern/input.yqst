@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #pairs, #let-bindings, #let-patterns, #structural-patterns, #unit-type;
+
+generic fn unwrap[T](pair : {T, Unit}) -> T {
+  return let {value, _} = pair in value
+}
+
+fn main(n : Nat) -> Nat {
+  return unwrap[Nat]({n, unit})
+}

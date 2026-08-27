@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-108/input.yqst:10:56: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and Nat
+>           return { x = y, y = if x(0) then 0 else succ(x(0)) }
+                                                         ^

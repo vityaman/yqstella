@@ -1,0 +1,8 @@
+language core;
+extend with #references, #unit-type, #let-bindings;
+
+fn main(u : Unit) -> Unit {
+  return let r = new(u) in *r
+}
+
+//SUCCESS

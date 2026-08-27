@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-bool-if-bad/input.yqst:16:23: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>      return if b then true else false
+                        ^

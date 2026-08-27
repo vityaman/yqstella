@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-INCORRECT-NUMBER-OF-TYPE-ARGUMENTS-const-many-vars/input.yqst:12:10: [ERROR_INCORRECT_NUMBER_OF_TYPE_ARGUMENTS]
+expected 2 type arguments, got 3
+>   return const[Nat, Bool, Bool](x)(false)
+           ^

@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #universal-types;
+
+generic fn apply[T](f : forall U. fn(U) -> T, x : Bool) -> T {
+  return f[Bool](x)
+}
+
+fn main(x : Nat) -> Nat {
+  return apply[Nat](generic [U] fn(u : U) { return succ(0) }, false)
+}

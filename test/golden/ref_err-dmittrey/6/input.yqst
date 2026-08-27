@@ -1,0 +1,8 @@
+language core;
+extend with #references,#comparison-operators,#natural-literals;
+
+fn main(n : Nat) -> Bool {
+  return <0x1234> == 5
+}
+
+//ERROR_AMBIGUOUS_REFERENCE_TYPE

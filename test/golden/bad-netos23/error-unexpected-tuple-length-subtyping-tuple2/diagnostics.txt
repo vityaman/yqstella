@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-tuple-length-subtyping-tuple2/input.yqst:15:10: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+(subsumes) expected 2 tuple components, got 1
+>   return tuple_gen(n)
+           ^

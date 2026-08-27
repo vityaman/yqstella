@@ -1,0 +1,15 @@
+language core;
+extend with #lists,#structural-patterns,#natural-literals;
+
+fn length(xs : [Nat]) -> Nat {
+  return match xs {
+    [] => 0
+  | cons(h, t) => succ(length(t))
+  }
+}
+
+fn main(_ : Nat) -> Nat {
+  return length([5])
+}
+
+//SUCCESS

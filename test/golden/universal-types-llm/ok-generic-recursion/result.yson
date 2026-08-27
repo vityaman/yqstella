@@ -1,0 +1,4 @@
+minirun ABI version: 2.45.0
+test/golden/universal-types-llm/ok-generic-recursion/yql.yqls:<main>:9:54: Error: Name not found: repeat
+	      (If (== count (Uint64 '0)) value (Apply (Apply repeat T) (+ count (Uint64 '1)) value)))))
+	                                                     ^

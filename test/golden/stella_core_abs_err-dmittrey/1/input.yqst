@@ -1,0 +1,7 @@
+language core;
+
+fn main(_ : Nat) -> Nat {
+  return fn(x : Nat) { return succ(x) }
+}
+
+//ERROR_UNEXPECTED_LAMBDA

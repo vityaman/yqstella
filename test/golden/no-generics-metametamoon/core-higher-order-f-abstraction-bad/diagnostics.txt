@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-higher-order-f-abstraction-bad/input.yqst:20:33: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return f(fn(x : Nat) { return x })
+                                  ^

@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+fn apply_poly(f : forall T . fn(T) -> T) -> fn(Nat) -> Nat {
+  return f[Nat]
+}
+
+fn main(n : Nat) -> Nat {
+  return apply_poly(generic [T] fn(x : T) { return x })(n)
+}

@@ -1,0 +1,4 @@
+test/golden/type-reconstruction-draen-guy/well-natural-arithmetic/input.yqst:7:12: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Expr' not implemented
+>     return Nat::rec(n, m, fn(i : auto) {
+             ^

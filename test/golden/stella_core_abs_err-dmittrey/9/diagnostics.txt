@@ -1,0 +1,8 @@
+test/golden/stella_core_abs_err-dmittrey/9/input.yqst:11:22: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Bool, got fn(Nat) -> Bool
+>     return boolTwice(fn(x : Nat) { return false })
+                       ^
+test/golden/stella_core_abs_err-dmittrey/9/input.yqst:11:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got fn(Bool) -> Bool
+>     return boolTwice(fn(x : Nat) { return false })
+             ^

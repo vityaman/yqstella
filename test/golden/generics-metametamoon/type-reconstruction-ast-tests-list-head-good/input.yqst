@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #lists;
+
+fn first(xs : auto) -> auto {
+  return List::head(xs)
+}
+
+fn main(n : Nat) -> auto {
+  return first([n])
+}

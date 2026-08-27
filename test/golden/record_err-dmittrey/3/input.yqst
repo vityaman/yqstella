@@ -1,0 +1,9 @@
+language core;
+extend with #records,#natural-literals,#let-bindings,#nullary-functions,#type-ascriptions;
+
+fn main(_ : Nat) -> Nat {
+  return let r = {x = 1, y = 2}  // :     Nat
+  in r as Nat
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

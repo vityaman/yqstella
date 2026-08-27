@@ -1,0 +1,20 @@
+language core;
+
+extend with #nullary-functions;
+extend with #multiparameter-functions;
+extend with #structural-patterns;
+extend with #pattern-ascriptions;
+extend with #nested-function-declarations;
+extend with #unit-type;
+
+extend with #exceptions;
+extend with #exception-type-declaration;
+
+exception type = Nat
+exception type = Bool
+
+fn main(x : Nat) -> Nat {
+  return x
+}
+
+//SUCCESS

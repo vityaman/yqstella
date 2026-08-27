@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-VARIANT-LABEL-variant-asc/input.yqst:7:17: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label a for <| b : Nat, c : Bool |>
+>   return match (<| a = succ(0) |>) as <| b : Nat, c : Bool |> {
+                  ^

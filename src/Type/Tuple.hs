@@ -1,15 +1,18 @@
 module Type.Tuple (annotateDotTupleType, annotateTupleType) where
 
 import Control.Monad (zipWithM)
+import Control.Monad.State (gets)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Constraint as Constraint
+import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, tellC, tellD, typeOf)
-import Type.Lift (liftType)
+import Type.Lift (liftType, liftType')
+import qualified Type.Unification as Unification
 
 annotateDotTupleType ::
   Maybe Type ->
@@ -20,6 +23,7 @@ annotateDotTupleType ::
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateDotTupleType t p expr index annotateType = do
   expr' <- annotateType Nothing expr
+  metaVariables <- gets Context.metaVars
 
   t' <- case typeOf expr' of
     _ | index == 0 -> do
@@ -38,14 +42,14 @@ annotateDotTupleType t p expr index annotateType = do
       t' <- liftType p (const actual) t
       return $ Just t'
     Just variable@(Type (AST.TypeVar () _))
-      | index == 1 || index == 2 -> do
+      | Unification.isMetaVar metaVariables variable,
+        index == 1 || index == 2 -> do
           (Type lhsT) <- freshTypeVar
           (Type rhsT) <- freshTypeVar
           tellC [Constraint.Eq p variable (Type $ AST.TypeTuple () [lhsT, rhsT])]
-          if index == 1
-            then return $ Just $ Type lhsT
-            else return $ Just $ Type rhsT
-      | otherwise -> do
+          let itemType = if index == 1 then Type lhsT else Type rhsT
+          Just <$> liftType' p itemType t
+      | Unification.isMetaVar metaVariables variable -> do
           let message = "tuple type reconstruction is not yet implemented"
           tellD [diagnostic Error NOT_IMPLEMENTED (pointRange p) message]
           return Nothing
@@ -65,12 +69,18 @@ annotateTupleType ::
   TypeAnnotator AST.Expr' ->
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateTupleType t p exprs annotateType = do
+  metaVariables <- gets Context.metaVars
   (exprs', isReliable) <- case t of
     Just (Type (AST.TypeTuple _ ts)) | length ts == length exprs -> do
       exprs' <- zipWithM annotateType (fmap (Just . Type) ts) exprs
       return (exprs', True)
     Just (Type (AST.TypeTop ())) -> do
       exprs' <- mapM (annotateType Nothing) exprs
+      return (exprs', True)
+    Just variable@(Type (AST.TypeVar () _)) | Unification.isMetaVar metaVariables variable -> do
+      exprs' <- mapM (annotateType Nothing) exprs
+      let inferred = Type . AST.TypeTuple () <$> traverse (fmap Type.toAST . typeOf) exprs'
+      maybe (pure ()) (tellC . pure . Constraint.Eq p variable) inferred
       return (exprs', True)
     Just expected -> do
       exprs' <- mapM (annotateType Nothing) exprs

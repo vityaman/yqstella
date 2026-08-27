@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type;
+
+fn main(n : Nat) -> Nat {
+  return 0(n)
+}
+
+//ERROR_NOT_A_FUNCTION

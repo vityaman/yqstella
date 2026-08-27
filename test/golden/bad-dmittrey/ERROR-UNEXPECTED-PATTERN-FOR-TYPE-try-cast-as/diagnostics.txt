@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-PATTERN-FOR-TYPE-try-cast-as/input.yqst:7:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat
+>     { true => 12 } //    
+        ^

@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-nonexhaustive-match-patterns-nonexhaustive-match-reconstruct/input.yqst:10:10: [ERROR_NONEXHAUSTIVE_MATCH_PATTERNS]
+non-exchaustive pattern-matching, useful clause: inr (_)
+>   return match test(input) {
+           ^

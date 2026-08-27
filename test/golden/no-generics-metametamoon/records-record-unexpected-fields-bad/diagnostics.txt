@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-record-unexpected-fields-bad/input.yqst:18:10: [ERROR_UNEXPECTED_RECORD_FIELDS]
+unexpected record fields: 
+>   return {a = n, b = n}
+           ^

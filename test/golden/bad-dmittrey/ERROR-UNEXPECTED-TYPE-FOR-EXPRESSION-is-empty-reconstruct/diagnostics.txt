@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-is-empty-reconstruct/input.yqst:7:24: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return List::isempty(arg)
+                         ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-unexpected-type-for-expression-1/input.yqst:10:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got fn(Nat) -> Nat
+>   return twice( fn(x : Nat){ return n } )
+           ^

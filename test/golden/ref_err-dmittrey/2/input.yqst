@@ -1,0 +1,8 @@
+language core;
+extend with #references;
+
+fn main(n : Nat) -> Nat {
+  return *n
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

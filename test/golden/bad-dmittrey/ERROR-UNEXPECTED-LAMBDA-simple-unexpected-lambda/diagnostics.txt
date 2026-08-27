@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-LAMBDA-simple-unexpected-lambda/input.yqst:5:12: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Bool, got fn(Nat) -> Nat
+>     return fn(i : Nat) { return i }
+             ^

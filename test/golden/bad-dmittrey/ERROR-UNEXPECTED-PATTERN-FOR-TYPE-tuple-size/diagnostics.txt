@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-PATTERN-FOR-TYPE-tuple-size/input.yqst:11:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+expected tuple with length 2, got 3
+>     {x, y, z} => x
+      ^

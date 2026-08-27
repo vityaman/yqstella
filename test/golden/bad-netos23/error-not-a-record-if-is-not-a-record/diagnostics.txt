@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-not-a-record-if-is-not-a-record/input.yqst:5:10: [ERROR_NOT_A_RECORD]
+type mismatch: expected record with field: Nat, got Nat
+>   return (if (n) then 0 else succ(0)).field
+           ^

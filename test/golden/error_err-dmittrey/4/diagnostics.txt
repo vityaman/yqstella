@@ -1,0 +1,4 @@
+test/golden/error_err-dmittrey/4/input.yqst:7:42: [ERROR_UNDEFINED_VARIABLE]
+undefined variable y
+>     return try { throw(0) } catch { x => y }  // :     
+                                           ^

@@ -1,0 +1,20 @@
+test/golden/ok-netos23/fix-from-arg-reconstruct/input.yqst:1:1: [ERROR_AMBIGUOUS_TYPE]
+type fn(fn(TypeVar(unit |> 3)) -> TypeVar(unit |> 3)) -> fn(TypeVar(unit |> 3)) -> TypeVar(unit |> 3) has unresolved type variable TypeVar(unit |> 3)
+> language core;
+  ^
+test/golden/ok-netos23/fix-from-arg-reconstruct/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(fn(TypeVar(unit |> 3)) -> TypeVar(unit |> 3)) -> fn(TypeVar(unit |> 3)) -> TypeVar(unit |> 3) has unresolved type variable TypeVar(unit |> 3)
+> language core;
+  ^
+test/golden/ok-netos23/fix-from-arg-reconstruct/input.yqst:5:9: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 3)) -> TypeVar(unit |> 3) has unresolved type variable TypeVar(unit |> 3)
+> fn main(f : fn(auto) -> auto) -> auto {
+          ^
+test/golden/ok-netos23/fix-from-arg-reconstruct/input.yqst:6:10: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 3)) -> TypeVar(unit |> 3) has unresolved type variable TypeVar(unit |> 3)
+>   return fix(f);
+           ^
+test/golden/ok-netos23/fix-from-arg-reconstruct/input.yqst:6:14: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 3)) -> TypeVar(unit |> 3) has unresolved type variable TypeVar(unit |> 3)
+>   return fix(f);
+               ^

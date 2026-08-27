@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type;
+
+fn main(_ : Unit) -> Unit {
+  return fn(u : Unit) { return u }
+}
+
+//ERROR_UNEXPECTED_LAMBDA

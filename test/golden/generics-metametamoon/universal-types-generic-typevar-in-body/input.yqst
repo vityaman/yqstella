@@ -1,0 +1,16 @@
+// SUCCESS
+language core;
+
+extend with #universal-types;
+
+generic fn identity[T](x : T) -> T {
+  return x
+}
+
+generic fn apply[T](x : T) -> T {
+  return identity[T](x)
+}
+
+fn main(x : Nat) -> Nat {
+  return apply[Nat](x)
+}

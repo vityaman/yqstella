@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-ambiguous-panic-type-panic-or-function/input.yqst:5:25: [ERROR_AMBIGUOUS_PANIC_TYPE]
+type inference for panic is not supported (use type ascriptions)
+>   return (if false then panic! else fn (x : Nat) { return x }) (0)
+                          ^

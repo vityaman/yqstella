@@ -1,0 +1,24 @@
+//! PASS
+language core;
+
+extend with #nullary-functions;
+extend with #multiparameter-functions;
+extend with #structural-patterns;
+extend with #pattern-ascriptions;
+extend with #nested-function-declarations;
+extend with #unit-type;
+
+extend with #exceptions;
+extend with #exception-type-declaration;
+
+exception type = Nat
+
+fn catch-arm-pat-may-be-non-exhaustive() -> Unit {
+  return try { unit } catch { 0 => unit }
+}
+
+fn main(x : Nat) -> Nat {
+  return x
+}
+
+//SUCCESS

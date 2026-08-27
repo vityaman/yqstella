@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/8/input.yqst:7:10: [ERROR_NOT_A_RECORD]
+type mismatch: expected record with abc: Nat, got fn(Nat) -> Nat
+>   return f.abc  // :   
+           ^

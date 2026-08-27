@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #records;
+
+generic fn missing[T](record : { value : T }) -> T {
+  return record.other
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

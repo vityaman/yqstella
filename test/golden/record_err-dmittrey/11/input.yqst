@@ -1,0 +1,8 @@
+language core;
+extend with #records,#natural-literals,#let-bindings;
+
+fn main(_ : Nat) -> Nat {
+  return {x = 1, y = 2}
+}
+
+//ERROR_UNEXPECTED_RECORD

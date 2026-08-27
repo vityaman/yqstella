@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-return-deref-wrong-ref/input.yqst:7:23: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+> 	return *(new (foo(0)))
+                        ^

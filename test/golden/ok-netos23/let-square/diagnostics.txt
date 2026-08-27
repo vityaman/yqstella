@@ -1,0 +1,4 @@
+test/golden/ok-netos23/let-square/input.yqst:6:12: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Expr' not implemented
+>     return Nat::rec(n, m, fn(i : Nat) {
+             ^

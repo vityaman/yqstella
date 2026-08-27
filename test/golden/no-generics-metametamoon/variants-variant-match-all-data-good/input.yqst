@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #variants;
+
+fn main(x : <| left : Nat, right : Bool |>) -> Nat {
+  return match x {
+      <| left = n |> => n
+    | <| right = b |> => 0
+  }
+}

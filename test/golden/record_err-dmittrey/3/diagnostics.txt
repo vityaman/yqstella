@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/3/input.yqst:6:6: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got {x : Nat, y : Nat}
+>   in r as Nat
+       ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-AMBIGUOUS-REFERENCE-TYPE-deref-memory-from-lambda/input.yqst:6:16: [ERROR_AMBIGUOUS_REFERENCE_TYPE]
+type inference for memory address is not supported (use type ascriptions)
+>     	return <0x01>
+                 ^

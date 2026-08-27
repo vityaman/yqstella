@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #lists;
+
+fn prepend(x : auto, xs : auto) -> auto {
+  return cons(x, xs)
+}
+
+fn main(n : Nat) -> auto {
+  return prepend(n, [succ(n)])
+}

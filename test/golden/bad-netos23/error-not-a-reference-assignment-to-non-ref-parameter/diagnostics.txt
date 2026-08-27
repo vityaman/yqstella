@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-not-a-reference-assignment-to-non-ref-parameter/input.yqst:5:16: [ERROR_NOT_A_REFERENCE]
+expected a reference, but got Nat
+> 	return n := 0; n
+                 ^

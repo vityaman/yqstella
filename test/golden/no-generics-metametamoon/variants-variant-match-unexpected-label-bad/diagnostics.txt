@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/variants-variant-match-unexpected-label-bad/input.yqst:21:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag unexistent not found
+>     | <| unexistent = z |> => 0
+        ^
+test/golden/no-generics-metametamoon/variants-variant-match-unexpected-label-bad/input.yqst:18:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return match x {
+           ^

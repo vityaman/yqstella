@@ -22,58 +22,61 @@ typeAliasCollect = Map.fromList . mapMaybe toTypeAlias
     toTypeAlias _ = Nothing
 
 typeAliasResolve :: TypeAliasesRaw -> AST.Type' Position -> TypeAnnotationEnv (Maybe Type)
-typeAliasResolve types t = do
-  t' <- go mempty t
-  mapM sanitizeT t'
+typeAliasResolve aliases type_ = do
+  resolved <- resolve mempty mempty type_
+  mapM sanitizeT resolved
   where
-    go :: Set String -> AST.Type' Position -> TypeAnnotationEnv (Maybe (AST.Type' Position))
-    go vis (AST.TypeFun p args returntype) = do
-      args' <- sequence <$> mapM (go vis) args
-      returntype' <- go vis returntype
+    resolve :: Set String -> Set String -> AST.Type' Position -> TypeAnnotationEnv (Maybe (AST.Type' Position))
+    resolve expandingAliases boundVariables (AST.TypeFun p args returntype) = do
+      args' <- sequence <$> mapM (resolve expandingAliases boundVariables) args
+      returntype' <- resolve expandingAliases boundVariables returntype
       return $ AST.TypeFun p <$> args' <*> returntype'
-    go vis (AST.TypeForAll p id' body) = do
-      body' <- go vis body
-      return $ AST.TypeForAll p id' <$> body'
-    go vis (AST.TypeRec p id' body) = do
-      body' <- go vis body
-      return $ AST.TypeRec p id' <$> body'
-    go vis (AST.TypeSum p lhs rhs) = do
-      lhs' <- go vis lhs
-      rhs' <- go vis rhs
+    resolve expandingAliases boundVariables (AST.TypeForAll p parameters body) = do
+      body' <- resolve expandingAliases (boundVariables <> identNames parameters) body
+      return $ AST.TypeForAll p parameters <$> body'
+    resolve expandingAliases boundVariables (AST.TypeRec p parameter body) = do
+      body' <- resolve expandingAliases (Set.insert (identName parameter) boundVariables) body
+      return $ AST.TypeRec p parameter <$> body'
+    resolve expandingAliases boundVariables (AST.TypeSum p lhs rhs) = do
+      lhs' <- resolve expandingAliases boundVariables lhs
+      rhs' <- resolve expandingAliases boundVariables rhs
       return $ AST.TypeSum p <$> lhs' <*> rhs'
-    go vis (AST.TypeTuple p types') = do
-      types'' <- sequence <$> mapM (go vis) types'
-      return $ AST.TypeTuple p <$> types''
-    go vis (AST.TypeRecord p fields) = do
-      let fieldGo (AST.ARecordFieldType p' (AST.StellaIdent label) ty) = do
-            ty' <- go vis ty
-            return $ AST.ARecordFieldType p' (AST.StellaIdent label) <$> ty'
-      fields' <- sequence <$> mapM fieldGo fields
+    resolve expandingAliases boundVariables (AST.TypeTuple p types) = do
+      types' <- sequence <$> mapM (resolve expandingAliases boundVariables) types
+      return $ AST.TypeTuple p <$> types'
+    resolve expandingAliases boundVariables (AST.TypeRecord p fields) = do
+      let resolveRecordField (AST.ARecordFieldType fieldPosition label fieldType) = do
+            fieldType' <- resolve expandingAliases boundVariables fieldType
+            return $ AST.ARecordFieldType fieldPosition label <$> fieldType'
+      fields' <- sequence <$> mapM resolveRecordField fields
       return $ AST.TypeRecord p <$> fields'
-    go vis (AST.TypeVariant p fields) = do
-      let fieldGo (AST.AVariantFieldType p' (AST.StellaIdent label) (AST.NoTyping p'')) =
-            return $ Just $ AST.AVariantFieldType p' (AST.StellaIdent label) (AST.NoTyping p'')
-          fieldGo (AST.AVariantFieldType p' (AST.StellaIdent label) (AST.SomeTyping p'' t')) = do
-            ty' <- go vis t'
-            return (AST.AVariantFieldType p' (AST.StellaIdent label) . AST.SomeTyping p'' <$> ty')
-      fields' <- sequence <$> mapM fieldGo fields
+    resolve expandingAliases boundVariables (AST.TypeVariant p fields) = do
+      let resolveVariantField field@(AST.AVariantFieldType _ _ (AST.NoTyping _)) = return $ Just field
+          resolveVariantField (AST.AVariantFieldType fieldPosition label (AST.SomeTyping typingPosition fieldType)) = do
+            fieldType' <- resolve expandingAliases boundVariables fieldType
+            return (AST.AVariantFieldType fieldPosition label . AST.SomeTyping typingPosition <$> fieldType')
+      fields' <- sequence <$> mapM resolveVariantField fields
       return $ AST.TypeVariant p <$> fields'
-    go vis (AST.TypeList p elemTy) = do
-      elemTy' <- go vis elemTy
-      return $ AST.TypeList p <$> elemTy'
-    go vis (AST.TypeRef p ty) = do
-      ty' <- go vis ty
-      return $ AST.TypeRef p <$> ty'
-    go vis (AST.TypeVar p (AST.StellaIdent name)) =
-      case Map.lookup name types of
-        Just ty
-          | name `Set.member` vis -> do
-              let msg = "recursive type alias detected for " ++ name
-              tellD [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) msg]
-              return Nothing
-          | otherwise -> go (Set.insert name vis) ty
-        Nothing -> do
-          let message = "undefined type alias " ++ name
-          tellD [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) message]
-          return Nothing
-    go _ x = return $ Just x
+    resolve expandingAliases boundVariables (AST.TypeList p item) = do
+      item' <- resolve expandingAliases boundVariables item
+      return $ AST.TypeList p <$> item'
+    resolve expandingAliases boundVariables (AST.TypeRef p referenced) = do
+      referenced' <- resolve expandingAliases boundVariables referenced
+      return $ AST.TypeRef p <$> referenced'
+    resolve expandingAliases boundVariables typeVariable@(AST.TypeVar p (AST.StellaIdent typeName))
+      | typeName `Set.member` boundVariables = return $ Just typeVariable
+      | otherwise = case Map.lookup typeName aliases of
+          Just alias
+            | typeName `Set.member` expandingAliases -> do
+                let message = "recursive type alias detected for " ++ typeName
+                tellD [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) message]
+                return Nothing
+            | otherwise -> resolve (Set.insert typeName expandingAliases) boundVariables alias
+          Nothing -> do
+            let message = "undefined type alias " ++ typeName
+            tellD [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) message]
+            return Nothing
+    resolve _ _ other = return $ Just other
+
+    identNames = Set.fromList . fmap identName
+    identName (AST.StellaIdent value) = value

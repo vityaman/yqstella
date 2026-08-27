@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/universal-types-duplicate-type-params-1/input.yqst:1:0: [ERROR_DUPLICATE_TYPE_PARAMETER]
+duplicate type parameter: T
+> language core;
+  ^

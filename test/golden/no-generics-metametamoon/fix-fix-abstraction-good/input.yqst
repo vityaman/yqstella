@@ -1,0 +1,18 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #fixpoint-combinator' or '#general-recursion;
+
+fn main(n : Nat) -> Nat {
+  return fix(fn (f : fn(Nat) -> Nat) {
+    return fn (x : Nat) { return x }
+  })(n)
+}

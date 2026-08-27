@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+generic fn wrong[T](x : T) -> T {
+  return succ(0)
+}
+
+fn main(n : Nat) -> Nat {
+  return wrong[Bool](false)
+}

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-346/input.yqst:18:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag number1 not found
+>       <| number1   = n |> => succ(n)
+        ^

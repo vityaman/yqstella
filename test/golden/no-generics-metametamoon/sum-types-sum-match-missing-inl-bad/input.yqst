@@ -1,0 +1,21 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_NONEXHAUSTIVE_MATCH_PATTERNS",
+    "location": "18:10"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #sum-types;
+
+fn main(x : Nat + Bool) -> Nat {
+  return match x {
+      inr(b) => 0
+  }
+}

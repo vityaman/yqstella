@@ -1,0 +1,4 @@
+test/golden/stella_core_err-dmittrey/1/input.yqst:11:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return foo(n)
+             ^

@@ -1,0 +1,9 @@
+language core;
+extend with #variants,#arithmetic-operators,#lists,#unit-type,#natural-literals,#structural-patterns,#multiparameter-functions,#fixpoint-combinator;
+
+
+fn main(_ : Nat) -> Nat {
+  return fix (fn (x : Nat, y : Nat) { return x + y })
+}
+
+//ERROR_UNEXPECTED_NUMBER_OF_PARAMETERS_IN_LAMBDA

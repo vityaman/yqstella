@@ -1,0 +1,4 @@
+test/golden/universal-types-malevrovich/error-test-err-typevar-not-a-tuple/input.yqst:5:10: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got T
+>   return t.1
+           ^

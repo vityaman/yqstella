@@ -1,0 +1,8 @@
+language core;
+extend with #references, #let-bindings, #type-ascriptions;
+
+fn main(n : Nat) -> &Nat {
+  return let addr = <0x0BEEF123> as &Nat in addr
+}
+
+//SUCCESS

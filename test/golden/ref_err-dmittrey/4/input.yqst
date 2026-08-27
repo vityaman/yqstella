@@ -1,0 +1,8 @@
+language core;
+extend with #references, #unit-type;
+
+fn main(u : Unit) -> Unit {
+  return *u
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

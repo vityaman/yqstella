@@ -1,0 +1,8 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-apply-pair-2-reconstruct/input.yqst:7:15: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got Nat
+>   return { f, f(0) }
+                ^
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-apply-pair-2-reconstruct/input.yqst:7:15: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
+>   return { f, f(0) }
+                ^

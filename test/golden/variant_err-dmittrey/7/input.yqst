@@ -1,0 +1,15 @@
+language core;
+extend with #variants,#unit-type,#type-ascriptions,#natural-literals,#nullary-variant-labels,#structural-patterns;
+
+fn example(x : Bool) -> <| a : Nat, b : Nat |> {
+  return if x then <| a = 5 |> else <| b = 4 |>
+}
+
+fn main(flag : Bool) -> Nat {
+  return match example(flag) {
+      <| a = n |> => succ(n)
+    | <| c |> => 0
+  }
+}
+
+// ERROR_UNEXPECTED_PATTERN_FOR_TYPE

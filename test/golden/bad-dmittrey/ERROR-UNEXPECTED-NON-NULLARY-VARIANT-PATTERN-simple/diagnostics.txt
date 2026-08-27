@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-NON-NULLARY-VARIANT-PATTERN-simple/input.yqst:7:12: [ERROR_UNEXPECTED_NON_NULLARY_VARIANT_PATTERN]
+unexpected non nullary pattern
+>       <| b = t |> => 0
+             ^

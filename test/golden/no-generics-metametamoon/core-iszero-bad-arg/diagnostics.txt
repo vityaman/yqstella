@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-iszero-bad-arg/input.yqst:16:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return Nat::iszero(b)
+                       ^

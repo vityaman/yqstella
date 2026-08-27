@@ -1,0 +1,11 @@
+/*e=ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION*/ language core;
+
+extend with #type-reconstruction;
+
+fn step(i : auto) -> auto {
+  return fn(acc : auto) { return succ(acc) }
+}
+
+fn main(n : Nat) -> auto {
+  return Nat::rec(n, true, step)
+}

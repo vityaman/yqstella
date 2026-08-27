@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-INCORRECT-ARITY-OF-MAIN-main-with-two-params/input.yqst:1:0: [ERROR_INCORRECT_ARITY_OF_MAIN]
+main function must have exactly one parameter, got 2
+> language core;
+  ^

@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION",
+    "location": "18:22"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #let-bindings, #fixpoint-combinator;
+
+fn main(n : fn(Nat) -> Bool) -> Nat {
+  return let a = fix(n) in a
+}

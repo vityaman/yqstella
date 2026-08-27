@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/lists-list-unexpected-list-bad/input.yqst:18:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return [n]
+           ^

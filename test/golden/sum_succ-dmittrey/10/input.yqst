@@ -1,0 +1,16 @@
+language core;
+extend with #sum-types,#let-bindings,#type-ascriptions;
+
+fn applyToZero(f : fn(Nat) -> Nat + Bool) -> Nat + Bool {
+    return f(0)
+}
+
+fn main(m : Nat) -> Nat {
+    return let fun = fn(x : Nat) { return inl(succ(x)) as (Nat + Bool) } in
+    match applyToZero(fun) {
+        inl(n) => n
+      | inr(_) => 0
+    }
+}
+
+//SUCCESS

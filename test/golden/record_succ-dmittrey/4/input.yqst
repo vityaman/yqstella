@@ -1,0 +1,12 @@
+language core;
+extend with #records,#arithmetic-operators,#natural-literals;
+
+fn sum(p : {a : Nat, b : Nat}) -> Nat {
+  return p.a + p.b
+}
+
+fn main(_ : Nat) -> Nat {
+  return sum({a = 10, b = 32})
+}
+
+//SUCCESS

@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types;
+
+generic fn identity[T](x : T) -> T {
+  return x
+}
+
+fn main(x : Nat) -> Bool{
+  return /*e=ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION*/ identity[Nat](x)
+}

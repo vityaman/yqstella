@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/variants-variant-match-type-mismatch-bad/input.yqst:20:26: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>     | <| right = b |> => b
+                           ^
+test/golden/no-generics-metametamoon/variants-variant-match-type-mismatch-bad/input.yqst:18:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, Bool
+>   return match x {
+           ^

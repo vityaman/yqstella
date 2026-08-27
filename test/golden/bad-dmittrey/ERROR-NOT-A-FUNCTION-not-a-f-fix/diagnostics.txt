@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-NOT-A-FUNCTION-not-a-f-fix/input.yqst:8:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Nat) -> Nat, got Bool
+>   return fix(true);
+               ^

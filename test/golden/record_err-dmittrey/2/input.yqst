@@ -1,0 +1,12 @@
+language core;
+extend with #records,#natural-literals,#let-bindings,#nullary-functions;
+
+fn make(n : Nat) -> {x : Nat} {
+  return {x = 42}
+}
+
+fn main(n : Nat) -> Nat {
+  return make(n).y
+}
+
+//ERROR_UNEXPECTED_FIELD_ACCESS

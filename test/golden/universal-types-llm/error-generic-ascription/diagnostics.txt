@@ -1,0 +1,8 @@
+test/golden/universal-types-llm/error-generic-ascription/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got T
+>   return value as Nat
+           ^
+test/golden/universal-types-llm/error-generic-ascription/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected T, got Nat
+>   return value as Nat
+           ^

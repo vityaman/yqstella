@@ -1,0 +1,8 @@
+language core;
+extend with #sum-types, #unit-type;
+
+fn main(n : Nat) -> Nat + (Unit + Nat) {
+    return inr(inl(unit))
+}
+
+//SUCCESS

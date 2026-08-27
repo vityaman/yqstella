@@ -1,0 +1,8 @@
+test/golden/no-generics-metametamoon/records-record-duplicate-type-fields-in-lambda-check-bad/input.yqst:17:23: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: a
+> fn f(x : fn({a : Nat, a : Nat}) -> Nat) -> Nat {
+                        ^
+test/golden/no-generics-metametamoon/records-record-duplicate-type-fields-in-lambda-check-bad/input.yqst:22:29: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: a
+>   return f(fn(r : {a : Nat, a : Nat}) { return 0 })
+                              ^

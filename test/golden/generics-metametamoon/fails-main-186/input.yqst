@@ -1,0 +1,21 @@
+// SUCCESS
+// alpha-renaming with nested forall payload and distinct binders
+language core;
+
+extend with #universal-types, #unit-type;
+
+generic fn mkConst[X](x : X) -> forall Y. fn(Y) -> X {
+  return generic [Y] fn(y : Y) {
+    return x
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return mkConst[forall A. fn(A) -> forall B. fn(B) -> A](
+    generic [A] fn(a : A) {
+      return generic [B] fn(b : B) {
+        return a
+      }
+    }
+  )[Bool](true)[Nat](n)[Unit](unit)
+}

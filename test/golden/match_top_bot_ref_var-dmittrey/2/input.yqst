@@ -1,0 +1,11 @@
+language core;
+
+extend with #top-type, #structural-patterns, #natural-literals;
+
+fn main( x : Top ) -> Nat {
+  return match x {
+    x => 1
+  }
+}
+
+//SUCCESS

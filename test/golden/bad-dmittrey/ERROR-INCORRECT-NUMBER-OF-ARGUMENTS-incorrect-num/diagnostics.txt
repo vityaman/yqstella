@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-INCORRECT-NUMBER-OF-ARGUMENTS-incorrect-num/input.yqst:6:12: [ERROR_INCORRECT_NUMBER_OF_ARGUMENTS]
+expected 2 arguments, got 1
+>     return (fn(a : Nat, b : Nat) {
+             ^

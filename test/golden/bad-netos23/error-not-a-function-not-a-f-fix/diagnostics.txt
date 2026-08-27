@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-not-a-function-not-a-f-fix/input.yqst:8:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Nat) -> Nat, got Bool
+>   return fix(true);
+               ^
