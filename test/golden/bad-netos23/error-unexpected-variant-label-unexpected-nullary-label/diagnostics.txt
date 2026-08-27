@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-variant-label-unexpected-nullary-label/input.yqst:6:10: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label e for <| a : Nat, b, c |>
+>   return <| e |>
+           ^

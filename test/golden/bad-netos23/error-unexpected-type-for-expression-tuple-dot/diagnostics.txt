@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-tuple-dot/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return {0, 0}.1
+           ^

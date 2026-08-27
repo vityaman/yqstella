@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-record-fields-return-record-with-missing-fields/input.yqst:6:10: [ERROR_UNEXPECTED_RECORD_FIELDS]
+unexpected record fields: 
+>   return { fst = 0, snd = true, thd = true }
+           ^

@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-list-simple/input.yqst:7:10: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>   return [arg, 0]
+           ^

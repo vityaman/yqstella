@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-missing-main-no-main/input.yqst:1:1: [ERROR_MISSING_MAIN]
+not found: main function
+> language core;
+  ^

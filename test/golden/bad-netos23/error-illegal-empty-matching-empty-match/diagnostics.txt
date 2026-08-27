@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-illegal-empty-matching-empty-match/input.yqst:10:10: [ERROR_ILLEGAL_EMPTY_MATCHING]
+expected at least one match case
+>   return match test(input) {
+           ^

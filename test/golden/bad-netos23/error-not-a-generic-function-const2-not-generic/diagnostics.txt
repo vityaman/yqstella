@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-not-a-generic-function-const2-not-generic/input.yqst:10:10: [ERROR_NOT_A_GENERIC_FUNCTION]
+expected a generic function, got fn(Nat) -> forall Y. fn(Y) -> Nat
+>   return const[Nat](x)[Bool](false)
+           ^

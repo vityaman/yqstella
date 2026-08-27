@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-nullary-variant-pattern-simple/input.yqst:1:0: [ERROR_UNEXPECTED_NULLARY_VARIANT_PATTERN]
+unexpected nullary pattern, expected Nat
+> language core;
+  ^

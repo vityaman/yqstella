@@ -1,0 +1,12 @@
+test/golden/ok-netos23/let-let-reconstruct/input.yqst:1:1: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 1)) -> Nat has unresolved type variable TypeVar(unit |> 1)
+> language core;
+  ^
+test/golden/ok-netos23/let-let-reconstruct/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 1)) -> Nat has unresolved type variable TypeVar(unit |> 1)
+> language core;
+  ^
+test/golden/ok-netos23/let-let-reconstruct/input.yqst:6:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 1) has unresolved type variable TypeVar(unit |> 1)
+> fn main(n : auto) -> auto {
+          ^

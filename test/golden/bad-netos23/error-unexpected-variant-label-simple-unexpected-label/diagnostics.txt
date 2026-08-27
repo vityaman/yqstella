@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-variant-label-simple-unexpected-label/input.yqst:9:12: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label v for <| value : Nat, failure : Unit |>
+>       then <| v = 0 |>
+             ^
+test/golden/bad-netos23/error-unexpected-variant-label-simple-unexpected-label/input.yqst:10:12: [ERROR_AMBIGUOUS_VARIANT_TYPE]
+type inference for variant types is not supported (use type ascriptions)
+>       else <| failure = unit |>
+             ^

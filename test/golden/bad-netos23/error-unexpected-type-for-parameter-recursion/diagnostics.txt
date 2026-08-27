@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-parameter-recursion/input.yqst:6:34: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Nat, got (i : Bool)
+>   return Nat::rec(n, succ(0), fn(i : Bool) {
+                                   ^

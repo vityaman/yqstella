@@ -1,0 +1,12 @@
+test/golden/bad-netos23/error-not-a-function-before-arg-type-check/input.yqst:8:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got Nat
+>   return n(foo(true))
+           ^
+test/golden/bad-netos23/error-not-a-function-before-arg-type-check/input.yqst:8:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return n(foo(true))
+                 ^
+test/golden/bad-netos23/error-not-a-function-before-arg-type-check/input.yqst:8:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
+>   return n(foo(true))
+           ^

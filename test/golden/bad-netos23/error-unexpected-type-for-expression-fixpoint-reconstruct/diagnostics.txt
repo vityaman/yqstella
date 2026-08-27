@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-fixpoint-reconstruct/input.yqst:7:35: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and Nat
+>   return fix(fn(y : Nat) { return true });
+                                    ^

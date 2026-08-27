@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-deref-memory/input.yqst:5:18: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected &Nat, got &Bool
+> 	return *(<0x01> as &Bool)
+                   ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-deref-memory/input.yqst:5:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+> 	return *(<0x01> as &Bool)
+                 ^

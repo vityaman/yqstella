@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-pattern-for-type-variant-asc-2/input.yqst:8:11: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag c not found
+>         | <| c = t |> => 0 // unknown label c
+            ^
+test/golden/bad-netos23/error-unexpected-pattern-for-type-variant-asc-2/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return match (<| a = succ(0) |>) as <| a : Nat, b : Bool |> {
+           ^

@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-pattern-for-type-try-catch-variant/input.yqst:12:37: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag x not found
+> 	return try { true } catch { <| x = 1 |> => true }
+                                      ^

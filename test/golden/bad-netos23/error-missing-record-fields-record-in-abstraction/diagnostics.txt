@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-missing-record-fields-record-in-abstraction/input.yqst:7:12: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: current
+>     return { next = succ(n) } // 'current' is missing
+             ^

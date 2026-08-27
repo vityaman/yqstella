@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-ambiguous-variant-type-ambiguous-variant-type-1/input.yqst:7:35: [ERROR_AMBIGUOUS_VARIANT_TYPE]
+type inference for variant types is not supported (use type ascriptions)
+>   return (fn (b : Bool) { return  <| value = n |>  })(true)
+                                    ^

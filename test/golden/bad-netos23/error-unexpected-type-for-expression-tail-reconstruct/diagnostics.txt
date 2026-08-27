@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-tail-reconstruct/input.yqst:7:45: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return (fn (a : auto) { return List::tail(arg) })(0)
+                                              ^

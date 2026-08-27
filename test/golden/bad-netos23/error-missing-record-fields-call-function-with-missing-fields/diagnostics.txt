@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-missing-record-fields-call-function-with-missing-fields/input.yqst:10:14: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: thd
+>   return foo({ fst = 0, snd = true }) // thd is missing
+               ^

@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-subtype-list/input.yqst:10:15: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Bool, got Nat
+>   return cons(0, (cons(0, [])))
+                ^
+test/golden/bad-netos23/error-unexpected-subtype-list/input.yqst:10:24: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Bool, got Nat
+>   return cons(0, (cons(0, [])))
+                         ^

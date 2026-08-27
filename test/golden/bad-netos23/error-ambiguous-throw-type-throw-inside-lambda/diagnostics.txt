@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-ambiguous-throw-type-throw-inside-lambda/input.yqst:9:16: [ERROR_AMBIGUOUS_THROW_TYPE]
+type inference for throw is not supported (use type ascriptions)
+>         return throw(1)
+                 ^

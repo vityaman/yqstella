@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-pattern-for-type-unexpected-variant-pattern/input.yqst:7:6: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Bool
+>      <| failure = f |>  => n
+       ^

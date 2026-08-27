@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-subtype-ref2/input.yqst:11:21: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Bool, got Nat
+>   return new(<| b = 1 |>)
+                      ^

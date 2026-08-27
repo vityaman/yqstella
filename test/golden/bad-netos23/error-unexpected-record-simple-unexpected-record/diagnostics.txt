@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-record-simple-unexpected-record/input.yqst:6:10: [ERROR_UNEXPECTED_RECORD]
+expected Nat, got record
+>   return { fst = 0, snd = true }
+           ^

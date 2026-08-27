@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-not-a-record-unit-is-not-a-record/input.yqst:4:13: [ERROR_BAD_EXTENSION]
+disabled extension usage: #unit-type
+> fn main(u : Unit) -> Nat {
+              ^
+test/golden/bad-netos23/error-not-a-record-unit-is-not-a-record/input.yqst:5:10: [ERROR_NOT_A_RECORD]
+type mismatch: expected record with field: Nat, got Unit
+>   return u.field
+           ^

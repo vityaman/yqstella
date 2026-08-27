@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-bad-let-6/input.yqst:14:19: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Bool) -> Bool, got Bool
+> 		c(y(Nat::iszero(m)))
+                    ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-bad-let-6/input.yqst:14:17: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got fn(fn(Bool) -> Bool) -> fn(Bool) -> Bool
+> 		c(y(Nat::iszero(m)))
+                  ^

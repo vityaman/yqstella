@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-let-list-reconstruct/input.yqst:7:22: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return let y = [0, true] in y
+                       ^

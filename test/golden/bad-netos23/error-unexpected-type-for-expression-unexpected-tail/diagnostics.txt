@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-unexpected-tail/input.yqst:8:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got [Nat]
+>     return List::tail([0] as [Nat])
+             ^

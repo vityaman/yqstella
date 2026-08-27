@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-list-infer-match/input.yqst:9:12: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>     | y => []
+             ^
+test/golden/bad-netos23/error-unexpected-list-infer-match/input.yqst:7:33: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return (fn (a : Nat) { return match(0) {
+                                  ^

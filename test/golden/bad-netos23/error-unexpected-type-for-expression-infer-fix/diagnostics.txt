@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-infer-fix/input.yqst:10:33: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected T -> T, got fn(Nat) -> Bool
+>   return (fn (a : Nat) { return fix(foo); } ) (0)
+                                  ^

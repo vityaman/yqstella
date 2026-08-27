@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-infer-match-reconstruct/input.yqst:8:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>     | y => true
+             ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-infer-match-reconstruct/input.yqst:6:33: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, Bool
+>   return (fn (a : Nat) { return match(0) {
+                                  ^

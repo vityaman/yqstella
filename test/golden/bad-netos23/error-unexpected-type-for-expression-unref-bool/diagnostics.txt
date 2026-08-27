@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-unref-bool/input.yqst:7:18: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected &Nat, got Bool
+> 	return *(true)
+                   ^
+test/golden/bad-netos23/error-unexpected-type-for-expression-unref-bool/input.yqst:7:16: [ERROR_NOT_A_REFERENCE]
+expected a reference type, got Bool
+> 	return *(true)
+                 ^

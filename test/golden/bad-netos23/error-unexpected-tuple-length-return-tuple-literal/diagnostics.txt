@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-tuple-length-return-tuple-literal/input.yqst:6:10: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+type mismatch: expected {Nat, Nat}, got {Nat, Nat, Bool}
+>   return {n, succ(n), true}
+           ^

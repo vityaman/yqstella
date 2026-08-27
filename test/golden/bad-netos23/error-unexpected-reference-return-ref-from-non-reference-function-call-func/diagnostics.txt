@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-reference-return-ref-from-non-reference-function-call-func/input.yqst:8:16: [ERROR_UNEXPECTED_REFERENCE]
+expected reference type, but got Nat
+> 	return new (foo(0))
+                 ^

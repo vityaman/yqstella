@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-no-nat-rec/input.yqst:5:19: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return Nat::rec(true, succ(0), fn(i : Nat) {
+                    ^

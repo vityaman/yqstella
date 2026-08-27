@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-undefined-variable-nested-func/input.yqst:12:10: [ERROR_UNDEFINED_VARIABLE]
+undefined variable bar
+>   return bar(0)
+           ^

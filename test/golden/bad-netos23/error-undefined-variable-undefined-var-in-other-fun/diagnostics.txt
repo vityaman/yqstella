@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-undefined-variable-undefined-var-in-other-fun/input.yqst:8:12: [ERROR_UNDEFINED_VARIABLE]
+undefined variable a
+>     return a
+             ^

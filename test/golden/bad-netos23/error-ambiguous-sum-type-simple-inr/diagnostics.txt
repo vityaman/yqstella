@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-ambiguous-sum-type-simple-inr/input.yqst:6:33: [ERROR_AMBIGUOUS_SUM_TYPE]
+type inference for sum types is not supported (use type ascriptions)
+>   return (fn (a : Nat) { return inr(0) }) (0)
+                                  ^

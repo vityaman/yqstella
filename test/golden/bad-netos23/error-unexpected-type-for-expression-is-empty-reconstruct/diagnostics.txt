@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-is-empty-reconstruct/input.yqst:7:24: [ERROR_NOT_A_LIST]
+expected list, got Nat
+>   return List::isempty(arg)
+                         ^

@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-incorrect-arity-of-main-main-with-zero-param/input.yqst:1:0: [ERROR_INCORRECT_ARITY_OF_MAIN]
+main function must have exactly one parameter, got 0
+> language core;
+  ^

@@ -1,0 +1,8 @@
+test/golden/bad-netos23/error-not-a-function-simple-no-function/input.yqst:4:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got Nat
+>   return n(n)
+           ^
+test/golden/bad-netos23/error-not-a-function-simple-no-function/input.yqst:4:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
+>   return n(n)
+           ^

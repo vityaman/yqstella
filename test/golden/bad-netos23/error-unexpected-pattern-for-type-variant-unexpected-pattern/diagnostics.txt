@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-pattern-for-type-variant-unexpected-pattern/input.yqst:14:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type <| value : Nat, failure : Unit |>
+>       inl(n) => succ(n)
+        ^

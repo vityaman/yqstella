@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-infer-fix-reconstruct/input.yqst:10:33: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected T -> T, got Nat
+>   return (fn (a : Nat) { return fix(0); } ) (0)
+                                  ^

@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-missing-data-for-label-simple/input.yqst:1:0: [ERROR_MISSING_DATA_FOR_LABEL]
+expected some variant label with type Nat, got nullary
+> language core;
+  ^

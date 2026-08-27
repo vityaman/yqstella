@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-record-application-record/input.yqst:10:15: [ERROR_UNEXPECTED_RECORD]
+expected Nat, got record
+>   return foo ({ a = 0, b = false })
+                ^

@@ -1,0 +1,4 @@
+test/golden/bad-netos23/error-unexpected-type-for-expression-fixpoint/input.yqst:7:35: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return fix(fn(y : Nat) { return true });
+                                    ^
