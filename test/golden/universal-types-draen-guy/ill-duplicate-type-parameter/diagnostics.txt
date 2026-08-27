@@ -1,0 +1,4 @@
+test/golden/universal-types-draen-guy/ill-duplicate-type-parameter/input.yqst:1:0: [ERROR_DUPLICATE_TYPE_PARAMETER]
+duplicate type parameter: X
+> language core;
+  ^

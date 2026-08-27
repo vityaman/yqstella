@@ -1,0 +1,32 @@
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn({a : Nat, b : Bool} + TypeVar(unit |> main |> 2)) -> {a : Nat, b : Bool} has unresolved type variable TypeVar(unit |> main |> 2)
+> language core;
+  ^
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:5:9: [ERROR_AMBIGUOUS_TYPE]
+type {a : Nat, b : Bool} + TypeVar(unit |> main |> 2) has unresolved type variable TypeVar(unit |> main |> 2)
+> fn test(value : auto) -> {a : Nat, b : Bool} {
+          ^
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:6:16: [ERROR_AMBIGUOUS_TYPE]
+type {a : Nat, b : Bool} + TypeVar(unit |> main |> 2) has unresolved type variable TypeVar(unit |> main |> 2)
+>   return match value {
+                 ^
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:7:5: [ERROR_AMBIGUOUS_TYPE]
+type {a : Nat, b : Bool} + TypeVar(unit |> main |> 2) has unresolved type variable TypeVar(unit |> main |> 2)
+>     inl(left) => left
+      ^
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:8:7: [ERROR_AMBIGUOUS_TYPE]
+type {a : Nat, b : Bool} + TypeVar(unit |> main |> 2) has unresolved type variable TypeVar(unit |> main |> 2)
+>     | inr(right) => {a = 0, b = false}
+        ^
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:8:11: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> main |> 2) has unresolved type variable TypeVar(unit |> main |> 2)
+>     | inr(right) => {a = 0, b = false}
+            ^
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:13:10: [ERROR_AMBIGUOUS_TYPE]
+type fn({a : Nat, b : Bool} + TypeVar(unit |> main |> 2)) -> {a : Nat, b : Bool} has unresolved type variable TypeVar(unit |> main |> 2)
+>   return test(inl({a = n, b = false})).a
+           ^
+test/golden/type-reconstruction-draen-guy/ill-ambiguous-sum-type/input.yqst:13:15: [ERROR_AMBIGUOUS_TYPE]
+type {a : Nat, b : Bool} + TypeVar(unit |> main |> 2) has unresolved type variable TypeVar(unit |> main |> 2)
+>   return test(inl({a = n, b = false})).a
+                ^

@@ -193,24 +193,34 @@ unexpectedListItemType p Expected t = do
 
 commonType :: Position -> [(Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
 commonType p pts = do
-  let groups =
-        map
-          (\((p', t') :| rest) -> (t', p' : map fst rest))
-          (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> areSame a b) pts))
+  metaVariables <- gets Context.metaVars
+  let present = mapMaybe snd pts
+      hasMetaVariables = not $ all (null . Unification.freeMetaVars metaVariables) present
 
-  case groups of
-    [(Nothing, _)] ->
-      return Nothing
-    [(Nothing, _), (Just t', _)] ->
-      return $ Just t'
-    [(Just t', _)] ->
-      return $ Just t'
-    ts -> do
-      -- TODO(vityaman): improve diagnostic
-      let ts' = fmap (maybe "?" show . fst) ts
-          message = "expected same type for all subexpressions, got " ++ intercalate ", " ts'
-      tellD [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
-      return Nothing
+  if hasMetaVariables
+    then case present of
+      [] -> return Nothing
+      first : rest -> do
+        mapM_ (ensureEqType p (mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p) first . Just) rest
+        return $ Just first
+    else do
+      let groups =
+            map
+              (\((p', t') :| rest) -> (t', p' : map fst rest))
+              (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> areSame a b) pts))
+
+      case groups of
+        [(Nothing, _)] ->
+          return Nothing
+        [(Nothing, _), (Just t', _)] ->
+          return $ Just t'
+        [(Just t', _)] ->
+          return $ Just t'
+        ts -> do
+          let ts' = fmap (maybe "?" show . fst) ts
+              message = "expected same type for all subexpressions, got " ++ intercalate ", " ts'
+          tellD [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
+          return Nothing
   where
     areSame Nothing Nothing = True
     areSame (Just lhs) (Just rhs) = Unification.alphaEq lhs rhs

@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types;
+
+generic fn const[X, X](x : X) -> fn(X) -> X {
+  return fn(y : X) { return x }
+}
+
+fn main(x : Nat) -> Nat {
+  return const[Nat](x)(x)
+}

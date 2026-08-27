@@ -1,4 +1,4 @@
-test/golden/type-reconstruction-malevrovich/error-test-err-pair/input.yqst:12:31: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-can't unify Nat and Bool
+test/golden/type-reconstruction-malevrovich/error-test-err-pair/input.yqst:12:48: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and Nat
 >   return if n.1 then n.2 else check_type_wrong(n)
-                                ^
+                                                 ^

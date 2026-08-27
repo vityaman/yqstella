@@ -1,0 +1,4 @@
+test/golden/universal-types-draen-guy/ill-not-a-generic-function/input.yqst:10:10: [ERROR_NOT_A_GENERIC_FUNCTION]
+expected a generic function, got fn(Nat) -> Nat
+>   return test[Bool](n)
+           ^

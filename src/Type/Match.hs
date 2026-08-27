@@ -17,12 +17,14 @@ import Diagnostic.Position (Position, pointRange)
 import Misc.Duplicate (sepUniqDupBy)
 import Syntax.PrettyPrint (displayAST)
 import qualified SyntaxGen.AbsStella as AST
+import qualified Type.Constraint as Constraint
 import Type.Context (withName)
 import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, tellD, typeOf, withStateTAE)
-import Type.Expectation (commonType)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, tellC, tellD, typeOf, withStateTAE)
+import Type.Expectation (commonType, sanitizeT)
+import qualified Type.Unification as Unification
 import Type.UsefulClause
 
 checkType :: Type -> AST.Pattern' Position -> Either Diagnostic (AST.Pattern' (Position, Type))
@@ -147,6 +149,8 @@ checkIrrefutable (AST.PatternUnit {}) =
   pure ()
 checkIrrefutable (AST.PatternVar {}) =
   pure ()
+checkIrrefutable (AST.PatternAsc _ pattern' _) =
+  checkIrrefutable pattern'
 checkIrrefutable p = do
   let message = "expected irrefutable pattern"
   Left $ diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange $ annotation p) message
@@ -197,6 +201,8 @@ bindings' (AST.PatternSucc _ pattern') =
   bindings' pattern'
 bindings' (AST.PatternVar (_, t) (AST.StellaIdent name)) =
   [(name, t)]
+bindings' (AST.PatternAsc _ pattern' _) =
+  bindings' pattern'
 bindings' p =
   error $ "bindings': unexpected pattern " ++ show p
 
@@ -215,8 +221,9 @@ annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType =
     Right () -> pure ()
 
   (pattern'', inExpr'') <- case typeOf expr' of
-    (Just t') ->
-      case checkType t' pattern' of
+    Just t' -> do
+      checked <- checkLetPatternType t' pattern'
+      case checked of
         (Right pattern'') -> do
           context <- get
           let context' = foldr (uncurry Context.withTyped) context (Map.toList $ bindings pattern'')
@@ -234,6 +241,16 @@ annotateLetType _ p bindings'' inExpr _ = do
   tellD [notImplemented p "LetManyBindings"]
   return $ fmap (,Nothing) (AST.Let p bindings'' inExpr)
 
+checkLetPatternType :: Type -> AST.Pattern' Position -> TypeAnnotationEnv (Either Diagnostic (AST.Pattern' (Position, Type)))
+checkLetPatternType actual (AST.PatternAsc p pattern' type_) = do
+  ascribed <- sanitizeT type_
+  tellC [Constraint.Eq p actual ascribed]
+  return $ do
+    pattern'' <- checkType ascribed pattern'
+    return $ AST.PatternAsc (p, actual) pattern'' (fmap (,ascribed) type_)
+checkLetPatternType actual pattern' =
+  return $ checkType actual pattern'
+
 annotateMatchType ::
   Maybe Type ->
   Position ->
@@ -249,15 +266,16 @@ annotateMatchType _ p expr [] annotateType = do
 annotateMatchType t p expr cases annotateType = do
   expr' <- annotateType Nothing expr
   let expr't = typeOf expr'
+  patternType <- reconstructPatternType p expr't cases
 
-  cases' <- case expr't of
+  cases' <- case patternType of
     Just expr't' -> mapM (\x -> annotateCaseType t x expr't' annotateType) cases
     Nothing -> pure $ fmap (fmap (,Nothing)) cases
 
-  () <- when (all (isJust . typeOf) cases' && isJust expr't) $ do
+  () <- when (all (isJust . typeOf) cases' && isJust patternType) $ do
     let patterns = fmap (fmap snd . (\(AST.AMatchCase _ x _) -> x)) cases'
         patterns' = fmap (fmap (fromMaybe (error "expected type in match case"))) patterns
-    case usefulClause patterns' (fromMaybe (error "expected type in match expression") expr't) of
+    case usefulClause patterns' (fromMaybe (error "expected type in match expression") patternType) of
       Just clause ->
         let message = "non-exchaustive pattern-matching, useful clause: " ++ displayAST clause
          in tellD [diagnostic Error NONEXHAUSTIVE_MATCH_PATTERNS (pointRange p) message]
@@ -265,6 +283,24 @@ annotateMatchType t p expr cases annotateType = do
 
   t' <- commonType p (fmap annotation cases')
   return (AST.Match (p, t') expr' cases')
+
+reconstructPatternType :: Position -> Maybe Type -> [AST.MatchCase' Position] -> TypeAnnotationEnv (Maybe Type)
+reconstructPatternType p actual@(Just variable@(Type (AST.TypeVar () _))) cases = do
+  metaVariables <- gets Context.metaVars
+  if Unification.isMetaVar metaVariables variable && all hasSumPattern cases
+    then do
+      (Type left) <- freshTypeVar
+      (Type right) <- freshTypeVar
+      let inferred = Type (AST.TypeSum () left right)
+      tellC [Constraint.Eq p variable inferred]
+      return $ Just inferred
+    else return actual
+  where
+    hasSumPattern (AST.AMatchCase _ AST.PatternInl {} _) = True
+    hasSumPattern (AST.AMatchCase _ AST.PatternInr {} _) = True
+    hasSumPattern _ = False
+reconstructPatternType _ actual _ =
+  return actual
 
 annotateCaseType ::
   Maybe Type ->

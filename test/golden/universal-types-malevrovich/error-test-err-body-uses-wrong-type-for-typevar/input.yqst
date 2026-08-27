@@ -1,5 +1,5 @@
 language core;
-extend with #universal-types;
+extend with #universal-types, #natural-literals;
 
 generic fn f[T](t : T) -> Nat {
   return if t then 0 else 1

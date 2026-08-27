@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types;
+
+generic fn test[T](n : A) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return 0
+}

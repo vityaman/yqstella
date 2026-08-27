@@ -1,0 +1,4 @@
+test/golden/universal-types-draen-guy/ill-undefined-type-variable/input.yqst:5:24: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable A
+> generic fn test[T](n : A) -> Nat {
+                         ^

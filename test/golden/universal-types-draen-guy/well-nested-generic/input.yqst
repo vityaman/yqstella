@@ -1,0 +1,15 @@
+language core;
+
+extend with #universal-types;
+
+generic fn test[T](t : T) -> T {
+  return (
+    generic [T] fn(value : T) {
+      return value
+    }
+  )[T](t)
+}
+
+fn main(x : Nat) -> Nat {
+  return test[Nat](x)
+}
