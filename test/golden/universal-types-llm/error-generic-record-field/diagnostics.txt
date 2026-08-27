@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-generic-record-field/input.yqst:6:10: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field other : T
+>   return record.other
+           ^

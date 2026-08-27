@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-generic-tuple-index/input.yqst:6:10: [ERROR_TUPLE_INDEX_OUT_OF_BOUNDS]
+type mismatch: expected tuple with size at least 3, got {T, T}
+>   return pair.3
+           ^

@@ -1,0 +1,20 @@
+language core;
+extend with #universal-types, #variants;
+
+generic fn make_first[A, B](value : A) -> <| first : A, second : B |> {
+  return <| first = value |>
+}
+
+generic fn make_second[A, B](value : B) -> <| first : A, second : B |> {
+  return <| second = value |>
+}
+
+fn main(n : Nat) -> Nat {
+  return match make_first[Nat, Bool](n) {
+    <| first = first |> => match make_second[Nat, Bool](false) {
+      <| first = impossible |> => impossible
+    | <| second = second |> => first
+    }
+  | <| second = second |> => 0
+  }
+}

@@ -152,7 +152,7 @@ closure LetRecBindings = [LetRecBindings, LetBindings, FixpointCombinator]
 closure OpenVariantExceptions = [OpenVariantExceptions, Variants]
 closure TryCastAs = [TryCastAs, Exceptions]
 closure AmbiguousTypeAsBottom = [AmbiguousTypeAsBottom, BottomType]
-closure UniversalTypes = [TypeReconstruction]
+closure UniversalTypes = [UniversalTypes, TypeReconstruction]
 closure x = [x]
 
 areConflicting :: Extension -> Extension -> Bool

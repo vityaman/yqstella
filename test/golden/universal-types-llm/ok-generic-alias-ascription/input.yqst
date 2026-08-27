@@ -1,0 +1,13 @@
+language core;
+
+extend with #universal-types, #type-aliases, #type-ascriptions;
+
+type N = Nat
+
+generic fn identity[T](value : T) -> T {
+  return value
+}
+
+fn main(n : N) -> Nat {
+  return identity[N](n) as Nat
+}

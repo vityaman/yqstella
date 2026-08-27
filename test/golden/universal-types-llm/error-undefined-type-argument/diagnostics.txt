@@ -1,0 +1,12 @@
+test/golden/universal-types-llm/error-undefined-type-argument/input.yqst:9:19: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable Missing
+>   return identity[Missing](n)
+                    ^
+test/golden/universal-types-llm/error-undefined-type-argument/input.yqst:9:28: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Missing, got Nat
+>   return identity[Missing](n)
+                             ^
+test/golden/universal-types-llm/error-undefined-type-argument/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Missing
+>   return identity[Missing](n)
+           ^

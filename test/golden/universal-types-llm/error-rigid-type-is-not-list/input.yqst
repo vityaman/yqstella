@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #lists;
+
+generic fn head_rigid[T](value : T) -> Nat {
+  return List::head(value)
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

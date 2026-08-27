@@ -1,0 +1,155 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let success (lambda '(E A)
+    (lambda '(value) (Variant value 'success (VariantType (StructType '('failure E) '('success A)))))))
+  (let failure (lambda '(E A)
+    (lambda '(error) (Variant error 'failure (VariantType (StructType '('failure E) '('success A)))))))
+  (let map_success (lambda '(E A B)
+    (lambda '(transform result) (block '(
+      (let yqstellamatchexpr result)
+      (let yqstellamatchbr0
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let error (Guess yqstellamatcharg 'failure))
+            (let yqstellamatchcond (And (Exists error) (Bool 'true)))
+            (let error (Unwrap error))
+            (return
+              (If
+                yqstellamatchcond
+                (Just (Apply (Apply failure E B) error))
+                (Nothing (OptionalType (VariantType (StructType '('failure E) '('success B))))))))))
+          yqstellamatchexpr))
+      (let yqstellamatchbr1
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let value (Guess yqstellamatcharg 'success))
+            (let yqstellamatchcond (And (Exists value) (Bool 'true)))
+            (let value (Unwrap value))
+            (return
+              (If
+                yqstellamatchcond
+                (Just (Apply (Apply success E B) (Apply transform value)))
+                (Nothing (OptionalType (VariantType (StructType '('failure E) '('success B))))))))))
+          yqstellamatchexpr))
+      (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))))
+  (let pair_success (lambda '(E A B)
+    (lambda '(left right) (block '(
+      (let yqstellamatchexpr left)
+      (let yqstellamatchbr0
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let error (Guess yqstellamatcharg 'failure))
+            (let yqstellamatchcond (And (Exists error) (Bool 'true)))
+            (let error (Unwrap error))
+            (return
+              (If
+                yqstellamatchcond
+                (Just (Apply (Apply failure E (TupleType A B)) error))
+                (Nothing (OptionalType (VariantType (StructType '('failure E) '('success (TupleType A B)))))))))))
+          yqstellamatchexpr))
+      (let yqstellamatchbr1
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let left_value (Guess yqstellamatcharg 'success))
+            (let yqstellamatchcond (And (Exists left_value) (Bool 'true)))
+            (let left_value (Unwrap left_value))
+            (return
+              (If
+                yqstellamatchcond
+                (Just
+                  (block '(
+                    (let yqstellamatchexpr right)
+                    (let yqstellamatchbr0
+                      (Apply
+                        (lambda '(yqstellamatcharg) (block '(
+                          (let error (Guess yqstellamatcharg 'failure))
+                          (let yqstellamatchcond (And (Exists error) (Bool 'true)))
+                          (let error (Unwrap error))
+                          (return
+                            (If
+                              yqstellamatchcond
+                              (Just (Apply (Apply failure E (TupleType A B)) error))
+                              (Nothing (OptionalType (VariantType (StructType '('failure E) '('success (TupleType A B)))))))))))
+                        yqstellamatchexpr))
+                    (let yqstellamatchbr1
+                      (Apply
+                        (lambda '(yqstellamatcharg) (block '(
+                          (let right_value (Guess yqstellamatcharg 'success))
+                          (let yqstellamatchcond (And (Exists right_value) (Bool 'true)))
+                          (let right_value (Unwrap right_value))
+                          (return
+                            (If
+                              yqstellamatchcond
+                              (Just (Apply (Apply success E (TupleType A B)) '(left_value right_value)))
+                              (Nothing (OptionalType (VariantType (StructType '('failure E) '('success (TupleType A B)))))))))))
+                        yqstellamatchexpr))
+                    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))
+                (Nothing (OptionalType (VariantType (StructType '('failure E) '('success (TupleType A B)))))))))))
+          yqstellamatchexpr))
+      (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))))
+  (let recover (lambda '(E A)
+    (lambda '(fallback result) (block '(
+      (let yqstellamatchexpr result)
+      (let yqstellamatchbr0
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let error (Guess yqstellamatcharg 'failure))
+            (let yqstellamatchcond (And (Exists error) (Bool 'true)))
+            (let error (Unwrap error))
+            (return (If yqstellamatchcond (Just (Apply fallback error)) (Nothing (OptionalType A)))))))
+          yqstellamatchexpr))
+      (let yqstellamatchbr1
+        (Apply
+          (lambda '(yqstellamatcharg) (block '(
+            (let value (Guess yqstellamatcharg 'success))
+            (let yqstellamatchcond (And (Exists value) (Bool 'true)))
+            (let value (Unwrap value))
+            (return (If yqstellamatchcond (Just value) (Nothing (OptionalType A)))))))
+          yqstellamatchexpr))
+      (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1))))))))
+  (let validate (lambda '(value)
+    (If
+      (> value (Uint64 '0))
+      (Apply (Apply success (DataType 'Bool) (DataType 'Uint64)) value)
+      (Apply (Apply failure (DataType 'Bool) (DataType 'Uint64)) (Bool 'false)))))
+  (let double (lambda '(value) (*MayWarn value (Uint64 '2))))
+  (let next (lambda '(value) (+MayWarn value (Uint64 '1))))
+  (let fallback (lambda '(_) (Uint64 '5)))
+  (let main (lambda '(n) (block '(
+    (let checked (Apply validate n))
+    (return (block '(
+      (let doubled
+        (Apply (Apply map_success (DataType 'Bool) (DataType 'Uint64) (DataType 'Uint64)) double checked))
+      (return (block '(
+        (let advanced
+          (Apply (Apply map_success (DataType 'Bool) (DataType 'Uint64) (DataType 'Uint64)) next checked))
+        (return (block '(
+          (let combined
+            (Apply (Apply pair_success (DataType 'Bool) (DataType 'Uint64) (DataType 'Uint64)) doubled advanced))
+          (return (block '(
+            (let left (Apply (Apply recover (DataType 'Bool) (DataType 'Uint64)) fallback doubled))
+            (return (block '(
+              (let right (Apply (Apply recover (DataType 'Bool) (DataType 'Uint64)) fallback advanced))
+              (return (block '(
+                (let total
+                  (Apply
+                    (Apply recover (DataType 'Bool) (DataType 'Uint64))
+                    fallback
+                    (Apply
+                      (Apply
+                        map_success
+                        (DataType 'Bool)
+                        (TupleType (DataType 'Uint64) (DataType 'Uint64))
+                        (DataType 'Uint64))
+                      (lambda '(pair) (+MayWarn (Nth pair '0) (Nth pair '1)))
+                      combined)))
+                (return (AsStruct '('left left) '('right right) '('total total) '('valid (> total (Uint64 '5)))))))))))))))))))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

@@ -10,6 +10,7 @@ import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import Type.Env
 import Type.Expectation (mismatch)
+import qualified Type.Unification as Unification
 
 liftSubType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
 liftSubType p lifting = liftSubType' p (Type $ lifting ())
@@ -32,13 +33,13 @@ subsumes (Type (AST.TypeAuto ())) _ =
 subsumes _ (Type (AST.TypeAuto ())) =
   let message' = "(subsumes) unexpected auto, expected type var"
    in Left $ diagnostic Error NOT_IMPLEMENTED (pointRange unknown) message'
+subsumes lhs rhs | Unification.alphaEq lhs rhs = Right ()
 subsumes (Type (AST.TypeVar () _)) _ =
   let message' = "(subsumes) type constraints are not supported yet"
    in Left $ diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange unknown) message'
 subsumes _ (Type (AST.TypeVar () _)) =
   let message' = "(subsumes) type constraints are not supported yet"
    in Left $ diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange unknown) message'
-subsumes lhs rhs | lhs == rhs = Right ()
 subsumes _ (Type (AST.TypeTop ())) = Right ()
 subsumes lhs@(Type (AST.TypeTop ())) rhs =
   let d = mismatch UNEXPECTED_SUBTYPE unknown lhs rhs

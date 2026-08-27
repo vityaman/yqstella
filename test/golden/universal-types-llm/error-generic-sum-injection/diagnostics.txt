@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-generic-sum-injection/input.yqst:6:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got T
+>   return inr(value)
+               ^

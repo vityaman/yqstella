@@ -1,0 +1,61 @@
+language core;
+
+extend with
+  #universal-types,
+  #lists,
+  #records,
+  #pairs,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #arithmetic-operators,
+  #comparison-operators;
+
+generic fn choose[T](condition : Bool, yes : T, no : T) -> T {
+  return if condition then yes else no
+}
+
+generic fn singleton[T](value : T) -> [T] {
+  return [value]
+}
+
+generic fn prepend[T](value : T, values : [T]) -> [T] {
+  return cons(value, values)
+}
+
+generic fn head_or[T](values : [T], fallback : T) -> T {
+  return if List::isempty(values) then fallback else List::head(values)
+}
+
+generic fn attach[T, U](value : T, metadata : U) -> {T, U} {
+  return {value, metadata}
+}
+
+generic fn start_history[T](value : T) -> {current : T, history : [T]} {
+  return {current = value, history = singleton[T](value)}
+}
+
+generic fn record_next[T](state : {current : T, history : [T]}, next : T) -> {current : T, history : [T]} {
+  return {current = next, history = prepend[T](next, state.history)}
+}
+
+fn history_depth(values : [Nat]) -> Nat {
+  return if List::isempty(values) then 0
+    else if List::isempty(List::tail(values)) then 1
+    else if List::isempty(List::tail(List::tail(values))) then 2
+    else 3
+}
+
+fn main(n : Nat) -> {current : Nat, previous : Nat, selected : Nat, depth : Nat, fresh : Bool} {
+  return let initial = start_history[Nat](n) in
+    let first = record_next[Nat](initial, n + 1) in
+    let second = record_next[Nat](first, n + 2) in
+    let previous = head_or[Nat](List::tail(second.history), n) in
+    let tagged = attach[Nat, Bool](second.current, second.current > previous) in
+    let selected = choose[Nat](tagged.2, tagged.1, previous) in
+    { current = second.current,
+      previous = previous,
+      selected = selected,
+      depth = history_depth(second.history),
+      fresh = tagged.2 }
+}

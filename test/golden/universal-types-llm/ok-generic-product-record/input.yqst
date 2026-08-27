@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #pairs, #tuples, #records;
+
+generic fn pack[T](value : T) -> { pair : {T, T}, triple : {T, T, T} } {
+  return { pair = {value, value}, triple = {value, value, value} }
+}
+
+fn main(n : Nat) -> Nat {
+  return pack[Nat](n).triple.3
+}

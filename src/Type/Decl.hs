@@ -3,34 +3,32 @@
 module Type.Decl (withParamDecls, withDecls, toPair, toParamSilent) where
 
 import Control.Monad (unless)
+import Control.Monad.State (get)
 import qualified Data.Map as Map
 import Data.Maybe (catMaybes)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
-import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Alias (typeAliasCollect, typeAliasResolve)
 import Type.Context (Context)
 import qualified Type.Context as Context
 import Type.Core (Type (..))
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, tellD, withStateTAE)
-import Type.Expectation (sanitizeT, sanitizeTSilent)
+import Type.Env (TypeAnnotationEnv, tellD, validateUniqueBy, withStateTAE)
+import Type.Expectation (sanitizeT, sanitizeTSilent, validateTypeParameters)
 
 withParamDecls :: [AST.ParamDecl' Position] -> Context -> TypeAnnotationEnv Context
 withParamDecls paramdecls context = do
-  let (uniq, dup) = sepUniqDupBy (\(AST.AParamDecl _ (AST.StellaIdent n) _) -> n) paramdecls
-
-      toDiagnostic (AST.AParamDecl p (AST.StellaIdent name) _) =
-        let message = "duplicate parameter: " ++ name
+  let toDiagnostic (AST.AParamDecl p (AST.StellaIdent parameterName) _) =
+        let message = "duplicate parameter: " ++ parameterName
          in diagnostic Error DUPLICATE_FUNCTION_PARAMETER (pointRange p) message
 
-  paramdecls' <- mapM toPair uniq
-  mapM_ toPair dup
-
-  tellD $ fmap toDiagnostic dup
-  return $ foldr (uncurry Context.withTyped) context paramdecls'
+  validated <- mapM (\parameter -> (parameter,) <$> toPair parameter) paramdecls
+  unique <- validateUniqueBy True (name . fst) (toDiagnostic . fst) validated
+  return $ foldr (uncurry Context.withTyped . snd) context unique
+  where
+    name (AST.AParamDecl _ (AST.StellaIdent value) _) = value
 
 withTypeAliases :: [AST.Decl' Position] -> Context -> TypeAnnotationEnv Context
 withTypeAliases decls context = do
@@ -76,8 +74,17 @@ withDecls decls isTopLevel context = do
     visit (AST.DeclFun p _ (AST.StellaIdent name) _ (AST.NoReturnType _) _ _ _) = do
       tellD [notImplemented p $ "name resolution for DeclFun " ++ name ++ " due to implicit return type"]
       return Nothing
-    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ _ _ _ _) = do
-      tellD [notImplemented p $ "name resolution for DeclFunGeneric " ++ name]
+    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) parameters paramdecls (AST.SomeReturnType _ returntype) _ _ _) = do
+      parameters' <- validateTypeParameters p parameters
+      current <- get
+      let (resolved, context') = Context.bindTypeVariables parameters' current
+      args'' <- withStateTAE (const context') (mapM toParamSilent paramdecls)
+      returntype' <- withStateTAE (const context') (sanitizeT returntype)
+      let functionType = Type.fn (fmap snd args'') returntype'
+          universalType = Type $ AST.TypeForAll () resolved (Type.toAST functionType)
+      return $ Just (name, [(p, universalType)])
+    visit (AST.DeclFunGeneric p _ (AST.StellaIdent name) _ _ (AST.NoReturnType _) _ _ _) = do
+      tellD [notImplemented p $ "name resolution for DeclFunGeneric " ++ name ++ " due to implicit return type"]
       return Nothing
     visit (AST.DeclTypeAlias {}) =
       return Nothing

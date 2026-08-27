@@ -6,6 +6,7 @@ module Type.Env
     positionOf,
     typeOf,
     freshTypeVar,
+    validateUniqueBy,
     tellD,
     tellC,
   )
@@ -16,9 +17,10 @@ import Control.Monad (when)
 import Control.Monad.State
 import Control.Monad.Trans.Writer
 import Diagnostic.Code (Code (DEBUG))
-import Diagnostic.Core (Diagnostics, Severity (Info), diagnostic)
+import Diagnostic.Core (Diagnostic, Diagnostics, Severity (Info), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import Extension.Core (Extension (DebugUnification))
+import Misc.Duplicate (sepUniqDupBy)
 import Type.Constraint (Constraint (Eq), Constraints)
 import Type.Context (Context)
 import qualified Type.Context as Context
@@ -31,9 +33,10 @@ type TypeAnnotator f = Maybe Type -> f Position -> TypeAnnotationEnv (f (Positio
 withStateTAE :: (Context -> Context) -> TypeAnnotationEnv a -> TypeAnnotationEnv a
 withStateTAE f m = do
   old <- get
-  modify f
+  put (Context.restoreInferenceState old (f old))
   result <- m
-  put old
+  inferred <- get
+  put (Context.restoreInferenceState inferred old)
   return result
 
 isAvailable :: Extension -> TypeAnnotationEnv Bool
@@ -53,6 +56,12 @@ freshTypeVar = do
   let (t, context') = Context.withFreshTypeVar context
   put context'
   return t
+
+validateUniqueBy :: (Ord k) => Bool -> (a -> k) -> (a -> Diagnostic) -> [a] -> TypeAnnotationEnv [a]
+validateUniqueBy reporting key toDiagnostic values = do
+  let (unique, duplicates) = sepUniqDupBy key values
+  when reporting $ tellD (fmap toDiagnostic duplicates)
+  return unique
 
 tellD :: Diagnostics -> TypeAnnotationEnv ()
 tellD ds = tell (ds, mempty)

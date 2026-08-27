@@ -1,0 +1,14 @@
+language core;
+
+extend with #universal-types, #nested-function-declarations, #let-bindings;
+
+generic fn outer[T](value : T) -> T {
+  generic fn local[U](item : U) -> U {
+    return item
+  }
+  return let ignored = local[Nat](0) in local[T](value)
+}
+
+fn main(n : Nat) -> Nat {
+  return outer[Nat](n)
+}

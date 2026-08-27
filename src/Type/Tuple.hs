@@ -1,15 +1,18 @@
 module Type.Tuple (annotateDotTupleType, annotateTupleType) where
 
 import Control.Monad (zipWithM)
+import Control.Monad.State (gets)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Constraint as Constraint
+import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, tellC, tellD, typeOf)
 import Type.Lift (liftType)
+import qualified Type.Unification as Unification
 
 annotateDotTupleType ::
   Maybe Type ->
@@ -20,6 +23,7 @@ annotateDotTupleType ::
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateDotTupleType t p expr index annotateType = do
   expr' <- annotateType Nothing expr
+  metaVariables <- gets Context.metaVars
 
   t' <- case typeOf expr' of
     _ | index == 0 -> do
@@ -38,14 +42,15 @@ annotateDotTupleType t p expr index annotateType = do
       t' <- liftType p (const actual) t
       return $ Just t'
     Just variable@(Type (AST.TypeVar () _))
-      | index == 1 || index == 2 -> do
+      | Unification.isMetaVar metaVariables variable,
+        index == 1 || index == 2 -> do
           (Type lhsT) <- freshTypeVar
           (Type rhsT) <- freshTypeVar
           tellC [Constraint.Eq p variable (Type $ AST.TypeTuple () [lhsT, rhsT])]
           if index == 1
             then return $ Just $ Type lhsT
             else return $ Just $ Type rhsT
-      | otherwise -> do
+      | Unification.isMetaVar metaVariables variable -> do
           let message = "tuple type reconstruction is not yet implemented"
           tellD [diagnostic Error NOT_IMPLEMENTED (pointRange p) message]
           return Nothing

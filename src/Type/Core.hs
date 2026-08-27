@@ -47,7 +47,7 @@ instance Show Type where
             AST.TypeFun _ args ret ->
               "fn(" ++ intercalate ", " (map (go 0) args) ++ ") -> " ++ go 0 ret
             AST.TypeForAll _ idents body ->
-              "forall " ++ unwords (map prettyN idents) ++ ". " ++ go 0 body
+              "forall " ++ intercalate ", " (map prettyN idents) ++ ". " ++ go 0 body
             AST.TypeRec _ ident body ->
               "µ " ++ prettyN ident ++ ". " ++ go 0 body
             AST.TypeSum _ lhs rhs ->

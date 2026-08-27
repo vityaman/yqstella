@@ -1,0 +1,14 @@
+language core;
+extend with #universal-types;
+
+generic fn identity[T](x : T) -> T {
+  return x
+}
+
+fn specialize(f : forall X. fn(X) -> X) -> fn(Nat) -> Nat {
+  return f[Nat]
+}
+
+fn main(n : Nat) -> Nat {
+  return specialize(identity)(n)
+}

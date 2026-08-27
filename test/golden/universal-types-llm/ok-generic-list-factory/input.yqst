@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #lists;
+
+generic fn singleton[T](value : T) -> [T] {
+  return [value]
+}
+
+fn main(n : Nat) -> Nat {
+  return List::head(singleton[Nat](n))
+}

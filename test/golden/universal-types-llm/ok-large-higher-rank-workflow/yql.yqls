@@ -1,0 +1,59 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let identity (lambda '(T) (lambda '(value) value)))
+  (let apply_poly_pair (lambda '(A B)
+    (lambda '(poly left right) '((Apply (Apply poly A) left) (Apply (Apply poly B) right)))))
+  (let make_const (lambda '(A) (lambda '(value) (lambda '(B) (lambda '(_) value)))))
+  (let transform_pair (lambda '(A B C D)
+    (lambda '(left_fn right_fn pair) '((Apply left_fn (Nth pair '0)) (Apply right_fn (Nth pair '1))))))
+  (let audit (lambda '(T)
+    (lambda '(poly value accepted)
+      (AsStruct
+        '('input value)
+        '('echo (Apply (Apply poly T) value))
+        '('accepted (Apply (Apply poly (DataType 'Bool)) accepted))))))
+  (let increment (lambda '(value) (+MayWarn value (Uint64 '1))))
+  (let bool_score (lambda '(value) (If value (Uint64 '10) (Uint64 '2))))
+  (let main (lambda '(n) (block '(
+    (let poly (lambda '(X) (lambda '(value) value)))
+    (return (block '(
+      (let original
+        (Apply
+          (Apply apply_poly_pair (DataType 'Uint64) (DataType 'Bool))
+          poly
+          (Apply (Apply identity (DataType 'Uint64)) n)
+          (Bool 'true)))
+      (return (block '(
+        (let transformed
+          (Apply
+            (Apply transform_pair (DataType 'Uint64) (DataType 'Bool) (DataType 'Uint64) (DataType 'Uint64))
+            increment
+            bool_score
+            original))
+        (return (block '(
+          (let keep_original (Apply (Apply make_const (DataType 'Uint64)) (Nth original '0)))
+          (return (block '(
+            (let kept (Apply (Apply keep_original (DataType 'Bool)) (Nth original '1)))
+            (return (block '(
+              (let report
+                (Apply
+                  (Apply audit (DataType 'Uint64))
+                  poly
+                  (Nth transformed '0)
+                  (And (Nth original '1) (Bool 'true))))
+              (return
+                (AsStruct
+                  '('original (Nth original '0))
+                  '('incremented (Member report 'echo))
+                  '('kept kept)
+                  '('score (Nth transformed '1))
+                  '('stable (== (Member report 'input) (Member report 'echo))))))))))))))))))))))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

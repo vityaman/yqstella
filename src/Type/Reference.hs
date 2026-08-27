@@ -1,14 +1,17 @@
 module Type.Reference (annotateRefExprType) where
 
+import Control.Monad.State (gets)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (Error), diagnostic)
 import Diagnostic.Position (Position, pointRange)
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Constraint as Constraint
+import qualified Type.Context as Context
 import Type.Core (Type (..))
 import qualified Type.Core as Type
 import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, tellC, tellD, typeOf)
 import Type.Lift (liftType, liftType')
+import qualified Type.Unification as Unification
 
 annotateRefExprType ::
   Maybe Type ->
@@ -58,12 +61,13 @@ annotateRefExprType t (AST.Deref p expr) annotateType = do
       annotateType (Just $ Type $ AST.TypeRef () $ Type.toAST expected) expr
     _ ->
       annotateType Nothing expr
+  metaVariables <- gets Context.metaVars
 
   t' <- case typeOf expr' of
     Just (Type (AST.TypeRef () t')) -> do
       result <- liftType' p (Type t') t
       return $ Just result
-    Just variable@(Type (AST.TypeVar () _)) -> do
+    Just variable@(Type (AST.TypeVar () _)) | Unification.isMetaVar metaVariables variable -> do
       result <- maybe freshTypeVar return t
       tellC [Constraint.Eq p variable (Type $ AST.TypeRef () $ Type.toAST result)]
       return $ Just result

@@ -4,11 +4,16 @@ module Type.Context
     withName,
     withTyped,
     withTypeAliased,
+    withTypeVariables,
+    bindTypeVariables,
     withFreshTypeVar,
+    metaVars,
+    restoreInferenceState,
     withExceptionType,
     withExceptionVariant,
     typeOf,
     typeWithAlias,
+    resolveTypeVariable,
     exceptionType,
     isAvailable,
     unknownName,
@@ -38,10 +43,12 @@ data Context = Context
   { contextName :: [String],
     contextBindings :: Map String Binding,
     contextTypeAliases :: Map String Type,
+    contextTypeVariables :: Map String AST.StellaIdent,
     contextExceptionType :: Maybe Type,
     contextExceptionTypeMode :: ExceptionTypeMode,
     contextExtensions :: Extensions,
-    contextPrevId :: Int
+    contextPrevId :: Int,
+    contextMetaVars :: Set.Set String
   }
   deriving (Show)
 
@@ -51,10 +58,12 @@ empty extensions =
     { contextName = [],
       contextBindings = Map.empty,
       contextTypeAliases = Map.empty,
+      contextTypeVariables = Map.empty,
       contextExceptionType = Nothing,
       contextExceptionTypeMode = Unknown,
       contextExtensions = extensions,
-      contextPrevId = 0
+      contextPrevId = 0,
+      contextMetaVars = Set.empty
     }
 
 withName :: String -> Context -> Context
@@ -68,11 +77,51 @@ withTypeAliased :: String -> Type -> Context -> Context
 withTypeAliased key t c@(Context {contextTypeAliases = typeAliases}) =
   c {contextTypeAliases = Map.insert key t typeAliases}
 
+withTypeVariables :: [AST.StellaIdent] -> Context -> Context
+withTypeVariables names = snd . bindTypeVariables names
+
+bindTypeVariables :: [AST.StellaIdent] -> Context -> ([AST.StellaIdent], Context)
+bindTypeVariables parameters context =
+  let (resolved, variables) = foldl bind ([], contextTypeVariables context) parameters
+   in (resolved, context {contextTypeVariables = variables})
+  where
+    bind (resolved, variables) parameter =
+      let source = name parameter
+          used = Set.fromList (Map.keys variables ++ fmap name (Map.elems variables))
+          resolvedName =
+            if Map.member source variables
+              then freshName used source
+              else source
+          resolvedParameter = AST.StellaIdent resolvedName
+       in (resolved ++ [resolvedParameter], Map.insert source resolvedParameter variables)
+    name (AST.StellaIdent value) = value
+
+freshName :: Set.Set String -> String -> String
+freshName used base = go (1 :: Int)
+  where
+    go n =
+      let candidate = base ++ "_" ++ show n
+       in if candidate `Set.member` used then go (n + 1) else candidate
+
 withFreshTypeVar :: Context -> (Type, Context)
 withFreshTypeVar c =
   let nextId = contextPrevId c + 1
       name = "TypeVar(" ++ intercalate " |> " (reverse $ contextName c) ++ " |> " ++ show nextId ++ ")"
-   in (Type (AST.TypeVar () (AST.StellaIdent name)), c {contextPrevId = nextId})
+   in ( Type (AST.TypeVar () (AST.StellaIdent name)),
+        c
+          { contextPrevId = nextId,
+            contextMetaVars = Set.insert name (contextMetaVars c)
+          }
+      )
+
+metaVars :: Context -> Set.Set String
+metaVars = contextMetaVars
+
+restoreInferenceState :: Context -> Context -> Context
+restoreInferenceState inferred lexical =
+  lexical
+    { contextMetaVars = contextMetaVars inferred <> contextMetaVars lexical
+    }
 
 withExceptionType :: Type -> Context -> Either Diagnostic Context
 withExceptionType t c@Context {contextExceptionTypeMode = Unknown} =
@@ -115,6 +164,9 @@ typeOf key ctx = (\(Binding x) -> x) <$> Map.lookup key (contextBindings ctx)
 
 typeWithAlias :: String -> Context -> Maybe Type
 typeWithAlias key ctx = Map.lookup key (contextTypeAliases ctx)
+
+resolveTypeVariable :: String -> Context -> Maybe AST.StellaIdent
+resolveTypeVariable key ctx = Map.lookup key (contextTypeVariables ctx)
 
 exceptionType :: Context -> Maybe Type
 exceptionType = contextExceptionType

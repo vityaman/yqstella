@@ -1,0 +1,54 @@
+language core;
+
+extend with
+  #universal-types,
+  #pairs,
+  #records,
+  #let-bindings,
+  #multiparameter-functions,
+  #natural-literals,
+  #arithmetic-operators,
+  #comparison-operators,
+  #logical-operators;
+
+generic fn identity[T](value : T) -> T {
+  return value
+}
+
+generic fn apply_poly_pair[A, B](poly : forall X. fn(X) -> X, left : A, right : B) -> {A, B} {
+  return {poly[A](left), poly[B](right)}
+}
+
+generic fn make_const[A](value : A) -> forall B. fn(B) -> A {
+  return generic [B] fn(_ : B) { return value }
+}
+
+generic fn transform_pair[A, B, C, D](left_fn : fn(A) -> C, right_fn : fn(B) -> D, pair : {A, B}) -> {C, D} {
+  return {left_fn(pair.1), right_fn(pair.2)}
+}
+
+generic fn audit[T](poly : forall X. fn(X) -> X, value : T, accepted : Bool) -> {input : T, echo : T, accepted : Bool} {
+  return {input = value, echo = poly[T](value), accepted = poly[Bool](accepted)}
+}
+
+fn increment(value : Nat) -> Nat {
+  return value + 1
+}
+
+fn bool_score(value : Bool) -> Nat {
+  return if value then 10 else 2
+}
+
+fn main(n : Nat) -> {original : Nat, incremented : Nat, kept : Nat, score : Nat, stable : Bool} {
+  return let poly = generic [X] fn(value : X) { return value } in
+    let original = apply_poly_pair[Nat, Bool](poly, identity[Nat](n), true) in
+    let transformed = transform_pair[Nat, Bool, Nat, Nat](increment, bool_score, original) in
+    let keep_original = make_const[Nat](original.1) in
+    let kept = keep_original[Bool](original.2) in
+    let report = audit[Nat](poly, transformed.1, original.2 and true) in
+    { original = original.1,
+      incremented = report.echo,
+      kept = kept,
+      score = transformed.2,
+      stable = report.input == report.echo }
+}

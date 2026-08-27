@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+generic fn self_app[X](f : forall X. fn(X) -> X) -> forall X. fn(X) -> X {
+  return f[forall X. fn(X) -> X](f)
+}
+
+fn main(n : Nat) -> Nat {
+  return self_app[Nat](generic [T] fn(x : T) { return x })[Nat](n)
+}

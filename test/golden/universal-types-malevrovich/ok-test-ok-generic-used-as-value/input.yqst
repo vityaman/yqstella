@@ -1,5 +1,5 @@
 language core;
-extend with #universal-types;
+extend with #universal-types, #multiparameter-functions;
 
 generic fn identity[T](x : T) -> T {
   return x

@@ -2,6 +2,7 @@ module Type.Expectation
   ( TypeKind (..),
     sanitizeT,
     sanitizeTSilent,
+    validateTypeParameters,
     liftEqType,
     liftEqType',
     ensureEqParamType,
@@ -13,7 +14,7 @@ module Type.Expectation
 where
 
 import Control.Monad (when)
-import Control.Monad.State (get)
+import Control.Monad.State (get, gets)
 import Data.Functor (void)
 import Data.List (groupBy, intercalate)
 import Data.List.NonEmpty (NonEmpty (..), nonEmpty)
@@ -27,7 +28,8 @@ import qualified Type.Constraint as Constraint
 import qualified Type.Context as Context
 import Type.Core (Type (Type), toAST)
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, freshTypeVar, tellC, tellD)
+import Type.Env (TypeAnnotationEnv, freshTypeVar, tellC, tellD, validateUniqueBy, withStateTAE)
+import qualified Type.Unification as Unification
 
 data TypeKind = Expected | Inferred
 
@@ -40,6 +42,17 @@ sanitizeTSilent = sanitizeT' False
 sanitizeT :: AST.Type' Position -> TypeAnnotationEnv Type
 sanitizeT = sanitizeT' True
 
+validateTypeParameters :: Position -> [AST.StellaIdent] -> TypeAnnotationEnv [AST.StellaIdent]
+validateTypeParameters = validateTypeParameters' True
+
+validateTypeParameters' :: Bool -> Position -> [AST.StellaIdent] -> TypeAnnotationEnv [AST.StellaIdent]
+validateTypeParameters' reporting p = validateUniqueBy reporting name toDiagnostic
+  where
+    name (AST.StellaIdent value) = value
+    toDiagnostic parameter =
+      let message = "duplicate type parameter: " ++ name parameter
+       in diagnostic Error DUPLICATE_TYPE_PARAMETER (pointRange p) message
+
 sanitizeT' :: Bool -> AST.Type' Position -> TypeAnnotationEnv Type
 sanitizeT' _ (AST.TypeAuto _) =
   freshTypeVar
@@ -47,9 +60,12 @@ sanitizeT' reporting (AST.TypeFun _ args ret) = do
   args' <- fmap toAST <$> mapM (sanitizeT' reporting) args
   ret' <- toAST <$> sanitizeT' reporting ret
   return $ Type $ AST.TypeFun () args' ret'
-sanitizeT' reporting t@(AST.TypeForAll p _ _) = do
-  when reporting $ tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) "ForAll"]
-  return (Type.fromAST t)
+sanitizeT' reporting (AST.TypeForAll p parameters body) = do
+  parameters' <- validateTypeParameters' reporting p parameters
+  context <- get
+  let (resolved, context') = Context.bindTypeVariables parameters' context
+  body' <- withStateTAE (const context') (sanitizeT' reporting body)
+  return $ Type $ AST.TypeForAll () resolved (toAST body')
 sanitizeT' reporting t@(AST.TypeRec p _ _) = do
   when reporting $ tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) "TypeRec"]
   return (Type.fromAST t)
@@ -103,11 +119,16 @@ sanitizeT' _ (AST.TypeBottom _) =
 sanitizeT' reporting (AST.TypeRef _ t) = do
   referenced' <- toAST <$> sanitizeT' reporting t
   return $ Type $ AST.TypeRef () referenced'
-sanitizeT' _ (AST.TypeVar _ (AST.StellaIdent name)) = do
+sanitizeT' reporting (AST.TypeVar p (AST.StellaIdent name)) = do
   context <- get
-  case Context.typeWithAlias name context of
-    Just t -> return t
-    Nothing -> return $ Type $ AST.TypeVar () (AST.StellaIdent name)
+  case Context.resolveTypeVariable name context of
+    Just resolved -> return $ Type $ AST.TypeVar () resolved
+    Nothing -> case Context.typeWithAlias name context of
+      Just t -> return t
+      Nothing -> do
+        let message = "undefined type variable " ++ name
+        when reporting $ tellD [diagnostic Error UNDEFINED_TYPE_VARIABLE (pointRange p) message]
+        return $ Type $ AST.TypeVar () (AST.StellaIdent name)
 
 -- TODO: make it return Maybe Type
 liftEqType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
@@ -133,15 +154,14 @@ ensureEqType p _ lifting@(Type (AST.TypeAuto ())) _ = do
   let message = "unexpected lifting auto type, must be a type var"
   tellD [diagnostic Fatal NOT_IMPLEMENTED (pointRange p) message]
   return lifting
-ensureEqType p _ variable@(Type (AST.TypeVar () _)) (Just checked) = do
-  tellC [Constraint.Eq p variable checked]
-  return variable
-ensureEqType p _ lifting (Just checked)
-  | not $ null (Type.fv lifting <> Type.fv checked) = do
-      tellC [Constraint.Eq p lifting checked]
+ensureEqType _ _ lifting (Just checked)
+  | Unification.alphaEq lifting checked =
       return lifting
-ensureEqType _ toDiagnostic lifting (Just checked) = do
-  when (lifting /= checked) $ tellD [toDiagnostic checked lifting]
+ensureEqType p toDiagnostic lifting (Just checked) = do
+  metaVariables <- gets Context.metaVars
+  if null (Unification.freeMetaVars metaVariables lifting <> Unification.freeMetaVars metaVariables checked)
+    then when (lifting /= checked) $ tellD [toDiagnostic checked lifting]
+    else tellC [Constraint.Eq p lifting checked]
   return lifting
 ensureEqType _ _ lifting Nothing =
   pure lifting
@@ -149,19 +169,26 @@ ensureEqType _ _ lifting Nothing =
 listItemType :: Position -> TypeKind -> Maybe Type -> TypeAnnotationEnv (Maybe Type)
 listItemType _ _ (Just (Type (AST.TypeList () t))) =
   return $ Just $ Type t
-listItemType p _ (Just variable@(Type (AST.TypeVar () _))) = do
-  (Type item) <- freshTypeVar
-  tellC [Constraint.Eq p variable (Type (AST.TypeList () item))]
-  return $ Just $ Type item
-listItemType p Inferred (Just t) = do
+listItemType p kind (Just variable@(Type (AST.TypeVar () _))) = do
+  metaVariables <- gets Context.metaVars
+  if Unification.isMetaVar metaVariables variable
+    then do
+      (Type item) <- freshTypeVar
+      tellC [Constraint.Eq p variable (Type (AST.TypeList () item))]
+      return $ Just $ Type item
+    else unexpectedListItemType p kind variable
+listItemType p kind (Just t) = unexpectedListItemType p kind t
+listItemType _ _ Nothing =
+  return Nothing
+
+unexpectedListItemType :: Position -> TypeKind -> Type -> TypeAnnotationEnv (Maybe Type)
+unexpectedListItemType p Inferred t = do
   let message = "expected list, got " ++ show t
   tellD [diagnostic Error NOT_A_LIST (pointRange p) message]
   return Nothing
-listItemType p Expected (Just t) = do
+unexpectedListItemType p Expected t = do
   let message = "expected " ++ show t ++ ", got list"
   tellD [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
-  return Nothing
-listItemType _ _ Nothing =
   return Nothing
 
 commonType :: Position -> [(Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
@@ -169,7 +196,7 @@ commonType p pts = do
   let groups =
         map
           (\((p', t') :| rest) -> (t', p' : map fst rest))
-          (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> a == b) pts))
+          (mapMaybe nonEmpty (groupBy (\(_, a) (_, b) -> areSame a b) pts))
 
   case groups of
     [(Nothing, _)] ->
@@ -184,6 +211,10 @@ commonType p pts = do
           message = "expected same type for all subexpressions, got " ++ intercalate ", " ts'
       tellD [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
       return Nothing
+  where
+    areSame Nothing Nothing = True
+    areSame (Just lhs) (Just rhs) = Unification.alphaEq lhs rhs
+    areSame _ _ = False
 
 mismatch :: Code -> Position -> Type -> Type -> Diagnostic
 mismatch code p expected@(Type (AST.TypeList () _)) actual@(Type (AST.TypeList () _)) =

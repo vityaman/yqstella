@@ -1,0 +1,4 @@
+test/golden/universal-types-malevrovich/error-test-err-type-application-to-regular-fn/input.yqst:9:10: [ERROR_NOT_A_GENERIC_FUNCTION]
+expected a generic function, got fn(Nat) -> Nat
+>   return ordinary[Nat](n)
+           ^

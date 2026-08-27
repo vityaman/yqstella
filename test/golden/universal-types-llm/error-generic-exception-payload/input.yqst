@@ -1,0 +1,13 @@
+language core;
+
+extend with #universal-types, #exceptions, #exception-type-declaration;
+
+exception type = Nat
+
+generic fn fail[T](value : T) -> T {
+  return throw(value)
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

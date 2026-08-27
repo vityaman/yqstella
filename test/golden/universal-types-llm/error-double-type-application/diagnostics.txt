@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-double-type-application/input.yqst:9:10: [ERROR_NOT_A_GENERIC_FUNCTION]
+expected a generic function, got fn(Nat) -> Nat
+>   return identity[Nat][Bool](n)
+           ^

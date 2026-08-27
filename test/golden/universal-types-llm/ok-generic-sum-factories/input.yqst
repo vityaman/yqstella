@@ -1,0 +1,21 @@
+language core;
+
+extend with #universal-types, #sum-types;
+
+generic fn make_left[A, B](value : A) -> A + B {
+  return inl(value)
+}
+
+generic fn make_right[A, B](value : B) -> A + B {
+  return inr(value)
+}
+
+fn main(n : Nat) -> Nat {
+  return match make_left[Nat, Bool](n) {
+    inl(left) => match make_right[Nat, Bool](false) {
+      inl(impossible) => impossible
+    | inr(right) => left
+    }
+  | inr(right) => 0
+  }
+}

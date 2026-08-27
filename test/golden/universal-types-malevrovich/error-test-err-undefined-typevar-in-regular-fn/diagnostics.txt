@@ -1,0 +1,8 @@
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-regular-fn/input.yqst:4:18: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable T
+> fn bad(x : T) -> T {
+                   ^
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-regular-fn/input.yqst:4:12: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable T
+> fn bad(x : T) -> T {
+             ^

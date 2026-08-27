@@ -1,0 +1,14 @@
+language core;
+
+extend with #universal-types, #sum-types, #type-ascriptions, #unit-type;
+
+fn make_left(value : Nat) -> forall T. fn(Unit) -> Nat + T {
+  return generic [T] fn(_ : Unit) { return inl(value) as (Nat + T) }
+}
+
+fn main(n : Nat) -> Nat {
+  return match make_left(n)[Bool](unit) {
+    inl(value) => value
+  | inr(value) => 0
+  }
+}

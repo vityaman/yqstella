@@ -20,6 +20,34 @@ import YQL.AST (Node (..))
 class YQLTranslatable f where
   toYQL :: f (Position, Maybe Type) -> Either Diagnostic Node
 
+identNode :: AST.StellaIdent -> Node
+identNode (AST.StellaIdent name) = A name
+
+functionToYQL ::
+  (YQLTranslatable param, YQLTranslatable decl, YQLTranslatable expr) =>
+  String ->
+  [AST.StellaIdent] ->
+  [param (Position, Maybe Type)] ->
+  [decl (Position, Maybe Type)] ->
+  expr (Position, Maybe Type) ->
+  Either Diagnostic Node
+functionToYQL name parameters paramdecls decls expr = do
+  paramdecls' <- mapM toYQL paramdecls
+  decls' <- mapM toYQL decls
+  expr' <- toYQL expr
+
+  let body =
+        if null decls'
+          then expr'
+          else Y [A "block", Q $ Y $ decls' ++ [Y [A "return", expr']]]
+      function = Y [A "lambda", Q (Y paramdecls'), body]
+      genericFunction =
+        if null parameters
+          then function
+          else Y [A "lambda", Q $ Y (fmap identNode parameters), function]
+
+  return $ Y [A "let", A name, genericFunction]
+
 instance YQLTranslatable AST.Program' where
   toYQL f@(AST.AProgram _ _ _ decls) = do
     paramdecls <- case mainparams decls of
@@ -60,17 +88,10 @@ instance YQLTranslatable AST.Program' where
         Right $ A $ "__" ++ name' ++ "__"
 
 instance YQLTranslatable AST.Decl' where
-  toYQL (AST.DeclFun _ _ (AST.StellaIdent name) paramdecls _ (AST.NoThrowType _) decls expr) = do
-    paramdecls' <- mapM toYQL paramdecls
-    decls' <- mapM toYQL decls
-    expr' <- toYQL expr
-
-    let body =
-          if null decls'
-            then expr'
-            else Y [A "block", Q $ Y $ decls' ++ [Y [A "return", expr']]]
-
-    return $ Y [A "let", A name, Y [A "lambda", Q (Y paramdecls'), body]]
+  toYQL (AST.DeclFun _ _ (AST.StellaIdent name) paramdecls _ (AST.NoThrowType _) decls expr) =
+    functionToYQL name [] paramdecls decls expr
+  toYQL (AST.DeclFunGeneric _ _ (AST.StellaIdent name) parameters paramdecls _ (AST.NoThrowType _) decls expr) =
+    functionToYQL name parameters paramdecls decls expr
   toYQL (AST.DeclTypeAlias _ (AST.StellaIdent name) _) = do
     return $ Y [A "let", A name, Y [A "Void"]]
   toYQL x = Left $ unsupported x "AST.Decl'"
@@ -85,6 +106,13 @@ instance YQLTranslatable AST.Binding' where
     return $ Q $ Y [Q $ A name, expr']
 
 instance YQLTranslatable AST.Expr' where
+  toYQL (AST.TypeAbstraction _ parameters expr) = do
+    expr' <- toYQL expr
+    return $ Y [A "lambda", Q $ Y (fmap identNode parameters), expr']
+  toYQL (AST.TypeApplication _ expr types) = do
+    expr' <- toYQL expr
+    types' <- mapM toYQL types
+    return $ Y ([A "Apply", expr'] ++ types')
   toYQL (AST.LessThan _ lhs rhs) = do
     lhs' <- toYQL lhs
     rhs' <- toYQL rhs
@@ -209,7 +237,7 @@ instance YQLTranslatable AST.Expr' where
     expr' <- toYQL expr
     return $ Y [A "Skip", expr', Y [A "Uint64", Q $ A "1"]]
   toYQL (AST.Panic (p, Just t)) = do
-    value <- toYQL $ defaultValue t
+    value <- defaultValueYQL t
     false <- toYQL (AST.ConstFalse (unknown, Just $ Type.fromAST' AST.TypeBool))
     let message = Y [A "String", Q $ A $ "\"" ++ "panic at :" ++ show p ++ "\""]
     return $ Y [A "Ensure", value, false, message]
@@ -254,6 +282,7 @@ instance YQLTranslatable AST.Expr' where
   toYQL x = Left $ unsupported x "AST.Expr'"
 
 instance YQLTranslatable AST.Type' where
+  toYQL (AST.TypeForAll {}) = Right $ Y [A "VoidType"]
   toYQL (AST.TypeFun _ argts returnts) = do
     argts' <- mapM toYQL argts
     returnt' <- toYQL returnts
@@ -295,6 +324,7 @@ instance YQLTranslatable AST.Type' where
   toYQL (AST.TypeBool _) = Right $ Y [A "DataType", Q $ A "Bool"]
   toYQL (AST.TypeNat _) = Right $ Y [A "DataType", Q $ A "Uint64"]
   toYQL (AST.TypeUnit _) = Right $ Y [A "VoidType"]
+  toYQL (AST.TypeVar _ ident) = Right $ identNode ident
   toYQL x = Left $ unsupported x "AST.Type'"
 
 instance YQLTranslatable AST.MatchCase' where
@@ -413,41 +443,46 @@ recipes (AST.PatternVar _ (AST.StellaIdent name)) =
 recipes x =
   Left $ unsupported x "AST.Pattern'"
 
-defaultValue :: Type -> AST.Expr' (Position, Maybe Type)
-defaultValue t@(Type (AST.TypeFun _ argts returnt)) =
-  let type' = fmap (const (unknown, Nothing))
-      decl i t' = AST.AParamDecl (unknown, Just (Type t')) (AST.StellaIdent $ "x" ++ show i) (type' t')
-      args = [decl i t' | (i, t') <- zip [0 :: Integer ..] argts]
-   in AST.Abstraction (unknown, Just t) args (defaultValue (Type returnt))
-defaultValue t@(Type (AST.TypeSum _ inl _)) =
-  AST.Inl (unknown, Just t) (defaultValue (Type inl))
-defaultValue t@(Type (AST.TypeTuple _ ts)) = do
-  let ts' = [defaultValue (Type t') | t' <- ts]
-   in AST.Tuple (unknown, Just t) ts'
-defaultValue t@(Type (AST.TypeRecord _ fields)) = do
-  let bindings = [binding id' t' | (AST.ARecordFieldType _ id' t') <- fields]
-      binding id' t' = AST.ABinding (unknown, Just (Type t')) id' (defaultValue (Type t'))
-   in AST.Record (unknown, Just t) bindings
-defaultValue t@(Type (AST.TypeVariant _ ((AST.AVariantFieldType _ id' (AST.NoTyping _)) : _))) =
-  let t' = Type.fromAST' AST.TypeUnit
-      data' = AST.SomeExprData (unknown, Just t') (AST.ConstUnit (unknown, Just t'))
-   in AST.Variant (unknown, Just t) id' data'
-defaultValue t@(Type (AST.TypeVariant _ ((AST.AVariantFieldType _ id' (AST.SomeTyping _ t')) : _))) =
-  let t'' = Type.fromAST t'
-      data' = AST.SomeExprData (unknown, Just t'') (AST.ConstUnit (unknown, Just t''))
-   in AST.Variant (unknown, Just t) id' data'
-defaultValue (Type (AST.TypeVariant _ [])) = do
-  error "defaultValue from AST.Type': empty variant type"
-defaultValue t@(Type (AST.TypeList _ _)) = do
-  AST.List (unknown, Just t) []
-defaultValue t@(Type (AST.TypeBool _)) =
-  AST.ConstFalse (unknown, Just t)
-defaultValue t@(Type (AST.TypeNat _)) =
-  AST.ConstInt (unknown, Just t) 0
-defaultValue t@(Type (AST.TypeUnit _)) =
-  AST.ConstUnit (unknown, Just t)
-defaultValue _ =
-  error "defaultValue from AST.Type': unexpected type"
+defaultValueYQL :: Type -> Either Diagnostic Node
+defaultValueYQL (Type type_) = case type_ of
+  AST.TypeFun _ args result -> do
+    result' <- defaultValueYQL (Type result)
+    let parameters = [A $ "x" ++ show index | index <- [0 .. length args - 1]]
+    return $ Y [A "lambda", Q $ Y parameters, result']
+  AST.TypeForAll _ parameters body -> do
+    body' <- defaultValueYQL (Type body)
+    return $ Y [A "lambda", Q $ Y (fmap identNode parameters), body']
+  AST.TypeSum _ left _ -> do
+    typeNode <- toTypeNode type_
+    value <- defaultValueYQL (Type left)
+    return $ Y [A "Variant", value, Q $ A "inl", typeNode]
+  AST.TypeTuple _ types -> Q . Y <$> mapM (defaultValueYQL . Type) types
+  AST.TypeRecord _ fields -> do
+    fields' <- mapM recordField fields
+    return $ Y $ A "AsStruct" : fields'
+  AST.TypeVariant _ (field : _) -> do
+    typeNode <- toTypeNode type_
+    case field of
+      AST.AVariantFieldType _ (AST.StellaIdent label) (AST.NoTyping _) ->
+        return $ Y [A "Variant", Y [A "Void"], Q $ A label, typeNode]
+      AST.AVariantFieldType _ (AST.StellaIdent label) (AST.SomeTyping _ fieldType) -> do
+        value <- defaultValueYQL (Type fieldType)
+        return $ Y [A "Variant", value, Q $ A label, typeNode]
+  AST.TypeList _ item -> do
+    itemType <- toTypeNode item
+    return $ Y [A "ToList", Y [A "Nothing", Y [A "OptionalType", itemType]]]
+  AST.TypeBool _ -> return $ Y [A "Bool", Q $ A "false"]
+  AST.TypeNat _ -> return $ Y [A "Uint64", Q $ A "0"]
+  AST.TypeUnit _ -> return $ Y [A "Void"]
+  _ -> do
+    typeNode <- toTypeNode type_
+    return $ Y [A "Unwrap", Y [A "Nothing", Y [A "OptionalType", typeNode]]]
+  where
+    recordField (AST.ARecordFieldType _ (AST.StellaIdent label) fieldType) = do
+      value <- defaultValueYQL (Type fieldType)
+      return $ Q $ Y [Q $ A label, value]
+
+    toTypeNode = toYQL . fmap (const (unknown, Nothing))
 
 checkExtensions :: [Extension] -> Either Diagnostic ()
 checkExtensions extensions = case findUnsupported extensions of
@@ -478,6 +513,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension LogicalOperators = True
     isSupportedExtension Panic = True
     isSupportedExtension TypeReconstruction = True
+    isSupportedExtension UniversalTypes = True
     isSupportedExtension _ = False
 
     findUnsupported :: [Extension] -> Maybe Extension

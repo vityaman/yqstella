@@ -1,0 +1,16 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let self_app (lambda '(X) (lambda '(f) (Apply (Apply f (VoidType)) f))))
+  (let main (lambda '(n)
+    (Apply
+      (Apply (Apply (Apply self_app (DataType 'Uint64)) (lambda '(T) (lambda '(x) x))) (DataType 'Uint64))
+      n)))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

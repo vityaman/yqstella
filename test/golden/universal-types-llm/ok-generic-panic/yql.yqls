@@ -1,0 +1,14 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let abort (lambda '(T)
+    (lambda '(_) (Ensure (Unwrap (Nothing (OptionalType T))) (Bool 'false) (String '"panic at :6:10")))))
+  (let main (lambda '(n) (If (== n (Uint64 '0)) n (Apply (Apply abort (DataType 'Uint64)) (Void)))))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

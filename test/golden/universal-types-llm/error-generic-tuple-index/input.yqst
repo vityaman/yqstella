@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #pairs, #tuples;
+
+generic fn third[T](pair : {T, T}) -> T {
+  return pair.3
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

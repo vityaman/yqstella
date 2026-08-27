@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-generic-variant-label/input.yqst:6:10: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label other for <| value : T |>
+>   return <| other = value |>
+           ^

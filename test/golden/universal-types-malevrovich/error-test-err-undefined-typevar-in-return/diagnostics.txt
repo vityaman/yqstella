@@ -1,0 +1,12 @@
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-return/input.yqst:4:27: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable Y
+> generic fn f[T](x : T) -> Y {
+                            ^
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-return/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Y, got T
+>   return x
+           ^
+test/golden/universal-types-malevrovich/error-test-err-undefined-typevar-in-return/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Y
+>   return f[Nat](n)
+           ^

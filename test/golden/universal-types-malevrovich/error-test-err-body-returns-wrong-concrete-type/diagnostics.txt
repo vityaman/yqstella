@@ -1,0 +1,8 @@
+test/golden/universal-types-malevrovich/error-test-err-body-returns-wrong-concrete-type/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected T, got Nat
+>   return succ(0)
+           ^
+test/golden/universal-types-malevrovich/error-test-err-body-returns-wrong-concrete-type/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return wrong[Bool](false)
+           ^

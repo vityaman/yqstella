@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-cast;
+
+generic fn invalid[T](value : T) -> Nat {
+  return value cast as Bool
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}
