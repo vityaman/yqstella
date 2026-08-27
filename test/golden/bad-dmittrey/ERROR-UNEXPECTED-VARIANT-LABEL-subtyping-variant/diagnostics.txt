@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-VARIANT-LABEL-subtyping-variant/input.yqst:14:10: [ERROR_UNEXPECTED_VARIANT_LABEL]
+(subsumes) unexpected variant field: value2, checking <| failure : Top, value : Nat, value2 : Bool |> <: <| value : Nat, failure : Top, value3 : Top |>
+>   return fail(n)
+           ^

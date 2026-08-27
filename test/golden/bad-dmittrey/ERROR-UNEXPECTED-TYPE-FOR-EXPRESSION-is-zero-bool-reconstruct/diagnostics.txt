@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-is-zero-bool-reconstruct/input.yqst:6:27: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>     return if Nat::iszero(true) then false else true
+                            ^

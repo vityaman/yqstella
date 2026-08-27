@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-different-branches/input.yqst:4:36: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return if true then false else 0
+                                     ^

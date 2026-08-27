@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/2/input.yqst:9:10: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field y : Nat
+>   return make(n).y
+           ^

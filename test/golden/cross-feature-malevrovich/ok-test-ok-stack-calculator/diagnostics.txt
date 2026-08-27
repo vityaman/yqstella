@@ -18,7 +18,3 @@ test/golden/cross-feature-malevrovich/ok-test-ok-stack-calculator/input.yqst:156
 disabled extension usage: #natural-literals
 >     cons(instr_push(5),
                       ^
-test/golden/cross-feature-malevrovich/ok-test-ok-stack-calculator/input.yqst:161:20: [ERROR_NOT_A_LIST]
-type mismatch: expected [<| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>], got <| push : Nat, add : Bool, mul : Bool, dup : Bool, pop : Bool |>
->   let result = run(program)(initial_stack) in
-                     ^

@@ -248,7 +248,7 @@ instance ExtensionsAnnotatable AST.Pattern' where
   annotateExtensions (AST.PatternTrue p) =
     AST.PatternTrue (p, Set.fromList [Extension.StructuralPatterns])
   annotateExtensions (AST.PatternUnit p) =
-    AST.PatternUnit (p, Set.fromList [Extension.UnitType, Extension.StructuralPatterns])
+    AST.PatternUnit (p, Set.singleton Extension.StructuralPatterns)
   annotateExtensions (AST.PatternInt p n) =
     AST.PatternInt (p, Set.fromList [Extension.StructuralPatterns]) n
   annotateExtensions (AST.PatternSucc p pattern_) =

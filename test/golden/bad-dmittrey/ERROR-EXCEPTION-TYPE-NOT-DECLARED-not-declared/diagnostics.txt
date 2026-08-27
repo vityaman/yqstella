@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-EXCEPTION-TYPE-NOT-DECLARED-not-declared/input.yqst:8:16: [ERROR_EXCEPTION_TYPE_NOT_DECLARED]
+expection type is not declared
+>   return try { throw(1) } with { 1 }
+                 ^

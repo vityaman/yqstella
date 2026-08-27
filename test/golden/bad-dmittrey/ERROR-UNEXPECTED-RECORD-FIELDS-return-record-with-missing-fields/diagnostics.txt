@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-RECORD-FIELDS-return-record-with-missing-fields/input.yqst:6:10: [ERROR_UNEXPECTED_RECORD_FIELDS]
+unexpected record fields: 
+>   return { fst = 0, snd = true, thd = true }
+           ^

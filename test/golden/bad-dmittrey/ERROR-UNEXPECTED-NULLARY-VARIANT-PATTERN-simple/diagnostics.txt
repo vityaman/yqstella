@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-NULLARY-VARIANT-PATTERN-simple/input.yqst:1:0: [ERROR_UNEXPECTED_NULLARY_VARIANT_PATTERN]
+unexpected nullary pattern, expected Nat
+> language core;
+  ^

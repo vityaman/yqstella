@@ -1,0 +1,15 @@
+language core;
+
+extend with #unit-type;
+
+fn twice(f : fn(Nat) -> Nat) -> fn(Nat) -> Nat {
+  return fn(x : Nat) { return f(f(x)) }
+}
+
+fn main(_ : Nat) -> fn(Nat) -> Nat {
+  return fn(n : Nat) {
+    return twice(fn(x : Bool) { return succ(0) })(n)
+  }
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_PARAMETER

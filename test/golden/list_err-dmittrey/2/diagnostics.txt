@@ -1,0 +1,12 @@
+test/golden/list_err-dmittrey/2/input.yqst:6:31: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return let xs = cons(true, [0, 1]) in  // true : Bool,  : [Nat]
+                                ^
+test/golden/list_err-dmittrey/2/input.yqst:6:34: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return let xs = cons(true, [0, 1]) in  // true : Bool,  : [Nat]
+                                   ^
+test/golden/list_err-dmittrey/2/input.yqst:7:3: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected [Nat], got [Bool]
+>   xs
+    ^

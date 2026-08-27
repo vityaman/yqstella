@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/11/input.yqst:5:10: [ERROR_UNEXPECTED_RECORD]
+expected Nat, got record
+>   return {x = 1, y = 2}
+           ^

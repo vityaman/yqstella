@@ -1,0 +1,4 @@
+test/golden/variant_err-dmittrey/1/input.yqst:5:42: [ERROR_UNEXPECTED_DATA_FOR_NULLARY_LABEL]
+expected nullary variant label
+>   return if x then <| a = 5 |> else <| b = 4 |>
+                                           ^

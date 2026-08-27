@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-SUBTYPE-bot/input.yqst:9:12: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Nat, got Bot
+>     return 1
+             ^

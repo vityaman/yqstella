@@ -1,0 +1,27 @@
+minirun ABI version: 2.45.0
+test/golden/record_succ-dmittrey/10/yql.yqls:<main>: Error: Type annotation
+
+    test/golden/record_succ-dmittrey/10/yql.yqls:<main>:13:34: Error: At function: AsList
+    	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                 ^
+        test/golden/record_succ-dmittrey/10/yql.yqls:<main>:13:42: Error: At function: AsStruct
+        	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                         ^
+            test/golden/record_succ-dmittrey/10/yql.yqls:<main>:13:53: Error: At tuple
+            	  (let world (Apply print world (AsList (AsStruct '('result result)))))
+	                                                    ^
+                test/golden/record_succ-dmittrey/10/yql.yqls:<main>:10:14: Error: At function: Apply
+                	    (return (Apply (Member r 'f) (Member r 'base)))))))
+	             ^
+                    test/golden/record_succ-dmittrey/10/yql.yqls:<main>:10:21: Error: At function: Member
+                    	    (return (Apply (Member r 'f) (Member r 'base)))))))
+	                    ^
+                        test/golden/record_succ-dmittrey/10/yql.yqls:<main>:7:27: Error: At function: AsStruct
+                        	  (let make (lambda '(_) (AsStruct '('f (lambda '(x) (+ x (Uint64 '1)))) '('base (Uint64 '100)))))
+	                          ^
+                            test/golden/record_succ-dmittrey/10/yql.yqls:<main>:7:38: Error: At tuple
+                            	  (let make (lambda '(_) (AsStruct '('f (lambda '(x) (+ x (Uint64 '1)))) '('base (Uint64 '100)))))
+	                                     ^
+                                test/golden/record_succ-dmittrey/10/yql.yqls:<main>:7:42: Error: Composable required. World, datasink, datasource and lambda are not composable
+                                	  (let make (lambda '(_) (AsStruct '('f (lambda '(x) (+ x (Uint64 '1)))) '('base (Uint64 '100)))))
+	                                         ^

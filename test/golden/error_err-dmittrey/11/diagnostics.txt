@@ -1,0 +1,16 @@
+test/golden/error_err-dmittrey/11/input.yqst:11:1: [ERROR_CONFLICTING_EXCEPTION_DECLARATIONS]
+cannot mix 'exception type' and 'exception variant' declarations
+> exception variant a : Bool
+  ^
+test/golden/error_err-dmittrey/11/input.yqst:12:1: [ERROR_CONFLICTING_EXCEPTION_DECLARATIONS]
+cannot mix 'exception type' and 'exception variant' declarations
+> exception variant b : Bool
+  ^
+test/golden/error_err-dmittrey/11/input.yqst:18:11: [ERROR_UNEXPECTED_VARIANT]
+expected Nat, but got a variant
+>     throw(<| a = true |>)   //  
+            ^
+test/golden/error_err-dmittrey/11/input.yqst:25:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat
+>     <| b = v |> => true
+      ^

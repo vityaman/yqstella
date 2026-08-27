@@ -1,0 +1,8 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-infer-match/input.yqst:6:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>     | y => true
+             ^
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-infer-match/input.yqst:4:33: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, Bool
+>   return (fn (a : Nat) { return match(0) {
+                                  ^

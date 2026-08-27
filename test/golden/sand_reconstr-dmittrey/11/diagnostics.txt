@@ -1,0 +1,4 @@
+test/golden/sand_reconstr-dmittrey/11/input.yqst:9:10: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
+mu TypeVar(unit |> 1). fn(Bool, Bool) -> TypeVar(unit |> 1)
+>   return test
+           ^

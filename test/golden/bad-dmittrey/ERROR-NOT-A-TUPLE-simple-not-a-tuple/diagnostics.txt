@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-NOT-A-TUPLE-simple-not-a-tuple/input.yqst:5:10: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got Bool
+>   return true.1
+           ^

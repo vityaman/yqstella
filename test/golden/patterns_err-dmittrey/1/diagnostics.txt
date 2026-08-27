@@ -1,0 +1,4 @@
+test/golden/patterns_err-dmittrey/1/input.yqst:7:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+expected tuple with length 2, got 1
+>     {x} => succ(x + y)
+      ^

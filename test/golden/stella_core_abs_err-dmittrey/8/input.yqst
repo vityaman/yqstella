@@ -1,0 +1,15 @@
+language core;
+
+extend with #unit-type;
+
+fn doubleApply(f : fn(Nat) -> Nat) -> fn(Nat) -> Nat {
+  return fn(n : Nat) { return f(f(n)) }
+}
+
+fn main(_ : Nat) -> fn(Nat) -> Nat {
+  return fn(y : Nat) {
+    return doubleApply(fn(x : Bool) { return succ(0) })(y)
+  }
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_PARAMETER

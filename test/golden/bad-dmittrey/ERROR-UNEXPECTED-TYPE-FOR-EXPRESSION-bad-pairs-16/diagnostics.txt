@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-bad-pairs-16/input.yqst:9:5: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got {Nat, Bool}
+>     (fn(x : Nat) { return { { { x, x }, { x, x } }, { { x, Nat::iszero(x) }, { x, x } } } })(0).2.1
+      ^

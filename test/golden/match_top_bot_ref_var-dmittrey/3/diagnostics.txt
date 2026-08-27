@@ -1,0 +1,4 @@
+test/golden/match_top_bot_ref_var-dmittrey/3/input.yqst:7:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Bot
+>     unit => 0
+      ^

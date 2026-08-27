@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-square-bad-square-reconstruct/input.yqst:19:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Nat and fn(Nat) -> Nat
+>         return Nat::add(i)( Nat::add(i)( succ( i )));
+                 ^

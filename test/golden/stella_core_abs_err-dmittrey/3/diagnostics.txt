@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_err-dmittrey/3/input.yqst:6:10: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Unit, got fn(Unit) -> Unit
+>   return fn(u : Unit) { return u }
+           ^

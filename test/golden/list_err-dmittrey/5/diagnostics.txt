@@ -1,0 +1,8 @@
+test/golden/list_err-dmittrey/5/input.yqst:6:26: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return let xs = [[0], [true]] in   //   : [Nat],  : [Bool]
+                           ^
+test/golden/list_err-dmittrey/5/input.yqst:7:3: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected [Nat], got [[Nat]]
+>   xs
+    ^

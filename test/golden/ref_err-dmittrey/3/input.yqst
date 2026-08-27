@@ -1,0 +1,8 @@
+language core;
+extend with #references, #unit-type, #natural-literals;
+
+fn main(n : Nat) -> Unit {
+  return n := 42
+}
+
+//ERROR_NOT_A_REFERENCE

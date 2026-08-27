@@ -1,0 +1,10 @@
+language core;
+extend with #references,#let-bindings;
+
+fn main(n : Nat) -> Nat {
+  return let r = new(n) in
+  let rr = new(r) in
+  **rr
+}
+
+//SUCCESS

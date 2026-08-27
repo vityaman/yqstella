@@ -1,0 +1,12 @@
+language core;
+extend with #sum-types,#let-bindings,#type-ascriptions;
+
+fn main(n : Nat) -> Nat {
+    return let val = inr(fn(x : Nat) { return succ(x) }) as (Nat + (fn(Nat) -> Nat)) in
+    match val {
+        inl(n) => n
+      | inr(f) => f(0)
+    }
+}
+
+//SUCCESS

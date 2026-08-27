@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TUPLE-application-record/input.yqst:10:15: [ERROR_UNEXPECTED_TUPLE]
+type mismatch: expected Nat, got {Nat, Bool}
+>   return foo ({0, false})
+                ^

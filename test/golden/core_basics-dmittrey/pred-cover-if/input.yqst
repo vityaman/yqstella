@@ -1,0 +1,10 @@
+// sample program in Stella Core
+language core;
+extend with #natural-literals,#predecessor;
+
+fn main(n : Nat) -> Nat
+{
+    return Nat::pred(if Nat::iszero(0) then 0 else succ(0))
+}
+
+//SUCCESS

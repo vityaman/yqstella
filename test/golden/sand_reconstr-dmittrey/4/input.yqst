@@ -1,0 +1,15 @@
+language core;
+
+extend with
+  #multiparameter-functions,
+  #type-reconstruction;
+
+fn test4(x : auto, y : auto) -> auto {
+  return if y then x else y
+}
+
+fn main(y : Nat) -> Bool {
+  return true
+}
+
+//SUCCESS

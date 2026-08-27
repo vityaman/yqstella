@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type;
+
+fn main(_ : Nat) -> Nat {
+  return fn(x : Nat) { return fn(y : Nat) { return succ(y) } }
+}
+
+//ERROR_UNEXPECTED_LAMBDA

@@ -1,0 +1,4 @@
+test/golden/variant_err-dmittrey/2/input.yqst:1:0: [ERROR_MISSING_DATA_FOR_LABEL]
+expected some variant label with type Nat, got nullary
+> language core;
+  ^

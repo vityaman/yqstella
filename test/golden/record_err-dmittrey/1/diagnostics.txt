@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/1/input.yqst:5:10: [ERROR_NOT_A_RECORD]
+type mismatch: expected record with current: Nat, got Nat
+>   return 0.current  // : 0 ERROR_NOT_A_RECORD
+           ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-panic-in-one-branch-bool-in-another/input.yqst:5:36: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Unit, got Bool
+>   return if false then panic! else true; 0
+                                     ^

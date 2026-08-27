@@ -1,0 +1,35 @@
+language core;
+
+extend with #nullary-functions;
+extend with #multiparameter-functions;
+extend with #structural-patterns;
+extend with #pattern-ascriptions;
+extend with #nested-function-declarations;
+extend with #unit-type;
+
+extend with #exceptions;
+
+fn throw-requires-decl(x : Unit) -> Unit {
+  //! ERROR(sema::exception_ty_not_declared)
+  return throw(x)
+}
+
+fn try-catch-requires-decl(x : Unit) -> Unit {
+  return try {
+    x
+  } catch {
+    //! ERROR(sema::exception_ty_not_declared)
+    y => y
+  }
+}
+
+fn try-with-does-not-require-decl(x : Unit) -> Unit {
+  //!~ ERROR
+  return try { x } with { x }
+}
+
+fn main(x : Nat) -> Nat {
+  return x
+}
+
+//ERROR_EXCEPTION_TYPE_NOT_DECLARED

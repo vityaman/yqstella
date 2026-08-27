@@ -1,0 +1,11 @@
+language core;
+
+fn normalize(n : Nat) -> Nat {
+  return Nat::pred(succ(n))
+}
+
+fn main(n : Nat) -> Nat {
+  return normalize(n)
+}
+
+//SUCCESS

@@ -1,0 +1,15 @@
+language core;
+extend with #variants,#unit-type,#natural-literals,#structural-patterns;
+
+fn valOrZero(x : Bool) -> <| val : Nat, zero : Unit |> {
+  return if x then <| val = 7 |> else <| zero = unit |>
+}
+
+fn main(flag : Bool) -> Nat {
+  return match valOrZero(flag) {
+      <| val = n |> => n
+    | <| zero = unit |> => 0
+  }
+}
+
+// SUCCESS

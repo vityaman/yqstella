@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_err-dmittrey/7/input.yqst:11:31: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Bool, got (x : Nat)
+>     return applyThreeTimes(fn(x : Nat) { return true })(flag)
+                                ^

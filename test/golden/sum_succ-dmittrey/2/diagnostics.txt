@@ -1,0 +1,28 @@
+test/golden/sum_succ-dmittrey/2/input.yqst:7:9: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inl(true)) => succ(0)
+          ^
+test/golden/sum_succ-dmittrey/2/input.yqst:7:13: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inl(true)) => succ(0)
+              ^
+test/golden/sum_succ-dmittrey/2/input.yqst:7:17: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inl(true)) => succ(0)
+                  ^
+test/golden/sum_succ-dmittrey/2/input.yqst:8:9: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inl(false)) => 0
+          ^
+test/golden/sum_succ-dmittrey/2/input.yqst:8:13: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inl(false)) => 0
+              ^
+test/golden/sum_succ-dmittrey/2/input.yqst:8:17: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inl(false)) => 0
+                  ^
+test/golden/sum_succ-dmittrey/2/input.yqst:9:9: [ERROR_BAD_EXTENSION]
+disabled extension usage: #structural-patterns
+>       | inr(inr(f)) => f(0)
+          ^

@@ -1,0 +1,4 @@
+test/golden/stella_core_err-dmittrey/13/input.yqst:6:20: [ERROR_UNDEFINED_VARIABLE]
+undefined variable x
+>   return if b then x else 0
+                     ^

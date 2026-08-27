@@ -1,0 +1,8 @@
+language core;
+extend with #variants,#unit-type,#type-ascriptions,#natural-literals,#nullary-variant-labels;
+
+fn main( n : Nat ) -> <| a : Nat |> {
+  return <| a |> as <| a : Nat |>
+}
+
+//ERROR_MISSING_DATA_FOR_LABEL

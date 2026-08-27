@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type;
+
+fn mainX(n : Nat) -> Nat {
+  return succ(n)
+}
+
+//ERROR_MISSING_MAIN

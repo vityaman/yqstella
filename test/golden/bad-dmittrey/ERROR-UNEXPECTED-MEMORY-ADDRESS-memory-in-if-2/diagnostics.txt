@@ -1,0 +1,8 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-MEMORY-ADDRESS-memory-in-if-2/input.yqst:6:39: [ERROR_UNEXPECTED_MEMORY_ADDRESS]
+expected Nat, but got memory address
+> 	return if Nat::iszero(n) then <0x01> else <0x02>
+                                        ^
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-MEMORY-ADDRESS-memory-in-if-2/input.yqst:6:51: [ERROR_AMBIGUOUS_REFERENCE_TYPE]
+type inference for memory address is not supported (use type ascriptions)
+> 	return if Nat::iszero(n) then <0x01> else <0x02>
+                                                    ^

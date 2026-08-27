@@ -1,0 +1,4 @@
+test/golden/stella_core_succ-dmittrey/10/input.yqst:4:46: [ERROR_BAD_EXTENSION]
+disabled extension usage: #predecessor
+>   return if Nat::iszero(n) then succ(0) else Nat::pred(n)
+                                               ^

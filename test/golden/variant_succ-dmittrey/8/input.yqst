@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type,#variants,#nullary-variant-labels,#type-ascriptions;
+
+fn main(_ : Unit) -> <| value, no : Unit |> {
+  return (<|value|> as <| value, no : Unit |>)
+}
+
+// SUCCESS

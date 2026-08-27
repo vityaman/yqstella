@@ -1,0 +1,9 @@
+language core;
+extend with #variants,#arithmetic-operators,#lists,#unit-type,#natural-literals,#structural-patterns,#multiparameter-functions,#fixpoint-combinator;
+
+
+fn main(_ : Nat) -> Nat {
+  return fix (fix (fn (x : Nat) { return x }))
+}
+
+//ERROR_NOT_A_FUNCTION

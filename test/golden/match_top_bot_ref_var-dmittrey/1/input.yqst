@@ -1,0 +1,16 @@
+language core;
+
+extend with #top-type, #structural-patterns, #natural-literals;
+
+fn main( x : Top ) -> Nat {
+  return match x {
+    true => 1
+  }
+}
+
+//unexpected pattern
+//  true
+//when pattern matching is expected for type
+//  Top
+
+//ERROR_UNEXPECTED_PATTERN_FOR_TYPE

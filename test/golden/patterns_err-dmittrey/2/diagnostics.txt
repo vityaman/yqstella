@@ -1,0 +1,12 @@
+test/golden/patterns_err-dmittrey/2/input.yqst:6:11: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type {z : Nat}
+>     { x = 4, y = 3 } => 10
+            ^
+test/golden/patterns_err-dmittrey/2/input.yqst:7:13: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type {z : Nat}
+>     | { x = 5, y = 6 } => 20
+              ^
+test/golden/patterns_err-dmittrey/2/input.yqst:8:27: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got {z : Nat}
+>     | { x = a, y = b } => a + b  // catch-all pattern    record'
+                            ^

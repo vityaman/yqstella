@@ -1,0 +1,15 @@
+language core;
+
+extend with #unit-type;
+
+fn boolTwice(f : Bool) -> fn(Bool) -> Bool {
+  return fn(b : Bool) { return f }
+}
+
+fn main(p : Bool) -> fn(Bool) -> Bool {
+  return fn(b : Bool) {
+    return boolTwice(fn(x : Nat) { return false })
+  }
+}
+
+//ERROR_UNEXPECTED_LAMBDA

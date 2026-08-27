@@ -1,0 +1,12 @@
+language core;
+extend with #records,#multiparameter-functions,#natural-literals;
+
+fn makePoint(x : Nat, y : Nat) -> {x : Nat, y : Nat} {
+  return {x = x, y = y}
+}
+
+fn main(_ : Nat) -> Nat {
+  return makePoint(2, 3).y
+}
+
+//SUCCESS

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-MISSING-RECORD-FIELDS-subtyping-record/input.yqst:14:10: [ERROR_MISSING_RECORD_FIELDS]
+(subsumes) missing record field: next, checking {current : Nat} <: {current : Nat, next : Nat}
+>   return iterate(0)
+           ^

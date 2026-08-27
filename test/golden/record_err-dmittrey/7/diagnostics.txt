@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/7/input.yqst:4:24: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: x
+> fn make() -> {x : Nat, x : Nat} {  // :   x   
+                         ^

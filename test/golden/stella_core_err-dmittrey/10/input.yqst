@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type,#fixpoint-combinator;
+
+fn main(n : Nat) -> Nat {
+  return fix(0)
+}
+
+//ERROR_NOT_A_FUNCTION

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-REFERENCE-return-ref-from-non-reference-function/input.yqst:6:16: [ERROR_UNEXPECTED_REFERENCE]
+expected reference type, but got Bool
+> 	return new (true)
+                 ^

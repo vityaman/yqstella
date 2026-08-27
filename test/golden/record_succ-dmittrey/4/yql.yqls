@@ -1,0 +1,13 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let sum (lambda '(p) (+MayWarn (Member p 'a) (Member p 'b))))
+  (let main (lambda '(_) (Apply sum (AsStruct '('a (Uint64 '10)) '('b (Uint64 '32))))))
+  (declare _____ (DataType 'Uint64))
+  (let result (Apply main _____))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

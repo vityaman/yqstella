@@ -1,0 +1,34 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let listVar (lambda '(flag)
+    (If
+      flag
+      (Variant
+        (AsList (Uint64 '1) (Uint64 '2) (Uint64 '3))
+        'lst
+        (VariantType (StructType '('lst (ListType (DataType 'Uint64))))))
+      (Variant
+        (AsList (Uint64 '1) (Uint64 '2))
+        'lst
+        (VariantType (StructType '('lst (ListType (DataType 'Uint64)))))))))
+  (let main (lambda '(flag) (block '(
+    (let yqstellamatchexpr (Apply listVar flag))
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let xs (Guess yqstellamatcharg 'lst))
+          (let yqstellamatchcond (And (Exists xs) (Bool 'true)))
+          (let xs (Unwrap xs))
+          (return
+            (If yqstellamatchcond (Just (Unwrap (ToOptional xs))) (Nothing (OptionalType (DataType 'Uint64))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0)))))))
+  (declare __flag__ (DataType 'Bool))
+  (let result (Apply main __flag__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

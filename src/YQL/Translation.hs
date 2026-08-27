@@ -538,12 +538,14 @@ recipes (AST.PatternCons (p, _) head' tail') = do
   return $ Map.union (fmap headF head'') (fmap tailF tail'')
 recipes (AST.PatternFalse (p, t)) = do
   false <- toYQL (AST.ConstFalse (p, t))
-  let f x = Y [A "OptionalIf", Y [A "Not", x], false]
+  let core = Y [A "OptionalIf", Y [A "Not", A "x"], false]
+      f x = mapcoerce' x $ Y [A "lambda", Q $ Y [A "x"], core]
   let name = "yqstellamatchfalse:" ++ show p
   return $ Map.singleton name f
 recipes (AST.PatternTrue (p, t)) = do
   true <- toYQL (AST.ConstTrue (p, t))
-  let f x = Y [A "OptionalIf", x, true]
+  let core = Y [A "OptionalIf", A "x", true]
+      f x = mapcoerce' x $ Y [A "lambda", Q $ Y [A "x"], core]
   let name = "yqstellamatchtrue:" ++ show p
   return $ Map.singleton name f
 recipes (AST.PatternUnit (p, _)) = do

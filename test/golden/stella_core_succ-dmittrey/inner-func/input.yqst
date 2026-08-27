@@ -1,0 +1,15 @@
+language core;
+extend with #nested-function-declarations,#lists,#let-bindings;
+
+fn plus4(n : Nat) -> Nat {
+  fn plus2(n : Nat) -> Nat {
+    return succ(succ(n))
+  }
+  return plus2(plus2(n))
+}
+
+fn main(n : Nat) -> Nat {
+  return plus4(n)
+}
+
+//SUCCESS

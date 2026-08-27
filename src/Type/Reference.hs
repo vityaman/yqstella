@@ -57,7 +57,7 @@ annotateRefExprType (Just t) (AST.Ref p expr) annotateType = do
   return (AST.Ref (p, Nothing) expr')
 annotateRefExprType t (AST.Deref p expr) annotateType = do
   expr' <- case (t, expr) of
-    (Just expected, AST.ConstMemory {}) ->
+    (Just expected, _) ->
       annotateType (Just $ Type $ AST.TypeRef () $ Type.toAST expected) expr
     _ ->
       annotateType Nothing expr

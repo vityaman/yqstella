@@ -1,0 +1,8 @@
+test/golden/variant_err-dmittrey/6/input.yqst:1:0: [ERROR_UNEXPECTED_NULLARY_VARIANT_PATTERN]
+unexpected nullary pattern, expected Nat
+> language core;
+  ^
+test/golden/variant_err-dmittrey/6/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return match example(flag) {
+           ^

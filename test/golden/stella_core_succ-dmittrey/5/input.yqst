@@ -1,0 +1,11 @@
+language core;
+
+fn inc_if_zero(n : Nat) -> Nat {
+  return if Nat::iszero(n) then succ(0) else n
+}
+
+fn main(n : Nat) -> Nat {
+  return inc_if_zero(n)
+}
+
+//SUCCESS

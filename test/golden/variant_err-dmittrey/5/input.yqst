@@ -1,0 +1,15 @@
+language core;
+extend with #variants,#unit-type,#type-ascriptions,#natural-literals,#nullary-variant-labels,#structural-patterns;
+
+fn example(x : Bool) -> <| a : Nat, b |> {
+  return if x then <| a = 5 |> else <| b |>
+}
+
+fn main(flag : Bool) -> Nat {
+  return match example(flag) {
+      <| a = n |> => succ(n)
+    | <| b = unit |> => 0
+  }
+}
+
+//ERROR_UNEXPECTED_NON_NULLARY_VARIANT_PATTERN

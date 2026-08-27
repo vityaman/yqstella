@@ -1,0 +1,4 @@
+test/golden/list_err-dmittrey/3/input.yqst:6:27: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected [Nat], got Nat
+>   return let xs = cons(0, 1) in   //    [Nat],   Nat
+                            ^

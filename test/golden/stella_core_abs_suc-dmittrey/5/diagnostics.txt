@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_suc-dmittrey/5/input.yqst:4:31: [ERROR_BAD_EXTENSION]
+disabled extension usage: #predecessor
+>   return fn(x : Nat) { return Nat::pred(x) }
+                                ^

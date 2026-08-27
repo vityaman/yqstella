@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-function-return/input.yqst:8:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return foo(0)
+             ^

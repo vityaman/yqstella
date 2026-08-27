@@ -1,0 +1,12 @@
+language core;
+extend with #references, #let-bindings,#sequencing;
+
+fn addOne(ref : &Nat) -> Nat {
+  return ref := succ(*ref); *ref
+}
+
+fn main(n : Nat) -> Nat {
+  return let r = new(n) in addOne(r)
+}
+
+//SUCCESS

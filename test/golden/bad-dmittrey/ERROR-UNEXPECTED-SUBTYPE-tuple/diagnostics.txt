@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-SUBTYPE-tuple/input.yqst:15:10: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Top, got Bool
+>   return tuple_gen(n)
+           ^

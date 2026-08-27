@@ -1,0 +1,10 @@
+language core;
+extend with #variants, #lists,#unit-type,#natural-literals,#structural-patterns,#fixpoint-combinator;
+
+fn idnat(n : Nat) -> Nat { return n }      // helper
+
+fn main(_ : Nat) -> Nat {
+  return fix (idnat)
+}
+
+//SUCCESS

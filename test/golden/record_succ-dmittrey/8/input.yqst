@@ -1,0 +1,9 @@
+language core;
+extend with #records,#let-bindings,#natural-literals;
+
+fn main(_ : Nat) -> Nat {
+  return let r = {a = {b = {c = {d = 123}}}} in
+  r.a.b.c.d
+}
+
+//SUCCESS

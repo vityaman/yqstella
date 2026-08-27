@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-PARAMETER-return-lambda-with-wrong-second-argument/input.yqst:6:17: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Bool, got (j : Nat)
+>       return fn(j : Nat) {
+                  ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNDEFINED-VARIABLE-simple-undefined-var/input.yqst:4:12: [ERROR_UNDEFINED_VARIABLE]
+undefined variable a
+>     return a
+             ^

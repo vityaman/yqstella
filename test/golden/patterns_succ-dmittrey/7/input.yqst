@@ -1,0 +1,16 @@
+language core;
+extend with #lists,#structural-patterns,#natural-literals;
+
+fn isSingleton(xs : [Nat]) -> Bool {
+  return match xs {
+    [] => false
+  | cons(h, []) => true
+  | cons(h, t) => false
+  }
+}
+
+fn main(_ : Nat) -> Bool {
+  return isSingleton([42])
+}
+
+//SUCCESS

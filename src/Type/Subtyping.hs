@@ -2,14 +2,14 @@ module Type.Subtyping (liftSubType, liftSubType') where
 
 import Control.Monad (when, zipWithM_)
 import Data.Foldable (find)
-import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, NOT_IMPLEMENTED, UNEXPECTED_SUBTYPE, UNEXPECTED_TYPE_FOR_EXPRESSION, UNEXPECTED_TYPE_FOR_NULLARY_LABEL))
+import Diagnostic.Code (Code (INCORRECT_NUMBER_OF_ARGUMENTS, MISSING_RECORD_FIELDS, NOT_IMPLEMENTED, UNEXPECTED_SUBTYPE, UNEXPECTED_TUPLE_LENGTH, UNEXPECTED_TYPE_FOR_EXPRESSION, UNEXPECTED_TYPE_FOR_NULLARY_LABEL, UNEXPECTED_VARIANT_LABEL))
 import Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position, pointRange, unknown)
 import Syntax.PrettyPrint (displayAST)
 import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import Type.Env
-import Type.Expectation (mismatch)
+import Type.Expectation (mismatch, mismatchSS)
 import qualified Type.Unification as Unification
 
 liftSubType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
@@ -61,7 +61,10 @@ subsumes (Type (AST.TypeFun () lhsArgs lhsRet)) (Type (AST.TypeFun () rhsArgs rh
 subsumes (Type (AST.TypeSum () lhsL lhsR)) (Type (AST.TypeSum () rhsL rhsR)) = do
   subsumes (Type lhsL) (Type rhsL)
   subsumes (Type lhsR) (Type rhsR)
-subsumes (Type (AST.TypeTuple () lhs)) (Type (AST.TypeTuple () rhs)) =
+subsumes (Type (AST.TypeTuple () lhs)) (Type (AST.TypeTuple () rhs)) = do
+  when (length lhs /= length rhs) $
+    let message' = "(subsumes) expected " ++ show (length rhs) ++ " tuple components, got " ++ show (length lhs)
+     in Left $ diagnostic Error UNEXPECTED_TUPLE_LENGTH (pointRange unknown) message'
   zipWithM_ subsumes (Type <$> lhs) (Type <$> rhs)
 subsumes lhsT'@(Type (AST.TypeRecord () lhs)) rhsT'@(Type (AST.TypeRecord () rhs)) =
   mapM_ (`subsumesF` lhs) rhs
@@ -93,7 +96,7 @@ subsumes lhsT'@(Type (AST.TypeVariant () lhs)) rhsT'@(Type (AST.TypeVariant () r
           let message' =
                 ("(subsumes) unexpected variant field: " ++ rhsName ++ ", ")
                   ++ ("checking " ++ show lhsT' ++ " <: " ++ show rhsT')
-           in Left $ diagnostic Error UNEXPECTED_SUBTYPE (pointRange unknown) message'
+           in Left $ diagnostic Error UNEXPECTED_VARIANT_LABEL (pointRange unknown) message'
         Just lhsF ->
           let lhsT = typingOf' lhsF
            in case (lhsT, rhsT) of
@@ -109,5 +112,5 @@ subsumes lhsT'@(Type (AST.TypeVariant () lhs)) rhsT'@(Type (AST.TypeVariant () r
 subsumes (Type (AST.TypeList () lhs)) (Type (AST.TypeList () rhs)) =
   subsumes (Type lhs) (Type rhs)
 subsumes lhs rhs =
-  let d = mismatch UNEXPECTED_TYPE_FOR_EXPRESSION unknown lhs rhs
+  let d = mismatchSS UNEXPECTED_SUBTYPE unknown (show rhs) (show lhs)
    in Left d {message = "(subsumes) " ++ message d}

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-infer-cons/input.yqst:10:42: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return (fn (a : Nat) { return cons(0, [true]); } ) (0)
+                                           ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-MISSING-MAIN-no-main/input.yqst:1:1: [ERROR_MISSING_MAIN]
+not found: main function
+> language core;
+  ^

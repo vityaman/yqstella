@@ -1,0 +1,14 @@
+language core;
+extend with #variants, #lists,#unit-type,#natural-literals,#structural-patterns;
+
+fn listVar(flag : Bool) -> <| lst : [Nat] |> {
+  return if flag then <| lst = [1,2,3] |> else <| lst = [1,2] |> 
+}
+
+fn main(flag : Bool) -> Nat {
+  return match listVar(flag) {
+      <| lst = xs |> => List::head(xs)
+  }
+}
+
+// SUCCESS

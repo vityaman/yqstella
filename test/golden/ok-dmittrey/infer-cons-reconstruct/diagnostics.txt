@@ -1,0 +1,8 @@
+test/golden/ok-dmittrey/infer-cons-reconstruct/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 1)) -> Nat has unresolved type variable TypeVar(unit |> 1)
+> language core;
+  ^
+test/golden/ok-dmittrey/infer-cons-reconstruct/input.yqst:5:8: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 1) has unresolved type variable TypeVar(unit |> 1)
+> fn foo(a : auto) -> auto {
+         ^

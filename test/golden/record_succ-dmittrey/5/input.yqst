@@ -1,0 +1,9 @@
+language core;
+extend with #records,#let-bindings,#natural-literals;
+
+fn main(_ : Nat) -> Nat {
+  return let r = {inc = fn(x : Nat) { return succ(x) }} in
+  r.inc(41)
+}
+
+//SUCCESS

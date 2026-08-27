@@ -1,0 +1,13 @@
+language core;
+
+extend with #exceptions;
+extend with #exception-type-declaration;
+
+//! ERROR(sema::conflicting_features)
+extend with #open-variant-exceptions;
+
+fn main(x : Nat) -> Nat {
+  return x
+}
+
+//SUCCESS

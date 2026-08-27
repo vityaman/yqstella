@@ -1,0 +1,10 @@
+language core;
+extend with #records,#nullary-functions,#natural-literals;
+
+fn f(_ : Nat) -> Nat { return 0 }
+
+fn main(_ : Nat) -> Nat {
+  return f.abc  // :   
+}
+
+//ERROR_NOT_A_RECORD

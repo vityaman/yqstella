@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-const-tail-reconstruct/input.yqst:7:20: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and Nat
+>   return  cons(0, [true]);
+                     ^

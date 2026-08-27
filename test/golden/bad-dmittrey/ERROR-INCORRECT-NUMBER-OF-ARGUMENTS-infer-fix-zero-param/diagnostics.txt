@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-INCORRECT-NUMBER-OF-ARGUMENTS-infer-fix-zero-param/input.yqst:10:33: [ERROR_INCORRECT_NUMBER_OF_ARGUMENTS]
+type mismatch: expected T -> T, got fn() -> Bool
+>   return (fn (a : Nat) { return fix(foo); } ) (0)
+                                  ^

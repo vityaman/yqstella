@@ -4,7 +4,7 @@ module Type.Annotation (annotateType, inferType) where
 
 import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
-import Control.Monad (unless)
+import Control.Monad (foldM, unless)
 import Control.Monad.State
 import Data.Foldable (find)
 import Diagnostic.Code (Code (..))
@@ -21,7 +21,7 @@ import qualified Type.Core as Type
 import Type.Decl (withDecls, withParamDecls)
 import Type.Env (TypeAnnotationEnv, isAvailable, positionOf, tellC, tellD, typeOf, withStateTAE)
 import Type.Exception (annotateExceptionExprType)
-import Type.Expectation (TypeKind (Expected, Inferred), listItemType, mismatchSS, sanitizeT, sanitizeTSilent, validateTypeParameters)
+import Type.Expectation (TypeKind (Expected, Inferred), ensureEqType, listItemType, mismatchSS, sanitizeT, sanitizeTSilent, validateTypeParameters)
 import Type.Expression (annotateTT2B, annotateTT2T)
 import Type.Lift (liftType, liftType')
 import Type.Match (annotateLetType, annotateMatchType)
@@ -81,7 +81,8 @@ annotateFunction p annotations fname paramdecls returntype throwtype decls expr 
 instance TypeAnnotatable AST.Program' where
   annotateType _ (AST.AProgram p languagedecl extensions decls) = do
     context' <- gets (withName "unit") >>= withDecls decls {-isTopLevel=-} True
-    decls' <- withStateTAE (const context') (mapM inferType decls)
+    context'' <- foldM addExceptionDeclaration context' decls
+    decls' <- withStateTAE (const context'') (mapM annotateTopDecl decls)
 
     t' <- case find isMain decls' of
       Just (AST.DeclFun (_, t'@(Just (Type (AST.TypeFun _ args _)))) _ _ _ _ _ _ _) | length args == 1 -> do
@@ -102,6 +103,19 @@ instance TypeAnnotatable AST.Program' where
 
     return (AST.AProgram (p, t') (stub languagedecl) (stubL extensions) decls')
     where
+      addExceptionDeclaration context (AST.DeclExceptionType p' type_) =
+        withStateTAE (const context) $ do
+          type' <- sanitizeT type_
+          case Context.withExceptionType type' context of
+            Right context' -> pure context'
+            Left issue -> do
+              tellD [issue {range = pointRange p'}]
+              pure context
+      addExceptionDeclaration context _ = pure context
+
+      annotateTopDecl f@(AST.DeclExceptionType {}) = pure $ stub f
+      annotateTopDecl decl = inferType decl
+
       isMain (AST.DeclFun _ _ (AST.StellaIdent name) _ _ _ _ _) | name == "main" = True
       isMain _ = False
 
@@ -319,16 +333,39 @@ instance TypeAnnotatable AST.Expr' where
   annotateType t (AST.Record p bindings) =
     annotateRecordType t p bindings annotateType
   annotateType t (AST.ConsList p head'' tail'') = do
-    headT <- listItemType p Expected t
+    let expectedListType = case t of
+          Just (Type (AST.TypeTop ())) -> Nothing
+          _ -> t
+    headT <- listItemType p Expected expectedListType
 
     head' <- annotateType headT head''
     let itemT = headT <|> snd (annotation head')
         listT = fmap Type.list itemT
 
-    tail' <- annotateType listT tail''
+    tail' <- case tail'' of
+      AST.List {} -> annotateType listT tail''
+      AST.ConsList {} -> annotateType listT tail''
+      AST.Tail {} -> annotateType listT tail''
+      _ -> do
+        inferred <- inferType tail''
+        case typeOf inferred of
+          Just actual -> do
+            isSubtyping <- isAvailable Extension.StructuralSubtyping
+            if isSubtyping
+              then do
+                _ <- liftType' (annotation tail'') actual listT
+                pure ()
+              else do
+                let toDiagnostic expected actual' =
+                      mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION (annotation tail'') (show expected) (show actual')
+                _ <- ensureEqType (annotation tail'') toDiagnostic actual listT
+                pure ()
+            pure ()
+          Nothing -> pure ()
+        pure inferred
     let tailT = listT <|> snd (annotation tail')
 
-    t' <- listItemType (annotation tail'') Inferred tailT
+    t' <- fmap Type.list <$> listItemType (annotation tail'') Inferred tailT
     return (AST.ConsList (p, t') head' tail')
   annotateType t (AST.Head p expr) = do
     let listT = fmap Type.list t
@@ -345,18 +382,16 @@ instance TypeAnnotatable AST.Expr' where
     return (AST.IsEmpty (p, Just t') expr')
   annotateType t (AST.Tail p expr) = do
     isTypeReconstruction <- isAvailable Extension.TypeReconstruction
-    if isTypeReconstruction
-      then do
+    case (isTypeReconstruction, t) of
+      (False, Just (Type (AST.TypeList _ item))) -> do
+        let listT = Just $ Type.list $ Type item
+        expr' <- annotateType listT expr
+        return (AST.Tail (p, listT <|> typeOf expr') expr')
+      _ -> do
         expr' <- inferType expr
         itemT <- listItemType (annotation expr) Inferred (typeOf expr')
         t' <- traverse (\item -> liftType' p (Type.list item) t) itemT
         return (AST.Tail (p, t') expr')
-      else do
-        headT <- listItemType p Expected t
-        let listT = fmap Type.list headT
-        expr' <- annotateType listT expr
-        let listT' = listT <|> snd (annotation expr')
-        return (AST.Tail (p, listT') expr')
   annotateType t x@(AST.Panic {}) =
     annotateExceptionExprType t x annotateType
   annotateType t x@(AST.Throw {}) = do

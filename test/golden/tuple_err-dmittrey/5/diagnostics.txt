@@ -1,0 +1,8 @@
+test/golden/tuple_err-dmittrey/5/input.yqst:9:10: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-ascriptions
+>   return {n, succ(n), succ(succ(n))} as Nat
+           ^
+test/golden/tuple_err-dmittrey/5/input.yqst:9:10: [ERROR_UNEXPECTED_TUPLE]
+type mismatch: expected Nat, got {Nat, Nat, Nat}
+>   return {n, succ(n), succ(succ(n))} as Nat
+           ^

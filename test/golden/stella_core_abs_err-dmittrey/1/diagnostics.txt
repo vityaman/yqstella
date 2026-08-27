@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_err-dmittrey/1/input.yqst:4:10: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Nat, got fn(Nat) -> Nat
+>   return fn(x : Nat) { return succ(x) }
+           ^

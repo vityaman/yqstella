@@ -1,0 +1,4 @@
+test/golden/fix_err-dmittrey/6/input.yqst:6:19: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Nat, got (b : Bool)
+>   return fix (fn (b : Bool) { return 0 })
+                    ^

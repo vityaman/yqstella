@@ -1,0 +1,8 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-PATTERN-FOR-TYPE-unexpected-pattern/input.yqst:11:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Bool
+>       inl(n) => n
+        ^
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-PATTERN-FOR-TYPE-unexpected-pattern/input.yqst:12:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Bool
+>     | inr(_) => 0
+        ^

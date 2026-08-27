@@ -1,0 +1,8 @@
+test/golden/ref_err-dmittrey/4/input.yqst:5:11: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected &Unit, got Unit
+>   return *u
+            ^
+test/golden/ref_err-dmittrey/4/input.yqst:5:10: [ERROR_NOT_A_REFERENCE]
+expected a reference type, got Unit
+>   return *u
+           ^

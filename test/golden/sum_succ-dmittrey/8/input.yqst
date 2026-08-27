@@ -1,0 +1,16 @@
+language core;
+extend with #sum-types,#structural-patterns,#natural-literals;
+
+fn eval(input : Nat + Bool) -> Nat {
+    return match input {
+        inl(n) => n
+      | inr(true) => 1
+      | inr(false) => 0
+    }
+}
+
+fn main(n : Nat) -> Nat {
+    return eval(inr(false))
+}
+
+//SUCCESS

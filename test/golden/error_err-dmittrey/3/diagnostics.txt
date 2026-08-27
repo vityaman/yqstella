@@ -1,0 +1,8 @@
+test/golden/error_err-dmittrey/3/input.yqst:7:18: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>     return try { 42 } catch { e => e }  // : try  Nat,   Bool
+                   ^
+test/golden/error_err-dmittrey/3/input.yqst:7:36: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>     return try { 42 } catch { e => e }  // : try  Nat,   Bool
+                                     ^

@@ -1,0 +1,13 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let increment_twice (lambda '(n) (+ (+ (Uint64 '0) (Uint64 '1)) (Uint64 '1))))
+  (let main (lambda '(r) (Apply increment_twice r)))
+  (declare __r__ (DataType 'Uint64))
+  (let result (Apply main __r__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

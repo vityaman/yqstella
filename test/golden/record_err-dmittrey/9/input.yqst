@@ -1,0 +1,12 @@
+language core;
+extend with #records,#nullary-functions,#natural-literals;
+
+fn make(p : Nat) -> {a : {b : Nat}} {
+  return {a = {b = 1}}
+}
+
+fn main(p : Nat) -> Nat {
+  return make(p).a.c  // :  c   {b : Nat}
+}
+
+//ERROR_UNEXPECTED_FIELD_ACCESS

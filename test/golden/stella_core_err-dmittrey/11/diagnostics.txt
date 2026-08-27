@@ -1,0 +1,12 @@
+test/golden/stella_core_err-dmittrey/11/input.yqst:6:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got Nat
+>   return 0(x)
+           ^
+test/golden/stella_core_err-dmittrey/11/input.yqst:6:12: [ERROR_UNDEFINED_VARIABLE]
+undefined variable x
+>   return 0(x)
+             ^
+test/golden/stella_core_err-dmittrey/11/input.yqst:6:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(auto) -> auto
+>   return 0(x)
+           ^

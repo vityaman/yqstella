@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/10/input.yqst:5:10: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: y, z
+>   return {x = 1}  // :  y  z
+           ^

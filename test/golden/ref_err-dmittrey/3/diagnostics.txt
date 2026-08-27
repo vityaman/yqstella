@@ -1,0 +1,4 @@
+test/golden/ref_err-dmittrey/3/input.yqst:5:10: [ERROR_NOT_A_REFERENCE]
+expected a reference, but got Nat
+>   return n := 42
+           ^

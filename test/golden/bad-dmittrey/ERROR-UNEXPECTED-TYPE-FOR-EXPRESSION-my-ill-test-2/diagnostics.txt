@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-my-ill-test-2/input.yqst:17:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Bool) -> Bool, got Bool
+>   return twice(Bool::not)(b)
+           ^

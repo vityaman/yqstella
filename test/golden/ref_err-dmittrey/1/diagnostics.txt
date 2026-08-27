@@ -1,0 +1,4 @@
+test/golden/ref_err-dmittrey/1/input.yqst:5:20: [ERROR_AMBIGUOUS_REFERENCE_TYPE]
+type inference for memory address is not supported (use type ascriptions)
+>   return let raw = <0x1234> in *raw
+                     ^

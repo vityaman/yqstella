@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TUPLE-LENGTH-subtyping-tuple2/input.yqst:15:10: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+(subsumes) expected 2 tuple components, got 1
+>   return tuple_gen(n)
+           ^

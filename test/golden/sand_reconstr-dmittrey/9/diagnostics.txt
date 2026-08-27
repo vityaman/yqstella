@@ -1,0 +1,4 @@
+test/golden/sand_reconstr-dmittrey/9/input.yqst:8:49: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and Nat
+>   return if true then (if x then y else 0) else false
+                                                  ^

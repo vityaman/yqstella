@@ -1,0 +1,8 @@
+test/golden/variant_err-dmittrey/5/input.yqst:11:12: [ERROR_UNEXPECTED_NON_NULLARY_VARIANT_PATTERN]
+unexpected non nullary pattern
+>     | <| b = unit |> => 0
+             ^
+test/golden/variant_err-dmittrey/5/input.yqst:9:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return match example(flag) {
+           ^

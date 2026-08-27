@@ -1,0 +1,15 @@
+language core;
+extend with #lists,#structural-patterns,#natural-literals,#arithmetic-operators;
+
+fn sum(xs : [Nat]) -> Nat {
+  return match xs {
+    [] => 0
+  | cons(h, t) => h + sum(t)
+  }
+}
+
+fn main(_ : Nat) -> Nat {
+  return sum([1,2,3])
+}
+
+//SUCCESS

@@ -1,0 +1,16 @@
+language core;
+extend with #tuples,#unit-type;
+
+fn noop(_ : {}) -> {} {
+  return {}
+}
+
+fn third(tup : {Nat, Nat, Nat}) -> Nat {
+  return unit.4
+}
+
+fn main(n : Nat) -> Nat {
+  return third({n, succ(n), succ(succ(n))})
+}
+
+// ERROR_NOT_A_TUPLE

@@ -1,0 +1,14 @@
+language core;
+
+extend with #unit-type;
+
+fn foo(n : Nat) -> Nat {
+  return succ(n)
+}
+
+
+fn main(n : Nat) -> Bool {
+    return foo(n)
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

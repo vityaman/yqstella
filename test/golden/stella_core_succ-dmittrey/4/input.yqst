@@ -1,0 +1,11 @@
+language core;
+
+fn check_zero(n : Nat) -> Bool {
+  return if Nat::iszero(n) then true else false
+}
+
+fn main(n : Nat) -> Bool {
+  return check_zero(n)
+}
+
+//SUCCESS

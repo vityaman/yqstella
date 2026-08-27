@@ -1,0 +1,26 @@
+language core;
+
+extend with
+  #unit-type,
+  #references,
+  #arithmetic-operators,
+  #sequencing,
+  #natural-literals;
+
+extend with #let-bindings;
+
+fn Nat::average(n : Nat) -> fn(Nat) -> Nat {
+  return fn(m : Nat) {
+    return let sum = succ(m) in
+           let two = succ(succ(sum)) in
+           // Assuming we have defined the division function
+           succ(two)
+  }
+}
+
+
+fn main(n : Nat) -> Nat {
+  return Nat::average(n)(n)
+}
+
+//SUCCESS

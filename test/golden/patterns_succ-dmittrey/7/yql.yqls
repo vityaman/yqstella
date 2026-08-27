@@ -1,0 +1,61 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let isSingleton (lambda '(xs) (block '(
+    (let yqstellamatchexpr xs)
+    (let yqstellamatchbr0
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let yqstellamatchnil:6:5
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              yqstellamatcharg
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond (And (Exists yqstellamatchnil:6:5) (Bool 'true)))
+          (let yqstellamatchnil:6:5 (Unwrap yqstellamatchnil:6:5))
+          (return (If yqstellamatchcond (Just (Bool 'false)) (Nothing (OptionalType (DataType 'Bool))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr1
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let h (ToOptional yqstellamatcharg))
+          (let yqstellamatchnil:7:13
+            (Apply
+              (lambda '(x f)
+                (MatchType
+                  x
+                  'Optional
+                  (lambda '(x) (FlatMap x (lambda '(x) (Apply f x))))
+                  (lambda '(x) (Apply f x))))
+              (Skip yqstellamatcharg (Uint64 '1))
+              (lambda '(x) (OptionalIf (Not (HasItems x)) (EmptyList)))))
+          (let yqstellamatchcond (And (Exists h) (And (Exists yqstellamatchnil:7:13) (Bool 'true))))
+          (let h (Unwrap h))
+          (let yqstellamatchnil:7:13 (Unwrap yqstellamatchnil:7:13))
+          (return (If yqstellamatchcond (Just (Bool 'true)) (Nothing (OptionalType (DataType 'Bool))))))))
+        yqstellamatchexpr))
+    (let yqstellamatchbr2
+      (Apply
+        (lambda '(yqstellamatcharg) (block '(
+          (let h (ToOptional yqstellamatcharg))
+          (let t (Skip yqstellamatcharg (Uint64 '1)))
+          (let yqstellamatchcond (And (Exists h) (And (Exists t) (Bool 'true))))
+          (let h (Unwrap h))
+          (let t (Unwrap t))
+          (return (If yqstellamatchcond (Just (Bool 'false)) (Nothing (OptionalType (DataType 'Bool))))))))
+        yqstellamatchexpr))
+    (return (Unwrap (Coalesce yqstellamatchbr0 yqstellamatchbr1 yqstellamatchbr2)))))))
+  (let main (lambda '(_) (Apply isSingleton (AsList (Uint64 '42)))))
+  (declare _____ (DataType 'Uint64))
+  (let result (Apply main _____))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

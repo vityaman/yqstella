@@ -1,0 +1,8 @@
+test/golden/fix_err-dmittrey/7/input.yqst:6:24: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected fn(Nat) -> Nat, got (x : Nat)
+>   return fix (fix (fn (x : Nat) { return x }))
+                         ^
+test/golden/fix_err-dmittrey/7/input.yqst:6:42: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected fn(Nat) -> Nat, got Nat
+>   return fix (fix (fn (x : Nat) { return x }))
+                                           ^

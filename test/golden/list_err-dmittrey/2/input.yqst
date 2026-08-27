@@ -1,0 +1,10 @@
+language core;
+extend with #variants,#type-ascriptions,#let-bindings,#arithmetic-operators,#lists,#unit-type,#natural-literals,#structural-patterns,#multiparameter-functions,#fixpoint-combinator;
+
+
+fn main(_ : Nat) -> [Nat] {
+  return let xs = cons(true, [0, 1]) in  // true : Bool,  : [Nat]
+  xs
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-DATA-FOR-NULLARY-LABEL-simple/input.yqst:6:15: [ERROR_UNEXPECTED_DATA_FOR_NULLARY_LABEL]
+expected nullary variant label
+>   return <| b = true |>
+                ^

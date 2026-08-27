@@ -1,0 +1,16 @@
+language core;
+
+extend with
+  #multiparameter-functions,
+  #nullary-functions,
+  #type-reconstruction;
+
+fn test5() -> auto {
+  return true
+}
+
+fn main(y : Nat) -> Bool {
+  return true
+}
+
+//SUCCESS

@@ -1,0 +1,4 @@
+test/golden/record_err-dmittrey/6/input.yqst:5:18: [ERROR_DUPLICATE_RECORD_FIELDS]
+duplicate field: x
+>   return {x = 1, x = 2}  // :    x
+                   ^

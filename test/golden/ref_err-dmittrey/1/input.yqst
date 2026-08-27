@@ -1,0 +1,8 @@
+language core;
+extend with #references,#let-bindings;
+
+fn main(n : Nat) -> Nat {
+  return let raw = <0x1234> in *raw
+}
+
+//ERROR_AMBIGUOUS_REFERENCE_TYPE

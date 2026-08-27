@@ -1,0 +1,26 @@
+language core;
+
+extend with
+  #unit-type,
+  #references,
+  #arithmetic-operators,
+  #sequencing,
+  #natural-literals;
+
+extend with #let-bindings;
+
+// square, computed as a sum of odd numbers
+fn square(n : Nat) -> Nat {
+  return Nat::rec(n, 0, fn(i : Nat) {
+      return fn(r : Nat) {
+        // r := r + (2*i + 1)
+        return let double = succ(i) in succ(double)
+      }
+  })
+}
+
+fn main(n : Nat) -> Nat {
+  return square(n)
+}
+
+//SUCCESS

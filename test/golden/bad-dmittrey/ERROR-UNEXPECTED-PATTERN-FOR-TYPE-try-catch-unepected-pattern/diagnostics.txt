@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-PATTERN-FOR-TYPE-try-catch-unepected-pattern/input.yqst:10:40: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type Nat
+> 	return try { fail(n) } catch { true => true }
+                                         ^

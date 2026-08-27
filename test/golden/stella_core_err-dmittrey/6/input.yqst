@@ -1,0 +1,9 @@
+language core;
+
+extend with #unit-type;
+
+fn main(n : Nat) -> Nat {
+  return true
+}
+
+//ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION

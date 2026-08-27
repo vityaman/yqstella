@@ -1,0 +1,11 @@
+language core;
+
+fn step_or_zero(n : Nat) -> Nat {
+  return if Nat::iszero(n) then 0 else succ(n)
+}
+
+fn main(n : Nat) -> Nat {
+  return step_or_zero(n)
+}
+
+//SUCCESS

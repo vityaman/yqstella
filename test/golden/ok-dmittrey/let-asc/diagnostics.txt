@@ -1,0 +1,4 @@
+test/golden/ok-dmittrey/let-asc/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: Extension #pattern-ascriptions not implemented
+> language core;
+  ^

@@ -5,6 +5,7 @@ module Type.Expectation
     validateTypeParameters,
     liftEqType,
     liftEqType',
+    ensureEqType,
     ensureEqParamType,
     listItemType,
     commonType,
@@ -22,13 +23,14 @@ import Data.Maybe (mapMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange, unknown)
+import qualified Extension.Core as Extension
 import Misc.Duplicate (sepUniqDupBy)
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Constraint as Constraint
 import qualified Type.Context as Context
 import Type.Core (Type (Type), toAST)
 import qualified Type.Core as Type
-import Type.Env (TypeAnnotationEnv, freshTypeVar, tellC, tellD, validateUniqueBy, withStateTAE)
+import Type.Env (TypeAnnotationEnv, freshTypeVar, isAvailable, tellC, tellD, validateUniqueBy, withStateTAE)
 import qualified Type.Unification as Unification
 
 data TypeKind = Expected | Inferred
@@ -132,10 +134,16 @@ sanitizeT' reporting (AST.TypeVar p (AST.StellaIdent name)) = do
 
 -- TODO: make it return Maybe Type
 liftEqType :: Position -> (() -> AST.Type' ()) -> Maybe Type -> TypeAnnotationEnv Type
-liftEqType p lifting = liftEqType' p (Type $ lifting ())
+liftEqType p lifting expected = do
+  isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+  isUniversalTypes <- isAvailable Extension.UniversalTypes
+  ensureEqType p (mismatchFor (isTypeReconstruction && not isUniversalTypes) UNEXPECTED_TYPE_FOR_EXPRESSION p) (Type $ lifting ()) expected
 
 liftEqType' :: Position -> Type -> Maybe Type -> TypeAnnotationEnv Type
-liftEqType' p = ensureEqType p (mismatch UNEXPECTED_TYPE_FOR_EXPRESSION p)
+liftEqType' p lifting expected = do
+  isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+  isUniversalTypes <- isAvailable Extension.UniversalTypes
+  ensureEqType p (mismatchFor (isTypeReconstruction && not isUniversalTypes) UNEXPECTED_TYPE_FOR_EXPRESSION p) lifting expected
 
 ensureEqParamType :: Position -> String -> Type -> Type -> TypeAnnotationEnv ()
 ensureEqParamType p name actual expected =
@@ -187,8 +195,10 @@ unexpectedListItemType p Inferred t = do
   tellD [diagnostic Error NOT_A_LIST (pointRange p) message]
   return Nothing
 unexpectedListItemType p Expected t = do
+  isTypeReconstruction <- isAvailable Extension.TypeReconstruction
   let message = "expected " ++ show t ++ ", got list"
-  tellD [diagnostic Error UNEXPECTED_LIST (pointRange p) message]
+      code = if isTypeReconstruction then UNEXPECTED_TYPE_FOR_EXPRESSION else UNEXPECTED_LIST
+  tellD [diagnostic Error code (pointRange p) message]
   return Nothing
 
 commonType :: Position -> [(Position, Maybe Type)] -> TypeAnnotationEnv (Maybe Type)
@@ -233,6 +243,12 @@ mismatch _ p expected@(Type (AST.TypeList () _)) actual@(Type _) =
   mismatchSS NOT_A_LIST p (show expected) (show actual)
 mismatch code p expected actual =
   mismatchSS code p (show expected) (show actual)
+
+mismatchFor :: Bool -> Code -> Position -> Type -> Type -> Diagnostic
+mismatchFor True _ p expected actual =
+  mismatchSS UNEXPECTED_TYPE_FOR_EXPRESSION p (show expected) (show actual)
+mismatchFor False code p expected actual =
+  mismatch code p expected actual
 
 mismatchSS :: Code -> Position -> String -> String -> Diagnostic
 mismatchSS code p expected actual =

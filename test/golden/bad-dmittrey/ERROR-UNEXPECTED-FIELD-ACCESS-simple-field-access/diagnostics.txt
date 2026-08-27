@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-FIELD-ACCESS-simple-field-access/input.yqst:5:10: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field thd : Nat
+>   return { fst = 0, snd = true }.thd
+           ^

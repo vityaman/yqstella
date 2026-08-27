@@ -11,6 +11,7 @@ import Data.Maybe (fromMaybe)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Severity (..), diagnostic)
 import Diagnostic.Position (Position, pointRange)
+import qualified Extension.Core as Extension
 import qualified SyntaxGen.AbsStella as AST
 import qualified Type.Constraint as Constraint
 import Type.Context (withName, withTyped)
@@ -18,7 +19,7 @@ import qualified Type.Context as Context
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Decl (toPair)
-import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, positionOf, tellC, tellD, typeOf, withStateTAE)
+import Type.Env (TypeAnnotationEnv, TypeAnnotator, freshTypeVar, isAvailable, positionOf, tellC, tellD, typeOf, withStateTAE)
 import Type.Expectation (ensureEqParamType, mismatchSS)
 import Type.Lift (liftType')
 import qualified Type.Unification as Unification
@@ -71,7 +72,18 @@ annotateAbstractionType t p paramdecls expr annotateType = do
         return ()
 
       let ensureParameterType ((p', (name, actual')), expected') =
-            ensureEqParamType p' name actual' expected'
+            do
+              isSubtyping <- isAvailable Extension.StructuralSubtyping
+              isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+              isUniversalTypes <- isAvailable Extension.UniversalTypes
+              if isSubtyping
+                then do
+                  _ <- liftType' p' expected' (Just actual')
+                  pure ()
+                else
+                  if isTypeReconstruction && not isUniversalTypes
+                    then tellC [Constraint.Eq p' actual' expected']
+                    else ensureEqParamType p' name actual' expected'
       mapM_ ensureParameterType (zip actual expected)
 
       context' <- gets withParams

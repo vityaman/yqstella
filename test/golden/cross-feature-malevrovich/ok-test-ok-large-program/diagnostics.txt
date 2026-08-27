@@ -6,7 +6,3 @@ test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:128:37
 disabled extension usage: #natural-literals
 >          let doubled = list_map(mul(2))(raw) in
                                       ^
-test/golden/cross-feature-malevrovich/ok-test-ok-large-program/input.yqst:100:49: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-type mismatch: expected Nat, got [Nat]
->              if gt_zero(h) then cons(h, t) else t)
-                                                  ^

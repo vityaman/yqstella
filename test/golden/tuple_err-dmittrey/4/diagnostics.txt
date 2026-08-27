@@ -1,0 +1,4 @@
+test/golden/tuple_err-dmittrey/4/input.yqst:13:16: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+type mismatch: expected {Nat, Nat}, got {Nat, Nat, Nat}
+>   return third({n, succ(n), succ(succ(n))})
+                 ^

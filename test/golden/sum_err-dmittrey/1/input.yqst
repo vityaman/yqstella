@@ -1,0 +1,10 @@
+language core;
+extend with #structural-subtyping, #sum-types;
+
+fn main(n : Nat) -> Bool + Nat {
+  return (fn (x : Nat) {
+    return inr(x)
+  })(n)
+}
+
+//ERROR_AMBIGUOUS_SUM_TYPE

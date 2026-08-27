@@ -1,0 +1,4 @@
+minirun ABI version: 2.45.0
+test/golden/patterns_succ-dmittrey/5/yql.yqls:<main>:37:31: Error: Name not found: length
+	              (Just (+ (Apply length t) (Uint64 '1)))
+	                              ^

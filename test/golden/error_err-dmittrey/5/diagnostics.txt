@@ -1,0 +1,4 @@
+test/golden/error_err-dmittrey/5/input.yqst:10:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>         throw(true)  // : true    Nat
+                ^

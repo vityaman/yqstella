@@ -1,0 +1,4 @@
+test/golden/let_succ-dmittrey/3/input.yqst:7:10: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Expr' not implemented
+>   return Nat::rec(n, 0, fn(i : Nat) {
+           ^

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-TYPE-FOR-EXPRESSION-bad-records-13/input.yqst:9:5: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected {x : fn(Bool) -> Nat, y : Nat}, got fn(Bool) -> Nat
+>     { x = { x = fn(x : Bool) {
+      ^

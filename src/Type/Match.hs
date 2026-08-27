@@ -3,6 +3,7 @@
 module Type.Match (annotateLetType, annotateMatchType, annotateCaseType) where
 
 import Annotation (Annotated (annotation))
+import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (unless, void, when, zipWithM)
 import Control.Monad.State
 import qualified Data.Bifunctor
@@ -312,7 +313,7 @@ annotateMatchType t p expr cases annotateType = do
   patternType <- reconstructPatternType p expr't cases
 
   cases' <- case patternType of
-    Just expr't' -> mapM (\x -> annotateCaseType t x expr't' annotateType) cases
+    Just expr't' -> annotateCases t expr't' cases
     Nothing -> pure $ fmap (fmap (,Nothing)) cases
 
   () <- when (all (isJust . typeOf) cases' && isJust patternType) $ do
@@ -326,6 +327,12 @@ annotateMatchType t p expr cases annotateType = do
 
   t' <- commonType p (fmap annotation cases')
   return (AST.Match (p, t') expr' cases')
+  where
+    annotateCases _ _ [] = pure []
+    annotateCases expected patternT (case' : rest) = do
+      case'' <- annotateCaseType expected case' patternT annotateType
+      rest' <- annotateCases (expected <|> typeOf case'') patternT rest
+      pure (case'' : rest')
 
 reconstructPatternType :: Position -> Maybe Type -> [AST.MatchCase' Position] -> TypeAnnotationEnv (Maybe Type)
 reconstructPatternType p actual@(Just variable@(Type (AST.TypeVar () _))) cases = do

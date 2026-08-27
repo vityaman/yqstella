@@ -1,0 +1,4 @@
+test/golden/stella_core_abs_err-dmittrey/2/input.yqst:4:10: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Bool, got fn(Bool) -> Bool
+>   return fn(b : Bool) { return b }
+           ^

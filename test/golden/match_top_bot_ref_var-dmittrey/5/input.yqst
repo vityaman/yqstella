@@ -1,0 +1,11 @@
+language core;
+
+extend with #bottom-type, #top-type, #structural-patterns, #natural-literals;
+
+fn main(x : Bot) -> Nat {
+  return match x {
+    x => 0
+  }
+}
+
+//SUCCESS

@@ -1,0 +1,4 @@
+test/golden/bad-dmittrey/ERROR-UNEXPECTED-SUBTYPE-func/input.yqst:9:15: [ERROR_UNEXPECTED_SUBTYPE]
+(subsumes) type mismatch: expected Top, got Bool
+>     return fn(x : Bool) {
+                ^
