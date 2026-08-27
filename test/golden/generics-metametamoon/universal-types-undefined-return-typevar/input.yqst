@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types;
+
+generic fn bad[T](x : T) -> /*e=ERROR_UNDEFINED_TYPE_VARIABLE*/ S {
+  return x
+}
+
+fn main(x : Nat) -> Nat {
+  return bad[Nat](x)
+}

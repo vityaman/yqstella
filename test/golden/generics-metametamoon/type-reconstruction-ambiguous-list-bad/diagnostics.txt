@@ -1,0 +1,20 @@
+test/golden/generics-metametamoon/type-reconstruction-ambiguous-list-bad/input.yqst:1:28: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> main |> 1)) -> [TypeVar(unit |> main |> 1)] has unresolved type variable TypeVar(unit |> main |> 1)
+> /*e=ERROR_AMBIGUOUS_TYPE*/ language core;
+                             ^
+test/golden/generics-metametamoon/type-reconstruction-ambiguous-list-bad/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> main |> 1)) -> [TypeVar(unit |> main |> 1)] has unresolved type variable TypeVar(unit |> main |> 1)
+> /*e=ERROR_AMBIGUOUS_TYPE*/ language core;
+  ^
+test/golden/generics-metametamoon/type-reconstruction-ambiguous-list-bad/input.yqst:5:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> main |> 1) has unresolved type variable TypeVar(unit |> main |> 1)
+> fn main(n : auto) -> auto {
+          ^
+test/golden/generics-metametamoon/type-reconstruction-ambiguous-list-bad/input.yqst:6:10: [ERROR_AMBIGUOUS_TYPE]
+type [TypeVar(unit |> main |> 1)] has unresolved type variable TypeVar(unit |> main |> 1)
+>   return [n]
+           ^
+test/golden/generics-metametamoon/type-reconstruction-ambiguous-list-bad/input.yqst:6:11: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> main |> 1) has unresolved type variable TypeVar(unit |> main |> 1)
+>   return [n]
+            ^

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-unexpected-record-bad/input.yqst:18:10: [ERROR_UNEXPECTED_RECORD]
+expected Nat, got record
+>   return {a = n}
+           ^

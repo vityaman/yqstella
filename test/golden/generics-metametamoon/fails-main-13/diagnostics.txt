@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-13/input.yqst:6:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected X_1, got X
+>     return a
+             ^

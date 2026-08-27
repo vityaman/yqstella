@@ -1,0 +1,9 @@
+// SUCCESS
+
+language core;
+
+extend with #type-reconstruction, #lists;
+
+fn main(n : [Nat]) -> auto {
+  return List::isempty(n)
+}

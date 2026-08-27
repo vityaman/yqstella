@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-21/input.yqst:6:42: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Unit and Nat + TypeVar(unit |> test |> 1)
+>   return if first then inl(succ(0)) else unit
+                                           ^

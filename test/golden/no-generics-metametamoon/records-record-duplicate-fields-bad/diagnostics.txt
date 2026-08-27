@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-record-duplicate-fields-bad/input.yqst:18:18: [ERROR_DUPLICATE_RECORD_FIELDS]
+duplicate field: a
+>   return {a = n, a = n}
+                   ^

@@ -1,0 +1,17 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_NOT_A_FUNCTION",
+    "location": "16:10"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+fn main(n : Nat) -> Nat {
+  return n(0)
+}

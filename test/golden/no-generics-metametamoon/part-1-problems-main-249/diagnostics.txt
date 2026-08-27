@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-249/input.yqst:33:47: [ERROR_UNEXPECTED_LIST]
+expected Nat, got list
+>         return let double = false in Nat::add([double])(succ(r))
+                                                ^

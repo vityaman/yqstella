@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-pair-dot-bad/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return {n, true}.1
+           ^

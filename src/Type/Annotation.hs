@@ -344,11 +344,19 @@ instance TypeAnnotatable AST.Expr' where
     _ <- uncurry (`listItemType` Inferred) $ annotation expr'
     return (AST.IsEmpty (p, Just t') expr')
   annotateType t (AST.Tail p expr) = do
-    headT <- listItemType p Expected t
-    let listT = fmap Type.list headT
-    expr' <- annotateType listT expr
-    let listT' = listT <|> snd (annotation expr')
-    return (AST.Tail (p, listT') expr')
+    isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+    if isTypeReconstruction
+      then do
+        expr' <- inferType expr
+        itemT <- listItemType (annotation expr) Inferred (typeOf expr')
+        t' <- traverse (\item -> liftType' p (Type.list item) t) itemT
+        return (AST.Tail (p, t') expr')
+      else do
+        headT <- listItemType p Expected t
+        let listT = fmap Type.list headT
+        expr' <- annotateType listT expr
+        let listT' = listT <|> snd (annotation expr')
+        return (AST.Tail (p, listT') expr')
   annotateType t x@(AST.Panic {}) =
     annotateExceptionExprType t x annotateType
   annotateType t x@(AST.Throw {}) = do

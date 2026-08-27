@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #lists;
+
+fn rest(xs : auto) -> auto {
+  return List::tail(xs)
+}
+
+fn main(n : Nat) -> auto {
+  return rest([n])
+}

@@ -1,0 +1,24 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #nested-function-declarations;
+
+
+
+fn main(n : Nat) -> Nat {
+  fn addTwo(x : Nat) -> Nat {
+    return succ(succ(x))
+  }
+  fn addThree(x : Nat) -> Nat {
+    return succ(succ(succ(x)))
+  }
+  return addTwo(addThree(n))
+}

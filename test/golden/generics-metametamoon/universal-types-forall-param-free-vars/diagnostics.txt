@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/universal-types-forall-param-free-vars/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #multiparameter-functions
+> // SUCCESS
+  ^

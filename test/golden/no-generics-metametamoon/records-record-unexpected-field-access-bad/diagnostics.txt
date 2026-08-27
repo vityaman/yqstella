@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-record-unexpected-field-access-bad/input.yqst:18:10: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field b : Nat
+>   return n.b
+           ^

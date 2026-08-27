@@ -1,0 +1,24 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+
+fn id(n : Nat) -> Nat {
+    return n
+}
+
+fn next(n : Nat) -> fn(Nat) -> Nat{
+    return id
+}
+
+
+fn main(n : Nat) -> Nat {
+  return Nat::rec(n, 0, next)
+}

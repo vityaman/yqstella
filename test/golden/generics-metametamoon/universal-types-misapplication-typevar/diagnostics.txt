@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/universal-types-misapplication-typevar/input.yqst:10:45: [ERROR_NOT_A_GENERIC_FUNCTION]
+expected a generic function, got fn(Nat) -> Nat
+>   return /*e=ERROR_NOT_A_GENERIC_FUNCTION*/ identity[Nat](x)
+                                              ^

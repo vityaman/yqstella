@@ -1,0 +1,16 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #lists;
+
+fn main(n : fn(Nat) -> Nat) -> Nat {
+  return n(List::head([]))
+}

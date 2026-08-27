@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-443/input.yqst:16:10: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Nat, got fn(Bool) -> Nat
+>   return fn(a : Bool) {
+           ^

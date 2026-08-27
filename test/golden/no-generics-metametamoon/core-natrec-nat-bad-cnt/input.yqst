@@ -1,0 +1,27 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION",
+    "location": "26:19"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+
+fn id(n : Nat) -> Nat {
+    return n
+}
+
+fn next(n : Nat) -> fn(Nat) -> Nat{
+    return id
+}
+
+
+fn main(n : Bool) -> Nat {
+  return Nat::rec(n, 0, next)
+}

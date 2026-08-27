@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #pairs, #multiparameter-functions;
+
+fn pair(x : auto, y : auto) -> auto {
+  return {x, y}
+}
+
+fn main(n : Nat) -> auto {
+  return pair(n, true)
+}

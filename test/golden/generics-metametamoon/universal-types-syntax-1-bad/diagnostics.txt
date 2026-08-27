@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/universal-types-syntax-1-bad/input.yqst:10:53: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return /*e=ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION*/ identity[Nat](x)
+                                                      ^

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/let-binding-let-binding-bad-rhs/input.yqst:18:23: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return let x = succ(true) in x
+                        ^

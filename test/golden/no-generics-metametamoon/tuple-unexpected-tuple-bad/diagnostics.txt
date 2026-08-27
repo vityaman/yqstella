@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/tuple-unexpected-tuple-bad/input.yqst:18:10: [ERROR_UNEXPECTED_TUPLE]
+type mismatch: expected Nat, got {Nat, Nat}
+>   return {n, n}
+           ^

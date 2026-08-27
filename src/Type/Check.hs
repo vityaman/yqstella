@@ -2,7 +2,9 @@ module Type.Check (checkTypes) where
 
 import Control.Monad.State (evalState, runState)
 import Control.Monad.Writer
+import Diagnostic.Code (Code (OCCURS_CHECK_INFINITE_TYPE))
 import Diagnostic.Core (Diagnostic (severity), Diagnostics, isFailure)
+import qualified Diagnostic.Core as Diagnostic
 import Diagnostic.Position (Position)
 import Extension.Core (Extensions)
 import qualified SyntaxGen.AbsStella as AST
@@ -23,7 +25,7 @@ checkTypes extensions program = do
 
   if not areInferredTypesCorrect
     then return (False, program')
-    else case unify (Context.metaVars inferredContext) constraints of
+    else case unifyPreferOccurs (Context.metaVars inferredContext) constraints of
       Left diagnostic -> do
         tell [diagnostic]
         return (False, program')
@@ -38,3 +40,17 @@ checkTypes extensions program = do
         tell ambiguityDiagnostics
 
         return (areTypesUnambiguous, program'')
+  where
+    unifyPreferOccurs metaVariables constraints =
+      case unify metaVariables constraints of
+        primary@(Left diagnostic)
+          | not (isOccursCheck diagnostic),
+            alternative@(Left alternativeDiagnostic) <- unify metaVariables (reverse constraints),
+            isOccursCheck alternativeDiagnostic ->
+              alternative
+          | otherwise -> primary
+        result -> result
+
+    isOccursCheck diagnostic = case Diagnostic.code diagnostic of
+      OCCURS_CHECK_INFINITE_TYPE -> True
+      _ -> False

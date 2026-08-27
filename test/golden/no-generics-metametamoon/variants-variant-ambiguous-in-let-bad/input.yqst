@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_AMBIGUOUS_VARIANT_TYPE",
+    "location": "18:18"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #let-bindings, #variants;
+
+fn main(n : Nat) -> Nat {
+  return let x = <| left = n |> in 0
+}

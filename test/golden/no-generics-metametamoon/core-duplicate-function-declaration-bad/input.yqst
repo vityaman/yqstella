@@ -1,0 +1,25 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_DUPLICATE_FUNCTION_DECLARATION",
+    "location": "19:1"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+fn f(x : Nat) -> Nat {
+  return x
+}
+
+fn f(x : Nat) -> Bool {
+  return true
+}
+
+fn main(n : Nat) -> Nat {
+  return f(n)
+}

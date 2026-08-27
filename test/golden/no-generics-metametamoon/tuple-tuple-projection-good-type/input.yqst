@@ -1,0 +1,16 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #tuples;
+
+fn main(n : {Nat, Bool}) -> Nat {
+  return n.1
+}

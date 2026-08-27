@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #universal-types;
+
+fn main(x : Nat) -> Nat {
+  generic fn localId[T](x : T) -> T {
+    return x
+  }
+  return localId[Nat](x)
+}
+

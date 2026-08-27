@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/fails-main-12/input.yqst:7:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return inr(0)
+               ^

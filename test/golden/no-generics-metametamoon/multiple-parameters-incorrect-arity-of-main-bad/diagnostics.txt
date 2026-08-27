@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/multiple-parameters-incorrect-arity-of-main-bad/input.yqst:1:0: [ERROR_INCORRECT_ARITY_OF_MAIN]
+main function must have exactly one parameter, got 2
+> /*
+  ^

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-record-duplicate-type-fields-bad/input.yqst:17:23: [ERROR_DUPLICATE_RECORD_TYPE_FIELDS]
+duplicate field: a
+> fn main(n : {a : Nat, a : Nat}) -> Nat {
+                        ^

@@ -10,7 +10,7 @@ import Data.Foldable (find)
 import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (fromMaybe, isJust)
+import Data.Maybe (catMaybes, fromMaybe, isJust)
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic, Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
@@ -237,9 +237,48 @@ annotateLetType t p [AST.APatternBinding p' pattern' expr] inExpr annotateType =
 
   let t' = typeOf inExpr''
   return $ AST.Let (p, t') [AST.APatternBinding (p', t) pattern'' expr'] inExpr''
-annotateLetType _ p bindings'' inExpr _ = do
-  tellD [notImplemented p "LetManyBindings"]
-  return $ fmap (,Nothing) (AST.Let p bindings'' inExpr)
+annotateLetType t p bindings'' inExpr annotateType = do
+  let annotateBinding (AST.APatternBinding p' pattern' expr) = do
+        expr' <- annotateType Nothing expr
+
+        case checkIrrefutable pattern' of
+          Left d -> tellD [d]
+          Right () -> pure ()
+
+        case typeOf expr' of
+          Just actual -> do
+            checked <- checkLetPatternType actual pattern'
+            case checked of
+              Right pattern'' -> do
+                let pattern''' = fmap (Data.Bifunctor.second Just) pattern''
+                return
+                  ( AST.APatternBinding (p', typeOf expr') pattern''' expr',
+                    Just $ bindings' pattern''
+                  )
+              Left d -> do
+                tellD [d]
+                return (AST.APatternBinding (p', typeOf expr') (fmap (,Nothing) pattern') expr', Nothing)
+          Nothing ->
+            return (AST.APatternBinding (p', Nothing) (fmap (,Nothing) pattern') expr', Nothing)
+
+  annotated <- mapM annotateBinding bindings''
+  let bindings''' = fmap fst annotated
+      bindingGroups = fmap snd annotated
+      entries = concat $ catMaybes bindingGroups
+      duplicates = Map.keys $ Map.filter ((1 <) . length) $ Map.fromListWith (++) [(name, [type_]) | (name, type_) <- entries]
+
+  unless (null duplicates) $
+    let message = "duplicate bindings: " ++ intercalate ", " duplicates
+     in tellD [diagnostic Error DUPLICATE_LET_BINDING (pointRange p) message]
+
+  inExpr' <- case sequence bindingGroups of
+    Just _ -> do
+      context <- get
+      let context' = foldr (uncurry Context.withTyped) context entries
+      withStateTAE (withName ("let at " ++ show p) . const context') (annotateType t inExpr)
+    Nothing -> pure $ fmap (,Nothing) inExpr
+
+  return $ AST.Let (p, typeOf inExpr') bindings''' inExpr'
 
 checkLetPatternType :: Type -> AST.Pattern' Position -> TypeAnnotationEnv (Either Diagnostic (AST.Pattern' (Position, Type)))
 checkLetPatternType actual (AST.PatternAsc p pattern' type_) = do
@@ -260,8 +299,12 @@ annotateMatchType ::
   TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
 annotateMatchType _ p expr [] annotateType = do
   expr' <- annotateType Nothing expr
-  let message = "expected at least one match case"
-   in tellD [diagnostic Error ILLEGAL_EMPTY_MATCHING (pointRange p) message]
+  metaVariables <- gets Context.metaVars
+  let hasUnresolvedConstraints =
+        maybe False (not . null . Unification.freeMetaVars metaVariables) (typeOf expr')
+  unless hasUnresolvedConstraints $
+    let message = "expected at least one match case"
+     in tellD [diagnostic Error ILLEGAL_EMPTY_MATCHING (pointRange p) message]
   return (AST.Match (p, Nothing) expr' [])
 annotateMatchType t p expr cases annotateType = do
   expr' <- annotateType Nothing expr

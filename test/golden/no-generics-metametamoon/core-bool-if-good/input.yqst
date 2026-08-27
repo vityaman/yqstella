@@ -1,0 +1,14 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+fn main(b : Bool) -> Bool {
+     return if b then true else false
+}

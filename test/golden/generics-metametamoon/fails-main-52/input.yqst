@@ -1,0 +1,7 @@
+language core;
+
+extend with #type-reconstruction;
+
+fn main(f : Nat) -> auto {
+  return /*e=ERROR_NOT_A_FUNCTION*/ f(f)
+}

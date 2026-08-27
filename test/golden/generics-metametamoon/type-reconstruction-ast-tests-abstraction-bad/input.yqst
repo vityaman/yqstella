@@ -1,0 +1,7 @@
+/*e=ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION*/ language core;
+
+extend with #type-reconstruction;
+
+fn main(n : Nat) -> auto {
+  return fn(x : auto) { return if x then succ(x) else 0 }
+}

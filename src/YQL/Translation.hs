@@ -5,7 +5,7 @@ import Control.Monad.Writer (runWriter)
 import Data.Foldable (find)
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, mapMaybe)
 import qualified Data.Set as Set
 import Diagnostic.Core (Diagnostic, notImplemented)
 import Diagnostic.Position (Position, unknown)
@@ -24,16 +24,16 @@ identNode :: AST.StellaIdent -> Node
 identNode (AST.StellaIdent name) = A name
 
 functionToYQL ::
-  (YQLTranslatable param, YQLTranslatable decl, YQLTranslatable expr) =>
+  (YQLTranslatable param, YQLTranslatable expr) =>
   String ->
   [AST.StellaIdent] ->
   [param (Position, Maybe Type)] ->
-  [decl (Position, Maybe Type)] ->
+  [AST.Decl' (Position, Maybe Type)] ->
   expr (Position, Maybe Type) ->
   Either Diagnostic Node
 functionToYQL name parameters paramdecls decls expr = do
   paramdecls' <- mapM toYQL paramdecls
-  decls' <- mapM toYQL decls
+  decls' <- mapM toYQL (orderDecls decls)
   expr' <- toYQL expr
 
   let body =
@@ -50,16 +50,17 @@ functionToYQL name parameters paramdecls decls expr = do
 
 instance YQLTranslatable AST.Program' where
   toYQL f@(AST.AProgram _ _ _ decls) = do
-    paramdecls <- case mainparams decls of
+    (paramdecls, resultType) <- case mainSignatures decls of
       [x] -> Right x
       xs -> Left $ unsupported f $ "expected an only main, got " ++ show (length xs)
 
     let (extensions', _) = runWriter $ enabledExtensions $ fmap fst f
     () <- checkExtensions $ Set.toList extensions'
 
-    topdecls' <- mapM toYQL decls
-    paramdecls' <- mapM declare paramdecls
+    topdecls' <- mapM toYQL (orderDecls decls)
+    paramdecls' <- concat <$> mapM bindParameter paramdecls
     mainargs' <- mapM toMainArg paramdecls
+    result' <- materializeCallable resultType (Y $ [A "Apply", A "main"] ++ mainargs')
 
     let rows = Y [A "AsList", Y [A "AsStruct", Q $ Y [Q $ A "result", A "result"]]]
 
@@ -67,16 +68,17 @@ instance YQLTranslatable AST.Program' where
           prelude "pure"
             ++ topdecls'
             ++ paramdecls'
-            ++ [Y [A "let", A "result", Y $ [A "Apply", A "main"] ++ mainargs']]
+            ++ [Y [A "let", A "result", result']]
             ++ [Y [A "let", A "world", Y [A "Apply", A "print", A "world", rows]]]
             ++ [Y [A "return", A "world"]]
 
     return $ Y main'
     where
-      mainparams = concatMap mainparams'
+      mainSignatures = concatMap mainSignature
 
-      mainparams' (AST.DeclFun _ _ (AST.StellaIdent "main") paramdecls _ _ _ _) = [paramdecls]
-      mainparams' _ = []
+      mainSignature (AST.DeclFun (_, Just (Type (AST.TypeFun _ _ result))) _ (AST.StellaIdent "main") paramdecls _ _ _ _) =
+        [(paramdecls, Type result)]
+      mainSignature _ = []
 
       declare :: AST.ParamDecl' (Position, Maybe Type) -> Either Diagnostic Node
       declare (AST.AParamDecl (_, t'') (AST.StellaIdent name') _) = do
@@ -84,8 +86,120 @@ instance YQLTranslatable AST.Program' where
         t' <- toYQL $ fromMaybe (error "expected a paramdecl type") t'''
         return $ Y [A "declare", A $ "__" ++ name' ++ "__", t']
 
+      bindParameter (AST.AParamDecl (_, Just type_@(Type (AST.TypeFun {}))) (AST.StellaIdent name') _) = do
+        value <- defaultValueYQL type_
+        return [Y [A "let", A $ "__" ++ name' ++ "__", value]]
+      bindParameter param = pure <$> declare param
+
       toMainArg (AST.AParamDecl _ (AST.StellaIdent name') _) = do
         Right $ A $ "__" ++ name' ++ "__"
+
+      materializeCallable (Type (AST.TypeFun _ arguments result)) callable = do
+        arguments' <- mapM (defaultValueYQL . Type) arguments
+        materializeCallable (Type result) (Y $ [A "Apply", callable] ++ arguments')
+      materializeCallable _ value = Right value
+
+orderDecls :: [AST.Decl' a] -> [AST.Decl' a]
+orderDecls = go []
+  where
+    go ordered [] = ordered
+    go ordered remaining =
+      let remainingNames = Set.fromList $ mapMaybe declName remaining
+          isReady decl =
+            let dependencies = maybe id Set.delete (declName decl) (declVariables decl)
+             in Set.null $ dependencies `Set.intersection` remainingNames
+       in case break isReady remaining of
+            (_, []) -> ordered ++ remaining
+            (before, ready : after) -> go (ordered ++ [ready]) (before ++ after)
+
+declName :: AST.Decl' a -> Maybe String
+declName (AST.DeclFun _ _ (AST.StellaIdent name) _ _ _ _ _) = Just name
+declName (AST.DeclFunGeneric _ _ (AST.StellaIdent name) _ _ _ _ _ _) = Just name
+declName _ = Nothing
+
+declVariables :: AST.Decl' a -> Set.Set String
+declVariables (AST.DeclFun _ _ _ parameters _ _ decls expr) =
+  functionVariables parameters decls expr
+declVariables (AST.DeclFunGeneric _ _ _ _ parameters _ _ decls expr) =
+  functionVariables parameters decls expr
+declVariables _ = Set.empty
+
+functionVariables :: [AST.ParamDecl' a] -> [AST.Decl' a] -> AST.Expr' a -> Set.Set String
+functionVariables parameters decls expr =
+  let bound = Set.fromList $ fmap paramName parameters ++ mapMaybe declName decls
+      used = Set.unions $ exprVariables expr : fmap declVariables decls
+   in used `Set.difference` bound
+  where
+    paramName (AST.AParamDecl _ (AST.StellaIdent name) _) = name
+
+exprVariables :: AST.Expr' a -> Set.Set String
+exprVariables expression = case expression of
+  AST.Sequence _ lhs rhs -> both lhs rhs
+  AST.Assign _ lhs rhs -> both lhs rhs
+  AST.If _ condition thenBranch elseBranch -> Set.unions $ fmap exprVariables [condition, thenBranch, elseBranch]
+  AST.Let _ bindings body -> bindingVariables bindings `Set.union` exprVariables body
+  AST.LetRec _ bindings body -> bindingVariables bindings `Set.union` exprVariables body
+  AST.TypeAbstraction _ _ expr -> exprVariables expr
+  AST.LessThan _ lhs rhs -> both lhs rhs
+  AST.LessThanOrEqual _ lhs rhs -> both lhs rhs
+  AST.GreaterThan _ lhs rhs -> both lhs rhs
+  AST.GreaterThanOrEqual _ lhs rhs -> both lhs rhs
+  AST.Equal _ lhs rhs -> both lhs rhs
+  AST.NotEqual _ lhs rhs -> both lhs rhs
+  AST.TypeAsc _ expr _ -> exprVariables expr
+  AST.TypeCast _ expr _ -> exprVariables expr
+  AST.Abstraction _ parameters expr ->
+    exprVariables expr `Set.difference` Set.fromList (fmap paramName parameters)
+  AST.Variant _ _ data' -> exprDataVariables data'
+  AST.Match _ expr cases -> exprVariables expr `Set.union` Set.unions (fmap caseVariables cases)
+  AST.List _ exprs -> Set.unions $ fmap exprVariables exprs
+  AST.Add _ lhs rhs -> both lhs rhs
+  AST.Subtract _ lhs rhs -> both lhs rhs
+  AST.LogicOr _ lhs rhs -> both lhs rhs
+  AST.Multiply _ lhs rhs -> both lhs rhs
+  AST.Divide _ lhs rhs -> both lhs rhs
+  AST.LogicAnd _ lhs rhs -> both lhs rhs
+  AST.Ref _ expr -> exprVariables expr
+  AST.Deref _ expr -> exprVariables expr
+  AST.Application _ function arguments -> exprVariables function `Set.union` Set.unions (fmap exprVariables arguments)
+  AST.TypeApplication _ expr _ -> exprVariables expr
+  AST.DotRecord _ expr _ -> exprVariables expr
+  AST.DotTuple _ expr _ -> exprVariables expr
+  AST.Tuple _ exprs -> Set.unions $ fmap exprVariables exprs
+  AST.Record _ bindings -> Set.unions $ fmap recordBindingVariables bindings
+  AST.ConsList _ head' tail' -> both head' tail'
+  AST.Head _ expr -> exprVariables expr
+  AST.IsEmpty _ expr -> exprVariables expr
+  AST.Tail _ expr -> exprVariables expr
+  AST.Panic _ -> Set.empty
+  AST.Throw _ expr -> exprVariables expr
+  AST.TryCatch _ expr _ fallback -> both expr fallback
+  AST.TryWith _ expr fallback -> both expr fallback
+  AST.TryCastAs _ expr _ _ success fallback -> Set.unions $ fmap exprVariables [expr, success, fallback]
+  AST.Inl _ expr -> exprVariables expr
+  AST.Inr _ expr -> exprVariables expr
+  AST.Succ _ expr -> exprVariables expr
+  AST.LogicNot _ expr -> exprVariables expr
+  AST.Pred _ expr -> exprVariables expr
+  AST.IsZero _ expr -> exprVariables expr
+  AST.Fix _ expr -> exprVariables expr
+  AST.NatRec _ n initial step -> Set.unions $ fmap exprVariables [n, initial, step]
+  AST.Fold _ _ expr -> exprVariables expr
+  AST.Unfold _ _ expr -> exprVariables expr
+  AST.ConstTrue _ -> Set.empty
+  AST.ConstFalse _ -> Set.empty
+  AST.ConstUnit _ -> Set.empty
+  AST.ConstInt _ _ -> Set.empty
+  AST.ConstMemory _ _ -> Set.empty
+  AST.Var _ (AST.StellaIdent name) -> Set.singleton name
+  where
+    both lhs rhs = exprVariables lhs `Set.union` exprVariables rhs
+    bindingVariables = Set.unions . fmap (\(AST.APatternBinding _ _ expr) -> exprVariables expr)
+    recordBindingVariables (AST.ABinding _ _ expr) = exprVariables expr
+    caseVariables (AST.AMatchCase _ _ expr) = exprVariables expr
+    exprDataVariables (AST.NoExprData _) = Set.empty
+    exprDataVariables (AST.SomeExprData _ expr) = exprVariables expr
+    paramName (AST.AParamDecl _ (AST.StellaIdent name) _) = name
 
 instance YQLTranslatable AST.Decl' where
   toYQL (AST.DeclFun _ _ (AST.StellaIdent name) paramdecls _ (AST.NoThrowType _) decls expr) =
@@ -173,6 +287,17 @@ instance YQLTranslatable AST.Expr' where
     expr' <- toYQL expr
     inExpr' <- toYQL inExpr
     return $ Y [A "block", Q $ Y [Y [A "let", A name, expr'], Y [A "return", inExpr']]]
+  toYQL (AST.Let _ bindings@(_ : _ : _) inExpr)
+    | Just names <- traverse bindingName bindings = do
+        bindings' <- mapM bindingExpr bindings
+        inExpr' <- toYQL inExpr
+        let lambda = Y [A "lambda", Q $ Y $ fmap A names, inExpr']
+        return $ Y $ [A "Apply", lambda] ++ bindings'
+    where
+      bindingName (AST.APatternBinding _ (AST.PatternVar _ (AST.StellaIdent name)) _) = Just name
+      bindingName _ = Nothing
+
+      bindingExpr (AST.APatternBinding _ _ expr) = toYQL expr
   toYQL (AST.Let (p, t) [AST.APatternBinding (p', t') pattern' expr] inExpr) = do
     toYQL (AST.Match (p, t) expr [AST.AMatchCase (p', t') pattern' inExpr])
   toYQL (AST.Abstraction _ paramdecls expr) = do
@@ -504,6 +629,7 @@ checkExtensions extensions = case findUnsupported extensions of
     isSupportedExtension MultiparameterFunctions = True
     isSupportedExtension NestedFunctionDeclarations = True
     isSupportedExtension LetBindings = True
+    isSupportedExtension LetManyBindings = True
     isSupportedExtension LetPatterns = True
     isSupportedExtension TypeAscriptions = True
     isSupportedExtension NaturalLiterals = True

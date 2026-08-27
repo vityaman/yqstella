@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-list-cons-good/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #multiparameter-functions
+> // SUCCESS
+  ^

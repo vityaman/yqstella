@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/variants-unexpected-variant-bad/input.yqst:18:10: [ERROR_UNEXPECTED_VARIANT]
+expected Nat, but got a variant
+>   return <| left = n |>
+           ^

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-missing-main-bad/input.yqst:13:1: [ERROR_MISSING_MAIN]
+not found: main function
+> language core;
+  ^

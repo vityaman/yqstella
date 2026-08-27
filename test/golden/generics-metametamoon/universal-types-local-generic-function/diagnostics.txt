@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/universal-types-local-generic-function/input.yqst:1:0: [ERROR_BAD_EXTENSION]
+disabled extension usage: #nested-function-declarations
+> // SUCCESS
+  ^

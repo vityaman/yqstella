@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-unexpected-lambda-bad/input.yqst:16:10: [ERROR_UNEXPECTED_LAMBDA]
+type mismatch: expected Nat, got fn(Nat) -> Nat
+>   return fn(x : Nat) { return x }
+           ^

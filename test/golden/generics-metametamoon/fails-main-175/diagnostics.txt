@@ -1,0 +1,12 @@
+test/golden/generics-metametamoon/fails-main-175/input.yqst:5:80: [ERROR_UNDEFINED_TYPE_VARIABLE]
+undefined type variable Y
+> fn identity(x : Nat) -> forall X. fn(X) -> /*e=ERROR_UNDEFINED_TYPE_VARIABLE*/ Y {
+                                                                                 ^
+test/golden/generics-metametamoon/fails-main-175/input.yqst:7:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Y, got X
+>     return x
+             ^
+test/golden/generics-metametamoon/fails-main-175/input.yqst:12:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Y
+>   return identity(x)[Nat](x)
+           ^

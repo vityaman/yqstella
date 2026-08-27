@@ -1,0 +1,8 @@
+test/golden/generics-metametamoon/fails-main-110/input.yqst:6:47: [ERROR_MISSING_RECORD_FIELDS]
+missing record fields: x, y, z
+>   return /*e=ERROR_UNEXPECTED_RECORD_FIELDS*/ {a = p.z, b = p.y, c = p.x}
+                                                ^
+test/golden/generics-metametamoon/fails-main-110/input.yqst:6:47: [ERROR_UNEXPECTED_RECORD_FIELDS]
+unexpected record fields: x, y, z
+>   return /*e=ERROR_UNEXPECTED_RECORD_FIELDS*/ {a = p.z, b = p.y, c = p.x}
+                                                ^

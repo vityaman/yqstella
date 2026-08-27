@@ -1,0 +1,20 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_FIELD_ACCESS",
+    "location": "19:5"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #records;
+
+fn main(x : Nat) -> Nat {
+  return
+    { f = 0, g = fn(x : Bool) { return if x then succ(0) else 0 }}.h(false)
+}

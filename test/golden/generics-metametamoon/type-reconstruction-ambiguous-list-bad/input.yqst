@@ -1,0 +1,7 @@
+/*e=ERROR_AMBIGUOUS_TYPE*/ language core;
+
+extend with #type-reconstruction, #lists;
+
+fn main(n : auto) -> auto {
+  return [n]
+}

@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_UNEXPECTED_LIST",
+    "location": "18:10"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #lists;
+
+fn main(n : Bool) -> Nat {
+  return [n]
+}

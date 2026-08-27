@@ -1,0 +1,19 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_DUPLICATE_VARIANT_TYPE_FIELDS",
+    "location": "17:13"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #variants;
+
+fn main(n : <| a : Nat, a : Bool |>) -> Nat {
+  return 0
+}

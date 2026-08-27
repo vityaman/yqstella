@@ -1,0 +1,16 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #unit-type;
+
+fn main(n : Unit) -> Unit {
+  return n
+}

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/tuple-tuple-projection-bad-type/input.yqst:18:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return n.2
+           ^

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/records-record-projection-bad-type/input.yqst:18:16: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return { a = n }
+                 ^

@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-unexpected-lambda-parameter/input.yqst:16:13: [ERROR_UNEXPECTED_TYPE_FOR_PARAMETER]
+type mismatch: expected Bool, got (x : Nat)
+>   return fn(x : Nat) { return x }
+              ^

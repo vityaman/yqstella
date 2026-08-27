@@ -1,0 +1,12 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-358/input.yqst:22:7: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+tag unknown not found
+>     | <| unknown  = x |> => 0
+        ^
+test/golden/no-generics-metametamoon/part-1-problems-main-358/input.yqst:18:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+expected same type for all subexpressions, got Nat, ?
+>   return match x {
+           ^
+test/golden/no-generics-metametamoon/part-1-problems-main-358/input.yqst:28:16: [ERROR_UNEXPECTED_VARIANT_LABEL]
+unexpected variant label unknown for <| number : Nat, boolean : Bool, function : fn(Nat) -> Nat |>
+>       return g(<| unknown = n |>
+                 ^

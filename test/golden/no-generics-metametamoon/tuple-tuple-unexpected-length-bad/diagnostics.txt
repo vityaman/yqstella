@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/tuple-tuple-unexpected-length-bad/input.yqst:18:10: [ERROR_UNEXPECTED_TUPLE_LENGTH]
+type mismatch: expected {Nat, Nat}, got {Nat, Nat, Nat}
+>   return {n, n, n}
+           ^

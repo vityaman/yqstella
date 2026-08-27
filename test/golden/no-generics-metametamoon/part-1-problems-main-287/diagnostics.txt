@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-287/input.yqst:19:5: [ERROR_UNEXPECTED_FIELD_ACCESS]
+missing record field h : ?
+>     { f = 0, g = fn(x : Bool) { return if x then succ(0) else 0 }}.h(false)
+      ^

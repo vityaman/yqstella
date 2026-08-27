@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-natrec-bad/input.yqst:10:28: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Nat and Bool
+>   return Nat::rec(n, true, step)
+                             ^

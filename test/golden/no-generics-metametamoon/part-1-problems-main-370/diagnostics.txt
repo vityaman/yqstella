@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/part-1-problems-main-370/input.yqst:26:41: [ERROR_UNEXPECTED_VARIANT]
+expected Bool, but got a variant
+>   return proc(cons(false, [true, false, <| value = n |>, false]))
+                                          ^

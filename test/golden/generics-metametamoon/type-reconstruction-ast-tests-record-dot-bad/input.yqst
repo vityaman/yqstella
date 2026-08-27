@@ -1,0 +1,9 @@
+// SUCCESS
+language core;
+
+
+extend with #type-reconstruction, #records;
+
+fn main(n : { a : auto, b : Bool }) ->  Nat {
+  return n.a
+}

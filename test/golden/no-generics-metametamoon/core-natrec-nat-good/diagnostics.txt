@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-natrec-nat-good/input.yqst:23:10: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Expr' not implemented
+>   return Nat::rec(n, 0, next)
+           ^

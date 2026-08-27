@@ -1,0 +1,4 @@
+test/golden/no-generics-metametamoon/core-undefined-variable-bad/input.yqst:16:10: [ERROR_UNDEFINED_VARIABLE]
+undefined variable y
+>   return y
+           ^

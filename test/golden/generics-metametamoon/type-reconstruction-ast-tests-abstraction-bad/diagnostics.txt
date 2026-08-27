@@ -1,0 +1,4 @@
+test/golden/generics-metametamoon/type-reconstruction-ast-tests-abstraction-bad/input.yqst:6:47: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify Bool and Nat
+>   return fn(x : auto) { return if x then succ(x) else 0 }
+                                                ^

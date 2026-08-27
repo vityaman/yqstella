@@ -1,0 +1,23 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": {
+    "code": "ERROR_INCORRECT_NUMBER_OF_ARGUMENTS",
+    "location": "22:10"
+  }
+}
+TEST_END
+*/
+
+language core;
+
+extend with #multiparameter-functions;
+
+fn k(x : Nat, y : Bool) -> Nat {
+  return x
+}
+
+fn main(n : Nat) -> Nat {
+  return k(n)
+}

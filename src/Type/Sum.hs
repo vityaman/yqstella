@@ -22,13 +22,17 @@ annotateSumExprType ::
 annotateSumExprType Nothing (AST.Inl p expr) annotateType = do
   expr' <- annotateType Nothing expr -- TODO: make a function for each diagnostic
   isBottom <- isAvailable Extension.AmbiguousTypeAsBottom
-  unless isBottom $
+  isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+  unless (isBottom || isTypeReconstruction) $
     let message = "type inference for sum types is not supported (use type ascriptions)"
      in tellD [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
 
   let inlT = typeOf expr'
-      inrT = if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
-      t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
+  inrT <-
+    if isTypeReconstruction
+      then Just <$> freshTypeVar
+      else pure $ if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
+  let t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
   return (AST.Inl (p, t') expr')
 annotateSumExprType (Just (Type (AST.TypeTop ()))) (AST.Inl p expr) annotateType =
   annotateSumExprType Nothing (AST.Inl p expr) annotateType
@@ -47,16 +51,20 @@ annotateSumExprType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inl p expr) annot
   let t' = (\(Type x) -> Type (AST.TypeSum () x inr)) <$> typeOf expr'
   return (AST.Inl (p, t') expr')
 annotateSumExprType t@(Just _) expression@(AST.Inl {}) annotateType =
-  annotateSumExprTypeUnexpected t expression annotateType
+  annotateSumExprTypeChecked t expression annotateType
 annotateSumExprType Nothing (AST.Inr p expr) annotateType = do
   expr' <- annotateType Nothing expr
   isBottom <- isAvailable Extension.AmbiguousTypeAsBottom
-  unless isBottom $
+  isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+  unless (isBottom || isTypeReconstruction) $
     let message = "type inference for sum types is not supported (use type ascriptions)"
      in tellD [diagnostic Error AMBIGUOUS_SUM_TYPE (pointRange p) message]
 
-  let inlT = if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
-      inrT = typeOf expr'
+  inlT <-
+    if isTypeReconstruction
+      then Just <$> freshTypeVar
+      else pure $ if isBottom then Just $ Type.fromAST' AST.TypeBottom else Nothing
+  let inrT = typeOf expr'
       t' = (\(Type x) (Type y) -> Type (AST.TypeSum () x y)) <$> inlT <*> inrT
   return (AST.Inr (p, t') expr')
 annotateSumExprType (Just (Type (AST.TypeTop ()))) (AST.Inr p expr) annotateType =
@@ -76,7 +84,7 @@ annotateSumExprType (Just (Type (AST.TypeSum _ inl inr))) (AST.Inr p expr) annot
   let t' = (\(Type x) -> Type (AST.TypeSum () inl x)) <$> typeOf expr'
   return (AST.Inr (p, t') expr')
 annotateSumExprType t@(Just _) expression@(AST.Inr {}) annotateType =
-  annotateSumExprTypeUnexpected t expression annotateType
+  annotateSumExprTypeChecked t expression annotateType
 annotateSumExprType _ _ _ = error "Unexpected non-sum expression"
 
 annotateSumExprTypeUnexpected ::
@@ -97,3 +105,23 @@ annotateSumExprTypeUnexpected (Just t) (AST.Inr p expr) annotateType = do
    in tellD [diagnostic Error UNEXPECTED_INJECTION (pointRange p) message]
   return (AST.Inr (p, Nothing) expr')
 annotateSumExprTypeUnexpected _ _ _ = error "Unexpected sum expression"
+
+annotateSumExprTypeChecked ::
+  Maybe Type ->
+  AST.Expr' Position ->
+  TypeAnnotator AST.Expr' ->
+  TypeAnnotationEnv (AST.Expr' (Position, Maybe Type))
+annotateSumExprTypeChecked expected expression annotateType = do
+  isTypeReconstruction <- isAvailable Extension.TypeReconstruction
+  if isTypeReconstruction
+    then do
+      expression' <- annotateSumExprType Nothing expression annotateType
+      case (expected, typeOf expression') of
+        (Just expected', Just actual) -> tellC [Constraint.Eq (position expression) actual expected']
+        _ -> pure ()
+      return expression'
+    else annotateSumExprTypeUnexpected expected expression annotateType
+  where
+    position (AST.Inl p _) = p
+    position (AST.Inr p _) = p
+    position _ = error "Unexpected sum expression"

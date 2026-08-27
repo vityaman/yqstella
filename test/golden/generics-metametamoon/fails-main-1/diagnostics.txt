@@ -1,0 +1,8 @@
+test/golden/generics-metametamoon/fails-main-1/input.yqst:7:42: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got Nat
+>   return { f, /*e=ERROR_NOT_A_FUNCTION*/ f(0) }
+                                           ^
+test/golden/generics-metametamoon/fails-main-1/input.yqst:7:42: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
+>   return { f, /*e=ERROR_NOT_A_FUNCTION*/ f(0) }
+                                           ^

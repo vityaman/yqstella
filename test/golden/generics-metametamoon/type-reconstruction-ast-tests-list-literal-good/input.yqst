@@ -1,0 +1,12 @@
+// SUCCESS
+language core;
+
+extend with #type-reconstruction, #lists;
+
+fn wrap(x : auto) -> auto {
+  return [x, x]
+}
+
+fn main(n : Nat) -> auto {
+  return wrap(n)
+}

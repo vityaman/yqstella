@@ -1,0 +1,20 @@
+/*
+TEST_BEGIN
+{
+  "type": "stop-on-first-error",
+  "expected-error": null
+}
+TEST_END
+*/
+
+language core;
+
+extend with #predecessor, #fixpoint-combinator' or '#general-recursion;
+
+fn sum(f : fn(Nat) -> Nat) -> fn(Nat) -> Nat {
+  return fn (x : Nat) { return if Nat::iszero(x) then 0 else succ(f(Nat::pred(x))) }
+}
+
+fn main(n : Nat) -> Nat {
+  return fix(sum)(n)
+}
