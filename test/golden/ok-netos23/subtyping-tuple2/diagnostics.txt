@@ -1,4 +1,0 @@
-test/golden/ok-netos23/subtyping-tuple2/input.yqst:1:0: [FATAL_NOT_IMPLEMENTED]
-YQL translation unsupported: Extension #structural-subtyping not implemented
-> language core;
-  ^

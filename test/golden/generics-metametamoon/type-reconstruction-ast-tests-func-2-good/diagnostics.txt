@@ -1,4 +1,0 @@
-test/golden/generics-metametamoon/type-reconstruction-ast-tests-func-2-good/input.yqst:7:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-type mismatch: expected Bool, got Nat
->   return n
-           ^
