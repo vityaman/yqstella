@@ -1,0 +1,15 @@
+language core;
+
+extend with #universal-types, #type-reconstruction, #nested-function-declarations;
+
+generic fn outer[T](value : auto) -> T {
+  generic fn captured[U](ignored : U) -> T {
+    return value
+  }
+
+  return captured[Bool](false)
+}
+
+fn main(n : Nat) -> Nat {
+  return outer[Nat](n)
+}

@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #lists;
+
+fn use(singleton : forall T. fn(T) -> [T]) -> Nat {
+  return List::head(singleton[Nat](0))
+}
+
+fn main(n : Nat) -> Nat {
+  return use(generic [T] fn(value : T) { return [] })
+}

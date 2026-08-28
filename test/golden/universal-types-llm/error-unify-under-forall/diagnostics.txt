@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-unify-under-forall/input.yqst:15:15: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify forall T. fn(Nat) -> T and forall T. fn(TypeVar( |> 1)) -> T
+>   return pass(abort)[Nat](n)
+                ^

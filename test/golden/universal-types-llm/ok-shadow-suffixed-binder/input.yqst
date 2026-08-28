@@ -1,0 +1,12 @@
+language core;
+extend with #universal-types;
+
+generic fn outer[T](seed : T) -> forall T, T_1. fn(T) -> fn(T_1) -> T {
+  return generic [T, T_1] fn(first : T) {
+    return fn(second : T_1) { return first }
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return outer[Bool](false)[Nat, Bool](n)(false)
+}

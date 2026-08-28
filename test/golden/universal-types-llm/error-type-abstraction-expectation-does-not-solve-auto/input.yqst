@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-reconstruction;
+
+fn use(identity : forall T. fn(T) -> T) -> Nat {
+  return identity[Nat](0)
+}
+
+fn main(n : Nat) -> Nat {
+  return use(generic [T] fn(value : auto) { return value })
+}

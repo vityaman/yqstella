@@ -1,0 +1,17 @@
+language core;
+extend with #universal-types, #variants, #multiparameter-functions;
+
+generic fn build[T](value : T) -> <| right : Nat, left : T |> {
+  return <| left = value |>
+}
+
+fn use(builder : forall X. fn(X) -> <| left : X, right : Nat |>, n : Nat) -> Nat {
+  return match builder[Nat](n) {
+    <| left = value |> => value
+  | <| right = value |> => value
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return use(build, n)
+}

@@ -89,7 +89,7 @@ bindTypeVariables parameters context =
       let source = name parameter
           used = Set.fromList (Map.keys variables ++ fmap name (Map.elems variables))
           resolvedName =
-            if Map.member source variables
+            if source `Set.member` used
               then freshName used source
               else source
           resolvedParameter = AST.StellaIdent resolvedName
@@ -120,7 +120,8 @@ metaVars = contextMetaVars
 restoreInferenceState :: Context -> Context -> Context
 restoreInferenceState inferred lexical =
   lexical
-    { contextMetaVars = contextMetaVars inferred <> contextMetaVars lexical
+    { contextPrevId = max (contextPrevId inferred) (contextPrevId lexical),
+      contextMetaVars = contextMetaVars inferred <> contextMetaVars lexical
     }
 
 withExceptionType :: Type -> Context -> Either Diagnostic Context

@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #lists, #let-bindings;
+
+fn main(n : Nat) -> Nat {
+  return let identities = [
+    generic [T] fn(value : T) { return value },
+    generic [U] fn(value : U) { return value }
+  ] in
+  List::head(identities)[Nat](n)
+}

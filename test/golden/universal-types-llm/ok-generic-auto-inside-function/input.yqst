@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-reconstruction;
+
+generic fn constantly[T](value : T) -> fn(Nat) -> auto {
+  return fn(_ : Nat) { return value }
+}
+
+fn main(n : Nat) -> Nat {
+  return constantly[Nat](n)(0)
+}

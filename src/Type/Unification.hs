@@ -69,8 +69,8 @@ unify metaVars (Eq p (Type (AST.TypeList () s)) (Type (AST.TypeList () t)) : cs)
   unify metaVars $ Eq p (Type s) (Type t) : cs
 unify metaVars (Eq p (Type (AST.TypeRef () s)) (Type (AST.TypeRef () t)) : cs) =
   unify metaVars $ Eq p (Type s) (Type t) : cs
-unify _ (Eq p (Type (AST.TypeForAll () _ _)) (Type (AST.TypeForAll () _ _)) : _) =
-  Left $ diagnostic Fatal NOT_IMPLEMENTED (pointRange p) "unification of non-alpha-equivalent universal types"
+unify _ (Eq p lhs@(Type (AST.TypeForAll () _ _)) rhs@(Type (AST.TypeForAll () _ _)) : _) =
+  unificationError UNEXPECTED_TYPE_FOR_EXPRESSION p $ "can't unify " ++ show lhs ++ " and " ++ show rhs
 unify metaVars (Eq p (Type (AST.TypeVar () (AST.StellaIdent x))) t : cs)
   | isMetaVar metaVars (Type (AST.TypeVar () (AST.StellaIdent x))),
     not $ x `Set.member` fv t = do

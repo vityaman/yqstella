@@ -1,0 +1,8 @@
+test/golden/universal-types-llm/error-rigid-type-is-not-reference/input.yqst:5:11: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected &Nat, got T
+>   return *value
+            ^
+test/golden/universal-types-llm/error-rigid-type-is-not-reference/input.yqst:5:10: [ERROR_NOT_A_REFERENCE]
+expected a reference type, got T
+>   return *value
+           ^

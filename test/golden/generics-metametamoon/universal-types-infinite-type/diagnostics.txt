@@ -1,4 +1,4 @@
 test/golden/generics-metametamoon/universal-types-infinite-type/input.yqst:12:26: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
-mu TypeVar(unit |> main |> 4). [TypeVar(unit |> main |> 4)]
+mu TypeVar(unit |> main |> 9). [TypeVar(unit |> main |> 9)]
 >   return equal_types(n, [n])
                            ^

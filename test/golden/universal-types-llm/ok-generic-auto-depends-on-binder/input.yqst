@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #type-reconstruction;
+
+generic fn identity[T](value : T) -> auto {
+  return value
+}
+
+fn main(n : Nat) -> Nat {
+  return identity[Nat](n)
+}

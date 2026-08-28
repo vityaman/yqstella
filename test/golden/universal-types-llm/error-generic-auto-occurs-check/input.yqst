@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-reconstruction;
+
+generic fn invalid[T](value : auto) -> auto {
+  return value(value)
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

@@ -1,4 +1,4 @@
 test/golden/generics-metametamoon/fails-main-147/input.yqst:19:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-can't unify fn(Nat) -> Nat and TypeVar(unit |> main |> 4) + (fn(Nat) -> Nat)
+can't unify fn(Nat) -> Nat and TypeVar(unit |> main |> 19) + (fn(Nat) -> Nat)
 >   return g(inr(inr(inr(fn(n : auto) { return g(inl(n)) }))))
              ^

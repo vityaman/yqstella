@@ -1,0 +1,20 @@
+(
+  (let print (lambda '(world rows) (block '(
+    (let sink (DataSink 'result))
+    (let options '('('type) '('autoref) '('unordered)))
+    (let world (ResFill! world sink (Key) rows options 'pure))
+    (return (Commit! world sink))))))
+  (let make_pair (lambda '(A B) (lambda '(left right) (lambda '(Z) (lambda '(_) '(left right))))))
+  (let preserve (lambda '(Z)
+    (lambda '(value)
+      (Nth
+        (Apply
+          (Apply (Apply (Apply make_pair Z (DataType 'Uint64)) value (Uint64 '0)) (DataType 'Bool))
+          (Bool 'false))
+        '0))))
+  (let main (lambda '(n) (Apply (Apply preserve (DataType 'Uint64)) n)))
+  (declare __n__ (DataType 'Uint64))
+  (let result (Apply main __n__))
+  (let world (Apply print world (AsList (AsStruct '('result result)))))
+  (return world)
+)

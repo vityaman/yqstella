@@ -1,0 +1,6 @@
+language core;
+extend with #universal-types;
+
+fn main(value : auto) -> Nat {
+  return 0
+}

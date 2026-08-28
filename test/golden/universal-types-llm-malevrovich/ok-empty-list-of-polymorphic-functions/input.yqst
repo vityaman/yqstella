@@ -1,0 +1,13 @@
+language core;
+
+extend with #universal-types, #lists;
+
+fn identities(n : Nat) -> [forall T. fn(T) -> T] {
+  return []
+}
+
+fn main(n : Nat) -> Nat {
+  return if List::isempty(identities(n))
+    then n
+    else List::head(identities(n))[Nat](n)
+}

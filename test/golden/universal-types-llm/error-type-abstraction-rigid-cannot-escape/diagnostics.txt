@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-type-abstraction-rigid-cannot-escape/input.yqst:7:12: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify forall U. fn(U) -> TypeVar(unit |> 1) and forall U. fn(U) -> U
+>     return generic [U] fn(value : U) { return n }
+             ^

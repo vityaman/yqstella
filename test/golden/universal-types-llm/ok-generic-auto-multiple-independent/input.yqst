@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #type-reconstruction, #multiparameter-functions;
+
+generic fn first[T](left : auto, right : auto) -> auto {
+  return left
+}
+
+fn main(n : Nat) -> Nat {
+  return first[Bool](n, false)
+}

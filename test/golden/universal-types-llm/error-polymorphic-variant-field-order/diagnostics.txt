@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-polymorphic-variant-field-order/input.yqst:16:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected forall X. fn(X) -> <| left : X, right : Nat |>, got forall T. fn(T) -> <| right : Nat, left : T |>
+>   return use(build, n)
+               ^

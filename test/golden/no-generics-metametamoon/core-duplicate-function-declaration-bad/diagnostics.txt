@@ -6,3 +6,7 @@ test/golden/no-generics-metametamoon/core-duplicate-function-declaration-bad/inp
 duplicate declaration: f
 > /*
   ^
+test/golden/no-generics-metametamoon/core-duplicate-function-declaration-bad/input.yqst:20:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Nat, got Bool
+>   return true
+           ^

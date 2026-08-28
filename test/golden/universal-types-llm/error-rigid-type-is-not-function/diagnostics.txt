@@ -1,0 +1,8 @@
+test/golden/universal-types-llm/error-rigid-type-is-not-function/input.yqst:5:10: [ERROR_NOT_A_FUNCTION]
+type mismatch: expected a function, got T
+>   return value(0)
+           ^
+test/golden/universal-types-llm/error-rigid-type-is-not-function/input.yqst:5:10: [ERROR_NOT_A_FUNCTION]
+note: expected fn(Nat) -> auto
+>   return value(0)
+           ^

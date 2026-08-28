@@ -1,0 +1,13 @@
+language core;
+extend with #universal-types, #type-reconstruction, #nested-function-declarations;
+
+generic fn outer[T](value : T) -> T {
+  generic fn identity[U](item : auto) -> U {
+    return item
+  }
+  return identity[T](value)
+}
+
+fn main(n : Nat) -> Nat {
+  return outer[Nat](n)
+}

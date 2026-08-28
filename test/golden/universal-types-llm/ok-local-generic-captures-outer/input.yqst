@@ -1,0 +1,13 @@
+language core;
+extend with #universal-types, #nested-function-declarations;
+
+generic fn outer[T](value : T) -> T {
+  generic fn keep[U](ignored : U) -> T {
+    return value
+  }
+  return keep[Bool](false)
+}
+
+fn main(n : Nat) -> Nat {
+  return outer[Nat](n)
+}

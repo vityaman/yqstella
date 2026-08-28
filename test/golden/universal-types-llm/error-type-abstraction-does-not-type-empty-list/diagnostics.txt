@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-type-abstraction-does-not-type-empty-list/input.yqst:10:49: [ERROR_AMBIGUOUS_LIST_TYPE]
+type inference for empty lists is not supported (use type ascriptions)
+>   return use(generic [T] fn(value : T) { return [] })
+                                                  ^

@@ -1,0 +1,15 @@
+language core;
+
+extend with #universal-types, #type-reconstruction;
+
+generic fn trigger[T](ignored : T) -> Nat {
+  return consume(0)
+}
+
+fn consume(value : auto) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return trigger[Bool](false)
+}

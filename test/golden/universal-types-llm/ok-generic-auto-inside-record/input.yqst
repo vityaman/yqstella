@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-reconstruction, #records;
+
+generic fn box[T](value : T) -> { value : auto } {
+  return { value = value }
+}
+
+fn main(n : Nat) -> Nat {
+  return box[Nat](n).value
+}

@@ -1,0 +1,7 @@
+language core;
+
+extend with #universal-types;
+
+fn main(identity : forall T. fn(T) -> T) -> Nat {
+  return identity[Nat](0)
+}

@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-reconstruction, #lists;
+
+generic fn singleton[T](value : T) -> [auto] {
+  return [value]
+}
+
+fn main(n : Nat) -> Nat {
+  return List::head(singleton[Nat](n))
+}

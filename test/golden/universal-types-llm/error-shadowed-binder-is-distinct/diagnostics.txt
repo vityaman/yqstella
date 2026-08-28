@@ -1,4 +1,4 @@
-test/golden/universal-types-llm/error-shadowed-binder-is-distinct/input.yqst:5:41: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-type mismatch: expected X_1, got X
+test/golden/universal-types-llm/error-shadowed-binder-is-distinct/input.yqst:5:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected forall X_1. fn(X_1) -> X_1, got forall X_1. fn(X_1) -> X
 >   return generic [X] fn(y : X) { return x }
-                                          ^
+           ^
