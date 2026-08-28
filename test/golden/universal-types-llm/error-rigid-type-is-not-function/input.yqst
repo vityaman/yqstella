@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types;
+
+generic fn call_rigid[T](value : T) -> Nat {
+  return value(0)
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

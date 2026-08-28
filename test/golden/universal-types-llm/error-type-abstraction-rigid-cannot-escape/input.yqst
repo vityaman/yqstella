@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-reconstruction, #nested-function-declarations;
+
+fn main(n : auto) -> Nat {
+  generic fn invalid[T](ignored : T) -> forall U. fn(U) -> U {
+    return generic [U] fn(value : U) { return n }
+  }
+
+  return 0
+}

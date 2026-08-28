@@ -1,0 +1,4 @@
+minirun ABI version: 2.45.0
+test/golden/universal-types-llm/ok-generic-mutual-recursion/yql.yqls:<main>:9:54: Error: Name not found: second
+	      (If (== count (Uint64 '0)) value (Apply (Apply second T) (+ count (Uint64 '1)) value)))))
+	                                                     ^

@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #type-reconstruction;
+
+generic fn make[T](value : T) -> forall U. fn(U) -> auto {
+  return generic [U] fn(ignored : U) { return value }
+}
+
+fn main(n : Nat) -> Nat {
+  return make[Nat](n)[Bool](false)
+}

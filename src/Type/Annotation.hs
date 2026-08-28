@@ -6,7 +6,9 @@ import Annotation (annotation)
 import Control.Applicative (Alternative ((<|>)))
 import Control.Monad (foldM, unless)
 import Control.Monad.State
+import Control.Monad.Writer (censor, listen)
 import Data.Foldable (find)
+import qualified Data.Set as Set
 import Diagnostic.Code (Code (..))
 import Diagnostic.Core (Diagnostic (range), Severity (Error), diagnostic, notImplemented)
 import Diagnostic.Position (Position, pointRange)
@@ -42,7 +44,51 @@ checkType t = annotateType $ Just t
 inferType :: (TypeAnnotatable f) => f Position -> TypeAnnotationEnv (f (Position, Maybe Type))
 inferType = annotateType Nothing
 
+data EscapePolicy = DiscardEscaping | RejectEscaping
+
+solveScopedConstraints ::
+  Position ->
+  Set.Set String ->
+  Set.Set String ->
+  EscapePolicy ->
+  (Substitution.Substitution -> a -> a) ->
+  TypeAnnotationEnv a ->
+  TypeAnnotationEnv a
+solveScopedConstraints p externalMetaVariables rigidVariables escapePolicy applySubstitution annotate = do
+  (annotated, (_, constraints)) <-
+    censor (\(diagnostics, _) -> (diagnostics, mempty)) $
+      listen annotate
+  metaVariables <- gets Context.metaVars
+  case Unification.unify metaVariables constraints of
+    Left issue -> do
+      tellD [issue]
+      pure annotated
+    Right substitution -> do
+      let localMetaVariables = metaVariables `Set.difference` externalMetaVariables
+          classify name =
+            let variable = Type $ AST.TypeVar () (AST.StellaIdent name)
+                inferred = Substitution.apply substitution variable
+                escapesScope =
+                  not (Set.null $ Type.fv inferred `Set.intersection` rigidVariables)
+                    || not (Set.null $ Unification.freeMetaVars localMetaVariables inferred)
+             in (variable, inferred, escapesScope)
+          solutions = filter (\(variable, inferred, _) -> not $ Unification.alphaEq variable inferred) $ classify <$> Set.toList externalMetaVariables
+          safeConstraints = [Constraint.Eq p variable inferred | (variable, inferred, False) <- solutions]
+          escapingSolutions = [(variable, inferred) | (variable, inferred, True) <- solutions]
+      tellC safeConstraints
+      case escapePolicy of
+        DiscardEscaping -> pure ()
+        RejectEscaping -> unless (null escapingSolutions) $ do
+          let message = "type inference solution escapes universal scope: " ++ show escapingSolutions
+          tellD [diagnostic Error UNEXPECTED_TYPE_FOR_EXPRESSION (pointRange p) message]
+      pure $ applySubstitution substitution annotated
+
+applyTypeAnnotation :: Substitution.Substitution -> (Position, Maybe Type) -> (Position, Maybe Type)
+applyTypeAnnotation substitution (position, type_) =
+  (position, Substitution.apply substitution <$> type_)
+
 annotateFunction ::
+  Maybe Type ->
   Position ->
   [AST.Annotation' Position] ->
   String ->
@@ -57,10 +103,20 @@ annotateFunction ::
       [AST.Decl' (Position, Maybe Type)],
       AST.Expr' (Position, Maybe Type)
     )
-annotateFunction p annotations fname paramdecls returntype throwtype decls expr = do
+annotateFunction declaredType p annotations fname paramdecls returntype throwtype decls expr = do
   unless (null annotations) $ tellD [notImplemented p "DeclFun annotations"]
 
-  context' <- gets (withName fname) >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
+  contextWithParams <- gets (withName fname) >>= withDecls decls {-isTopLevel=-} False >>= withParamDecls paramdecls
+
+  let declaredSignature = case declaredType of
+        Just (Type (AST.TypeFun () args result)) -> Just (fmap Type args, Type result)
+        _ -> Nothing
+      context' = case declaredSignature of
+        Just (args, _)
+          | length args == length paramdecls ->
+              let names = [name | AST.AParamDecl _ (AST.StellaIdent name) _ <- paramdecls]
+               in foldr (uncurry Context.withTyped) contextWithParams (zip names args)
+        _ -> contextWithParams
 
   case throwtype of
     AST.NoThrowType _ -> pure ()
@@ -70,11 +126,15 @@ annotateFunction p annotations fname paramdecls returntype throwtype decls expr 
         AST.AParamDecl (p', Context.typeOf name context') (AST.StellaIdent name) (stub type_)
       paramdecls' = fmap annotateParam paramdecls
 
-  decls' <- withStateTAE (const context') (mapM inferType decls)
-  expectedReturn <- case returntype of
-    AST.SomeReturnType _ type_ -> Just <$> sanitizeTSilent type_
-    AST.NoReturnType _ -> pure Nothing
-  expr' <- withStateTAE (const context') (annotateType expectedReturn expr)
+  expectedReturn <- case declaredSignature of
+    Just (_, result) -> pure $ Just result
+    Nothing -> case returntype of
+      AST.SomeReturnType _ type_ -> Just <$> sanitizeTSilent type_
+      AST.NoReturnType _ -> pure Nothing
+  (decls', expr') <- withStateTAE (const context') $ do
+    decls' <- mapM inferType decls
+    expr' <- annotateType expectedReturn expr
+    pure (decls', expr')
 
   return (Type.fn <$> traverse typeOf paramdecls' <*> typeOf expr', paramdecls', decls', expr')
 
@@ -121,7 +181,8 @@ instance TypeAnnotatable AST.Program' where
 
 instance TypeAnnotatable AST.Decl' where
   annotateType _ (AST.DeclFun p annotations (AST.StellaIdent fname) paramdecls returntype throwtype decls expr) = do
-    (functionType, paramdecls', decls', expr') <- annotateFunction p annotations fname paramdecls returntype throwtype decls expr
+    declaredType <- gets (Context.typeOf fname)
+    (functionType, paramdecls', decls', expr') <- annotateFunction declaredType p annotations fname paramdecls returntype throwtype decls expr
 
     return
       ( AST.DeclFun
@@ -137,9 +198,28 @@ instance TypeAnnotatable AST.Decl' where
   annotateType _ (AST.DeclFunGeneric p annotations (AST.StellaIdent fname) parameters paramdecls returntype throwtype decls expr) = do
     current <- get
     let (resolved, context') = Context.bindTypeVariables parameters current
+        declaredType = case Context.typeOf fname current of
+          Just (Type (AST.TypeForAll () declaredParameters body))
+            | length declaredParameters == length resolved ->
+                Just $ Substitution.substitute (zip declaredParameters (fmap (Type . AST.TypeVar ()) resolved)) (Type body)
+          _ -> Nothing
+        declaredMetaVariables = maybe mempty (Unification.freeMetaVars $ Context.metaVars current) declaredType
+        externalMetaVariables = Context.metaVars current `Set.difference` declaredMetaVariables
+        rigidVariables = Set.fromList [name | AST.StellaIdent name <- resolved]
+        applySubstitution substitution (functionType, paramdecls', decls', expr') =
+          ( Substitution.apply substitution <$> (declaredType <|> functionType),
+            fmap (fmap $ applyTypeAnnotation substitution) paramdecls',
+            fmap (fmap $ applyTypeAnnotation substitution) decls',
+            fmap (applyTypeAnnotation substitution) expr'
+          )
     (functionType, paramdecls', decls', expr') <-
-      withStateTAE (const context') $ annotateFunction p annotations fname paramdecls returntype throwtype decls expr
+      solveScopedConstraints p externalMetaVariables rigidVariables DiscardEscaping applySubstitution $
+        withStateTAE (const context') $
+          annotateFunction declaredType p annotations fname paramdecls returntype throwtype decls expr
     let universalType = Type . AST.TypeForAll () resolved . Type.toAST <$> functionType
+    case universalType of
+      Just type_ -> modify (Context.withTyped fname type_)
+      Nothing -> pure ()
     return
       ( AST.DeclFunGeneric
           (p, universalType)
@@ -203,12 +283,12 @@ instance TypeAnnotatable AST.Expr' where
     parameters' <- validateTypeParameters p parameters
     context <- get
     let (resolved, context') = Context.bindTypeVariables parameters' context
-        expectedBody = case expected of
-          Just (Type (AST.TypeForAll () expectedParameters body))
-            | length expectedParameters == length resolved ->
-                Just $ Substitution.substitute (zip expectedParameters (fmap (Type . AST.TypeVar ()) resolved)) (Type body)
-          _ -> Nothing
-    expr' <- withStateTAE (const context') (annotateType expectedBody expr)
+        externalMetaVariables = Context.metaVars context
+        rigidVariables = Set.fromList [name | AST.StellaIdent name <- resolved]
+        applySubstitution substitution = fmap $ applyTypeAnnotation substitution
+    expr' <-
+      solveScopedConstraints p externalMetaVariables rigidVariables RejectEscaping applySubstitution $
+        withStateTAE (const context') (inferType expr)
     actual <- case typeOf expr' of
       Just body -> Just <$> liftType' p (Type $ AST.TypeForAll () resolved (Type.toAST body)) expected
       Nothing -> pure Nothing

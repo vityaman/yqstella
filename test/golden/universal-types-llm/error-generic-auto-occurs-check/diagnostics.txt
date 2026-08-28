@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-generic-auto-occurs-check/input.yqst:6:16: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
+mu TypeVar(unit |> invalid |> 4). fn(TypeVar(unit |> invalid |> 4)) -> TypeVar(unit |> invalid |> 5)
+>   return value(value)
+                 ^

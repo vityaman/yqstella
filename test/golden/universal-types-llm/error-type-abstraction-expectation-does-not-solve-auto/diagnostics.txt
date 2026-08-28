@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-type-abstraction-expectation-does-not-solve-auto/input.yqst:10:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify forall T. fn(TypeVar(unit |> main |> 1)) -> TypeVar(unit |> main |> 1) and forall T. fn(T) -> T
+>   return use(generic [T] fn(value : auto) { return value })
+               ^

@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/ok-auto-explicit-type-argument/input.yqst:10:19: [FATAL_NOT_IMPLEMENTED]
+YQL translation unsupported: AST.Type' not implemented
+>   return identity[auto](n)
+                    ^

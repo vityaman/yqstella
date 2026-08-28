@@ -1,0 +1,14 @@
+language core;
+extend with #universal-types, #multiparameter-functions, #predecessor;
+
+generic fn first[T](count : Nat, value : T) -> T {
+  return if Nat::iszero(count) then value else second[T](Nat::pred(count), value)
+}
+
+generic fn second[T](count : Nat, value : T) -> T {
+  return if Nat::iszero(count) then value else first[T](Nat::pred(count), value)
+}
+
+fn main(n : Nat) -> Nat {
+  return first[Nat](n, n)
+}

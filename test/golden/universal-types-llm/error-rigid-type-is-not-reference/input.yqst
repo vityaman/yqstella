@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #references;
+
+generic fn dereference_rigid[T](value : T) -> Nat {
+  return *value
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

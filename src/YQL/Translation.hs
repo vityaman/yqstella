@@ -15,6 +15,7 @@ import qualified SyntaxGen.AbsStella as AST
 import Type.Core (Type (Type))
 import qualified Type.Core as Type
 import Type.Env (typeOf)
+import qualified Type.Substitution as Substitution
 import YQL.AST (Node (..))
 
 class YQLTranslatable f where
@@ -97,6 +98,11 @@ instance YQLTranslatable AST.Program' where
       materializeCallable (Type (AST.TypeFun _ arguments result)) callable = do
         arguments' <- mapM (defaultValueYQL . Type) arguments
         materializeCallable (Type result) (Y $ [A "Apply", callable] ++ arguments')
+      materializeCallable (Type (AST.TypeForAll _ parameters body)) callable = do
+        let unitType = Type $ AST.TypeUnit ()
+            instantiated = Substitution.substitute [(parameter, unitType) | parameter <- parameters] (Type body)
+            typeArguments = replicate (length parameters) $ Y [A "VoidType"]
+        materializeCallable instantiated (Y $ [A "Apply", callable] ++ typeArguments)
       materializeCallable _ value = Right value
 
 orderDecls :: [AST.Decl' a] -> [AST.Decl' a]

@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #pairs;
+
+generic fn project_rigid[T](value : T) -> Nat {
+  return value.1
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

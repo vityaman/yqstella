@@ -1,0 +1,13 @@
+language core;
+
+extend with #universal-types, #type-reconstruction;
+
+generic fn consume[T](value : auto) -> Nat {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return if Nat::iszero(consume[Nat](n))
+    then consume[Bool](false)
+    else 0
+}

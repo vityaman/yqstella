@@ -1,0 +1,14 @@
+language core;
+extend with #universal-types, #pairs, #multiparameter-functions;
+
+generic fn make_pair[A, B](left : A, right : B) -> forall Z. fn(Z) -> {A, B} {
+  return generic [Z] fn(_ : Z) { return {left, right} }
+}
+
+generic fn preserve[Z](value : Z) -> Z {
+  return make_pair[Z, Nat](value, 0)[Bool](false).1
+}
+
+fn main(n : Nat) -> Nat {
+  return preserve[Nat](n)
+}

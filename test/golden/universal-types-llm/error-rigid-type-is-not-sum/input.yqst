@@ -1,0 +1,13 @@
+language core;
+extend with #universal-types, #sum-types;
+
+generic fn match_rigid[T](value : T) -> Nat {
+  return match value {
+    inl(left) => 0
+  | inr(right) => 0
+  }
+}
+
+fn main(n : Nat) -> Nat {
+  return n
+}

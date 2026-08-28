@@ -1,4 +1,4 @@
 test/golden/bad-netos23/error-unexpected-type-for-expression-square-bad-add-reconstruct/input.yqst:9:14: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
-can't unify Nat and fn(TypeVar(unit |> Nat::add |> 2)) -> TypeVar(unit |> Nat::add |> 2)
+can't unify Nat and fn(TypeVar(unit |> Nat::add |> 9)) -> TypeVar(unit |> Nat::add |> 9)
 >       return succ( i );
                ^

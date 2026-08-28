@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #type-reconstruction;
+
+generic fn ignore[T](value : auto) -> auto {
+  return 0
+}
+
+fn main(n : Nat) -> Nat {
+  return ignore[Nat](false)
+}

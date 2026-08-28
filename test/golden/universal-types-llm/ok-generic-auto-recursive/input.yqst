@@ -1,0 +1,10 @@
+language core;
+extend with #universal-types, #type-reconstruction;
+
+generic fn keep[T](value : auto) -> auto {
+  return if true then value else keep[T](value)
+}
+
+fn main(n : Nat) -> Nat {
+  return keep[Bool](n)
+}

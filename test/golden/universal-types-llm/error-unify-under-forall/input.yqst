@@ -1,0 +1,16 @@
+language core;
+extend with #universal-types, #type-reconstruction, #type-aliases, #panic;
+
+type Poly = forall T. fn(auto) -> T
+
+generic fn abort[T](value : Nat) -> T {
+  return panic!
+}
+
+fn pass(function : Poly) -> Poly {
+  return function
+}
+
+fn main(n : Nat) -> Nat {
+  return pass(abort)[Nat](n)
+}

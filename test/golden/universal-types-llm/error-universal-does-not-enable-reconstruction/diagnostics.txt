@@ -1,0 +1,16 @@
+test/golden/universal-types-llm/error-universal-does-not-enable-reconstruction/input.yqst:4:17: [ERROR_BAD_EXTENSION]
+disabled extension usage: #type-reconstruction
+> fn main(value : auto) -> Nat {
+                  ^
+test/golden/universal-types-llm/error-universal-does-not-enable-reconstruction/input.yqst:1:1: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 1)) -> Nat has unresolved type variable TypeVar(unit |> 1)
+> language core;
+  ^
+test/golden/universal-types-llm/error-universal-does-not-enable-reconstruction/input.yqst:1:0: [ERROR_AMBIGUOUS_TYPE]
+type fn(TypeVar(unit |> 1)) -> Nat has unresolved type variable TypeVar(unit |> 1)
+> language core;
+  ^
+test/golden/universal-types-llm/error-universal-does-not-enable-reconstruction/input.yqst:4:9: [ERROR_AMBIGUOUS_TYPE]
+type TypeVar(unit |> 1) has unresolved type variable TypeVar(unit |> 1)
+> fn main(value : auto) -> Nat {
+          ^

@@ -1,0 +1,14 @@
+language core;
+extend with #universal-types;
+
+generic fn first[T](value : T) -> T {
+  return second[T](value)
+}
+
+generic fn second[T](value : T) -> T {
+  return value
+}
+
+fn main(n : Nat) -> Nat {
+  return first[Nat](n)
+}

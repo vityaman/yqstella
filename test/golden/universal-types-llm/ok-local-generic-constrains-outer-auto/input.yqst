@@ -1,0 +1,11 @@
+language core;
+
+extend with #universal-types, #type-reconstruction, #nested-function-declarations;
+
+fn main(n : auto) -> Nat {
+  generic fn captured[T](ignored : T) -> Nat {
+    return n
+  }
+
+  return captured[Bool](false)
+}

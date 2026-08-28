@@ -1,0 +1,8 @@
+test/golden/universal-types-llm/error-rigid-type-is-not-sum/input.yqst:6:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type T
+>     inl(left) => 0
+      ^
+test/golden/universal-types-llm/error-rigid-type-is-not-sum/input.yqst:7:5: [ERROR_UNEXPECTED_PATTERN_FOR_TYPE]
+unexpected pattern for type T
+>   | inr(right) => 0
+      ^

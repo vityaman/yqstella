@@ -1,4 +1,4 @@
 test/golden/bad-netos23/error-occurs-check-infinite-type-infinite-function-fix-type/input.yqst:6:18: [ERROR_OCCURS_CHECK_INFINITE_TYPE]
-mu TypeVar(unit |> main |> 1). fn(TypeVar(unit |> main |> 1)) -> TypeVar(unit |> main |> 2)
+mu TypeVar(unit |> main |> 4). fn(TypeVar(unit |> main |> 4)) -> TypeVar(unit |> main |> 5)
 >     return fix(f(f))
                    ^

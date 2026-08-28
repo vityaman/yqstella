@@ -6,3 +6,7 @@ test/golden/core-draen-guy/ill-duplicate-function-declaration/input.yqst:1:0: [E
 duplicate declaration: func
 > language core;
   ^
+test/golden/core-draen-guy/ill-duplicate-function-declaration/input.yqst:8:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+type mismatch: expected Bool, got Nat
+>   return 0;
+           ^

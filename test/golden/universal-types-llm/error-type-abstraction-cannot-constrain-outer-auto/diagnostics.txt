@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-type-abstraction-cannot-constrain-outer-auto/input.yqst:6:10: [ERROR_UNEXPECTED_TYPE_FOR_EXPRESSION]
+can't unify forall U. fn(U) -> TypeVar(unit |> 1) and forall U. fn(U) -> Nat
+>   return generic [U] fn(ignored : U) { return n }
+           ^

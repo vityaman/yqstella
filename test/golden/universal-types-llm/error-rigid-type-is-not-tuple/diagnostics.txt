@@ -1,0 +1,4 @@
+test/golden/universal-types-llm/error-rigid-type-is-not-tuple/input.yqst:5:10: [ERROR_NOT_A_TUPLE]
+type mismatch: expected tuple, got T
+>   return value.1
+           ^

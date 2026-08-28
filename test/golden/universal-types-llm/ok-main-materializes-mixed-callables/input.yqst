@@ -1,0 +1,9 @@
+language core;
+
+extend with #universal-types;
+
+fn main(n : Nat) -> fn(Nat) -> forall T. fn(T) -> Nat {
+  return fn(ignored_nat : Nat) {
+    return generic [T] fn(ignored : T) { return n }
+  }
+}
